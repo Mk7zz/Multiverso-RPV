@@ -35,7 +35,7 @@ export function Header() {
         <button className="icon-btn menu-toggle" onClick={() => setMenu(!menu)} aria-label="Abrir menu">
           <PixelIcon name="menu" size={16} />
         </button>
-        <Link to="/" className="logo">
+        <Link to={user?.role === 'company' ? '/empresa' : '/'} className="logo">
           <RpvMark size={40} />
           <span>
             {BRAND.name}
@@ -43,7 +43,16 @@ export function Header() {
           </span>
         </Link>
         <nav className={`nav ${menu ? 'open' : ''}`}>
-          {user ? (
+          {user?.role === 'company' ? (
+            <>
+              <NavLink to="/empresa" end>
+                Painel
+              </NavLink>
+              <NavLink to="/empresa/talentos">Talentos</NavLink>
+              <NavLink to="/empresa/vagas">Oportunidades</NavLink>
+              <NavLink to="/empresa/convites">Convites</NavLink>
+            </>
+          ) : user ? (
             <>
               <NavLink to="/painel">{BRAND.world.name}</NavLink>
               <NavLink to="/jornada">Mapa</NavLink>
@@ -54,6 +63,7 @@ export function Header() {
               <NavLink to="/cursos">Cursos</NavLink>
               <NavLink to="/ranking">Ranking</NavLink>
               <NavLink to="/conexoes">Conexões</NavLink>
+              {user.role === 'student' && <NavLink to="/oportunidades">Oportunidades</NavLink>}
               <NavLink to="/eventos">Eventos</NavLink>
             </>
           ) : (
@@ -61,6 +71,7 @@ export function Header() {
               <NavLink to="/cursos">Cursos</NavLink>
               <NavLink to="/eventos">Eventos</NavLink>
               <NavLink to="/validar">Validar certificado</NavLink>
+              <NavLink to="/empresas">Para empresas</NavLink>
             </>
           )}
         </nav>
@@ -68,10 +79,12 @@ export function Header() {
           {user ? (
             <>
               <HudChip />
-              <Link to="/mensagens" className="icon-btn" aria-label={`Mensagens (${unreadMessages} não lidas)`} title="Mensagens">
-                <PixelIcon name="mail" size={18} />
-                {unreadMessages > 0 && <span className="dot-count">{unreadMessages}</span>}
-              </Link>
+              {user.role !== 'company' && (
+                <Link to="/mensagens" className="icon-btn" aria-label={`Mensagens (${unreadMessages} não lidas)`} title="Mensagens">
+                  <PixelIcon name="mail" size={18} />
+                  {unreadMessages > 0 && <span className="dot-count">{unreadMessages}</span>}
+                </Link>
+              )}
               <Link to="/notificacoes" className="icon-btn" aria-label={`Notificações (${unreadNotifications} não lidas)`} title="Notificações">
                 <PixelIcon name="bell" size={18} />
                 {unreadNotifications > 0 && <span className="dot-count">{unreadNotifications > 99 ? '99+' : unreadNotifications}</span>}
@@ -87,13 +100,32 @@ export function Header() {
                         {user.name}
                       </strong>
                       <span className="muted small">
-                        <PixelIcon name={user.level.icon} size={14} /> Nível {user.level.level} · {user.points} XP
+                        {user.role === 'company' ? (
+                          <>
+                            <PixelIcon name="building" size={14} /> Empresa parceira
+                          </>
+                        ) : (
+                          <>
+                            <PixelIcon name={user.level.icon} size={14} /> Nível {user.level.level} · {user.points} XP
+                          </>
+                        )}
                       </span>
                     </div>
                     <hr style={{ margin: '4px 0' }} />
-                    <Link to="/painel">Voltar ao {BRAND.world.name}</Link>
-                    <Link to="/perfil">Perfil, medalhas e avatar</Link>
-                    <Link to="/certificados">Meus certificados</Link>
+                    {user.role === 'company' ? (
+                      <>
+                        <Link to="/empresa">Área da empresa</Link>
+                        <Link to="/empresa/perfil">Dados da empresa</Link>
+                        <Link to="/notificacoes">Notificações</Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link to="/painel">Voltar ao {BRAND.world.name}</Link>
+                        <Link to="/perfil">Perfil, medalhas e avatar</Link>
+                        <Link to="/certificados">Meus certificados</Link>
+                        {user.role === 'student' && <Link to="/oportunidades?aba=vitrine">Minha vitrine para empresas</Link>}
+                      </>
+                    )}
                     {user.role === 'admin' && <Link to="/admin">Painel administrativo</Link>}
                     <hr style={{ margin: '4px 0' }} />
                     <button
@@ -167,6 +199,7 @@ export function Layout() {
           <span className="row">
             <Link to="/cursos">Cursos</Link>
             <Link to="/validar">Validar certificado</Link>
+            <Link to="/empresas">Para empresas</Link>
             <a href={BRAND.site.url} target="_blank" rel="noreferrer">
               {BRAND.site.label} ↗
             </a>

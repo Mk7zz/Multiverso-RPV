@@ -1,9 +1,20 @@
 import type { ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router';
 import { AdminLayout } from './components/AdminLayout';
+import { CompanyLayout } from './components/CompanyLayout';
 import { Layout } from './components/Layout';
 import { Spinner } from './components/ui';
 import { useAuth } from './lib/auth';
+import { homeFor } from './lib/partners';
+import type { Role } from './lib/types';
+import { CompanyInvites, CompanyProfile } from './pages/company/Invites';
+import { CompanyJobDetail, CompanyJobs } from './pages/company/Jobs';
+import { CompanyOverview } from './pages/company/Overview';
+import { CompanyTalentDetail, CompanyTalents } from './pages/company/Talents';
+import { CompanyRegister } from './pages/partners/CompanyRegister';
+import { ForCompanies } from './pages/partners/ForCompanies';
+import { AdminPartners } from './pages/admin/Partners';
+import { OpportunityDetail, Opportunities } from './pages/student/Opportunities';
 import { AdminAssessments } from './pages/admin/Assessments';
 import { AdminCertificates } from './pages/admin/Certificates';
 import { AdminCommunication } from './pages/admin/Communication';
@@ -39,13 +50,19 @@ import { Ranking } from './pages/student/Ranking';
 import { Onboarding } from './pages/start/Onboarding';
 import { TitleScreen } from './pages/start/TitleScreen';
 
-function RequireAuth({ children, admin }: { children: ReactNode; admin?: boolean }) {
+/** Sem `role`, aceita aluno e admin (as telas do aluno). Empresas têm a própria área. */
+function RequireAuth({ children, role, anyRole }: { children: ReactNode; role?: Role; anyRole?: boolean }) {
   const { user, ready } = useAuth();
   const location = useLocation();
   if (!ready) return <Spinner />;
   if (!user) return <Navigate to={`/entrar?next=${encodeURIComponent(location.pathname + location.search)}`} replace />;
-  if (admin && user.role !== 'admin') return <Navigate to="/painel" replace />;
+  if (!anyRole && (role ? user.role !== role : user.role === 'company')) return <Navigate to={homeFor(user.role)} replace />;
   return <>{children}</>;
+}
+
+/** Telas exclusivas de aluno (vitrine e candidaturas não fazem sentido para o admin). */
+function StudentOnly({ children }: { children: ReactNode }) {
+  return <RequireAuth role="student">{children}</RequireAuth>;
 }
 
 export function App() {
@@ -67,6 +84,7 @@ export function App() {
         <Route path="eventos" element={<Events />} />
         <Route path="validar" element={<ValidateCertificate />} />
         <Route path="validar/:code" element={<ValidateCertificate />} />
+        <Route path="empresas" element={<ForCompanies />} />
 
         {/* Aluno */}
         <Route path="painel" element={<RequireAuth><Dashboard /></RequireAuth>} />
@@ -80,19 +98,34 @@ export function App() {
         <Route path="ranking" element={<RequireAuth><Ranking /></RequireAuth>} />
         <Route path="conexoes" element={<RequireAuth><Connections /></RequireAuth>} />
         <Route path="conexoes/comparar/:id" element={<RequireAuth><Compare /></RequireAuth>} />
-        <Route path="notificacoes" element={<RequireAuth><Notifications /></RequireAuth>} />
+        <Route path="notificacoes" element={<RequireAuth anyRole><Notifications /></RequireAuth>} />
         <Route path="mensagens" element={<RequireAuth><Messages /></RequireAuth>} />
+        <Route path="oportunidades" element={<StudentOnly><Opportunities /></StudentOnly>} />
+        <Route path="oportunidades/:id" element={<StudentOnly><OpportunityDetail /></StudentOnly>} />
         <Route path="*" element={<NotFound />} />
       </Route>
 
+      {/* Empresa parceira */}
+      <Route path="empresas/cadastro" element={<CompanyRegister />} />
+      <Route path="empresa" element={<RequireAuth role="company"><CompanyLayout /></RequireAuth>}>
+        <Route index element={<CompanyOverview />} />
+        <Route path="talentos" element={<CompanyTalents />} />
+        <Route path="talentos/:id" element={<CompanyTalentDetail />} />
+        <Route path="vagas" element={<CompanyJobs />} />
+        <Route path="vagas/:id" element={<CompanyJobDetail />} />
+        <Route path="convites" element={<CompanyInvites />} />
+        <Route path="perfil" element={<CompanyProfile />} />
+      </Route>
+
       {/* Administrador */}
-      <Route path="admin" element={<RequireAuth admin><AdminLayout /></RequireAuth>}>
+      <Route path="admin" element={<RequireAuth role="admin"><AdminLayout /></RequireAuth>}>
         <Route index element={<AdminOverview />} />
         <Route path="usuarios" element={<AdminUsers />} />
         <Route path="conteudo" element={<AdminContent />} />
         <Route path="conteudo/cursos/:id" element={<AdminCourseEditor />} />
         <Route path="questoes" element={<AdminQuestions />} />
         <Route path="avaliacoes" element={<AdminAssessments />} />
+        <Route path="empresas" element={<AdminPartners />} />
         <Route path="comunicacao" element={<AdminCommunication />} />
         <Route path="certificados" element={<AdminCertificates />} />
         <Route path="relatorios" element={<AdminReports />} />

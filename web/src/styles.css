@@ -442,3 +442,67 @@ table.table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .event-date span { font-size: 0.8rem; color: var(--muted); }
 .thumb { width: 96px; height: 60px; flex-shrink: 0; border: 2px solid var(--line); border-radius: var(--radius-sm); background: var(--brand-100) center / cover no-repeat; }.auth-card { width: 100%; max-width: 440px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ---- Empresas parceiras (página pública, área da empresa e Feira de Talentos) ---- */
+.partner-hero { position: relative; overflow: hidden; background: #7fd0e6; color: #fff; border-bottom: 3px solid var(--line); }
+.partner-hero .pixel-valley { position: absolute; inset: 0; width: 100%; height: 100%; }
+.partner-hero-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; padding: 56px 16px 64px; }
+.partner-hero h1 { margin: 0; font-family: var(--font-pixel); font-size: clamp(1.8rem, 5vw, 3.2rem); line-height: 1.1; color: #fff; text-shadow: 3px 3px 0 var(--brand), 6px 6px 0 var(--line); max-width: 860px; }
+.partner-hero h1 em { font-style: normal; color: var(--lime); }
+.partner-hero-sub { max-width: 640px; margin: 0; font-weight: 600; background: rgba(18, 56, 42, 0.82); border: 2px solid var(--line); border-radius: 4px; padding: 10px 14px; }
+.partner-hero .title-option { min-width: 260px; }
+.partner-numbers { background: var(--surface); border-bottom: 2px solid var(--border); }
+.partner-numbers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; padding-top: 18px; padding-bottom: 18px; }
+.partner-number { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.partner-number strong { font-family: var(--font-pixel); font-size: 1.8rem; line-height: 1.1; }
+.partner-number span { color: var(--muted); font-size: 0.85rem; }
+.why-card { display: flex; flex-direction: column; gap: 8px; }
+.why-card h3 { margin: 4px 0 0; }
+.why-card p { margin: 0; }
+.partner-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.partner-steps li { position: relative; display: flex; flex-direction: column; gap: 6px; padding-top: 26px; }
+.step-num { position: absolute; top: -12px; left: 16px; width: 28px; height: 28px; display: grid; place-items: center; background: var(--lime); color: #15300a; border: 2px solid var(--line); border-radius: 3px; font-family: var(--font-pixel); box-shadow: 2px 2px 0 var(--drop); }
+.area-bar { display: grid; grid-template-columns: 110px minmax(0, 1fr) 32px; align-items: center; gap: 10px; font-size: 0.9rem; }
+.area-bar strong { text-align: right; font-variant-numeric: tabular-nums; }
+.area-track { height: 12px; background: var(--surface-2); border: 2px solid var(--line); border-radius: 3px; overflow: hidden; }
+.area-track > span { display: block; height: 100%; background: var(--xp-grad); }
+.partner-cta { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: var(--lime-50); border-color: var(--line); }
+
+.company-logo { display: inline-grid; place-items: center; flex-shrink: 0; color: #fff; font-family: var(--font-pixel); line-height: 1; border: 2px solid var(--line); border-radius: 3px; box-shadow: 2px 2px 0 var(--drop); text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35); }
+.company-side-head { display: flex; gap: 10px; align-items: center; padding: 4px 8px 12px; margin-bottom: 6px; border-bottom: 2px solid var(--border); }
+.pending-card { display: flex; gap: 16px; align-items: flex-start; border-color: var(--line); background: var(--accent-50); }
+.list-row { padding: 8px 0; border-bottom: 1px solid var(--border); flex-wrap: nowrap; }
+.list-row:last-child { border-bottom: 0; }
+.filters { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; align-items: center; padding: 14px; }
+.terms-box { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; background: var(--surface-2); border: 2px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; }
+.terms-box input { margin-top: 3px; flex-shrink: 0; }
+
+.talent-tile { display: flex; flex-direction: column; gap: 10px; }
+.talent-name { font-weight: 700; font-size: 1.05rem; color: var(--text); display: block; }
+.talent-headline { margin: 0; font-style: italic; color: var(--text-2); }
+.talent-proof { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.82rem; color: var(--text-2); padding: 8px 0; border-top: 1px dashed var(--border); border-bottom: 1px dashed var(--border); }
+.talent-proof span { display: inline-flex; align-items: center; gap: 4px; }
+.save-btn { color: var(--muted); filter: grayscale(1); opacity: 0.6; }
+.save-btn.on { filter: none; opacity: 1; }
+.talent-hero { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+.talent-hero .talent-headline { margin: 8px 0; font-size: 1.05rem; }
+.talent-actions { width: 260px; max-width: 100%; }
+.contact-box { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 2px dashed var(--border); border-radius: var(--radius-sm); color: var(--text-2); }
+.contact-box.open { border-style: solid; border-color: var(--line); background: var(--lime-50); color: var(--text); margin-top: 8px; }
+
+.match { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.match-bar { width: 72px; height: 10px; background: var(--surface-2); border: 2px solid var(--line); border-radius: 2px; overflow: hidden; }
+.match-bar > span { display: block; height: 100%; background: var(--danger); }
+.match.mid .match-bar > span { background: var(--accent); }
+.match.high .match-bar > span { background: var(--xp-grad); }
+.job-tile { display: flex; flex-direction: column; gap: 12px; color: var(--text); transition: transform 0.12s, box-shadow 0.12s; }
+.job-tile:hover { text-decoration: none; transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--drop); }
+.applicant { display: flex; gap: 14px; align-items: flex-start; }
+.applicant-side { width: 210px; flex-shrink: 0; }
+.invite-card.pending { border-color: var(--line); box-shadow: 4px 4px 0 var(--drop); }
+.invite-message { margin: 10px 0; padding: 10px 12px; background: var(--surface-2); border-left: 4px solid var(--brand); border-radius: 2px; }
+@media (max-width: 700px) {
+  .applicant { flex-wrap: wrap; }
+  .applicant-side, .talent-actions { width: 100%; }
+  .area-bar { grid-template-columns: 90px minmax(0, 1fr) 28px; }
+}

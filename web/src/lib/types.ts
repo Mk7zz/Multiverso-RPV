@@ -1,4 +1,4 @@
-export type Role = 'student' | 'admin';
+export type Role = 'student' | 'admin' | 'company';
 
 export interface AvatarConfig {
   skin: string;
@@ -35,6 +35,17 @@ export interface User {
   points: number;
   level: LevelInfo;
   created_at: string;
+  company_id: number | null;
+  job_title: string | null;
+  /** Vitrine de talentos (opt-in) vista pelas empresas parceiras. */
+  talent: {
+    visible: boolean;
+    headline: string | null;
+    areas: string[];
+    goal: string | null;
+    guardian_ok: boolean;
+    needs_consent: boolean;
+  };
 }
 
 export interface PublicUser {

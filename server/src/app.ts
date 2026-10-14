@@ -10,9 +10,12 @@ import { authRouter } from './routes/auth';
 import { catalogRouter } from './routes/catalog';
 import { certificatesRouter } from './routes/certificates';
 import { communicationRouter } from './routes/communication';
+import { companyRouter } from './routes/company';
 import { connectionsRouter } from './routes/connections';
 import { gamificationRouter } from './routes/gamification';
 import { learningRouter } from './routes/learning';
+import { opportunitiesRouter } from './routes/opportunities';
+import { partnersRouter } from './routes/partners';
 import { profileRouter } from './routes/profile';
 
 export function createApp() {
@@ -38,6 +41,9 @@ export function createApp() {
   api.use('/communication', communicationRouter);
   api.use('/connections', connectionsRouter);
   api.use('/gamification', gamificationRouter);
+  api.use('/partners', partnersRouter);
+  api.use('/company', companyRouter);
+  api.use('/opportunities', opportunitiesRouter);
   api.use('/admin', adminRouter);
   api.use(() => {
     throw notFound('Rota não encontrada');

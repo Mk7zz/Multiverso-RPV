@@ -4,22 +4,30 @@ import { courseAssessments, courseLessonIds, recalcEnrollment } from '../lib/pro
 import { hashPassword } from '../lib/security';
 import { bootstrap } from './bootstrap';
 import { all, get, run, tx } from './index';
+import { seedPartners } from './seed-partners';
 
 /**
  * Dados FICTÍCIOS para demonstração (dashboards, ranking, conexões).
  *   npm run seed:demo           -> cria ~40 alunos de demonstração
  *   npm run seed:demo -- --clean -> remove todos os usuários marcados como demo
- * Login de demonstração: aluno@demo.multiverso.rpv / demo12345
+ * Login de demonstração: aluno@demo.multiverso.rpv / demo12345 (empresa: empresa@demo.multiverso.rpv / demo12345)
  */
 bootstrap();
 
+let seed = 42;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+
 if (process.argv.includes('--clean')) {
+  run('DELETE FROM companies WHERE is_demo = 1');
   const { changes } = run('DELETE FROM users WHERE is_demo = 1');
-  console.log(`[seed:demo] ${changes} usuários de demonstração removidos.`);
+  console.log(`[seed:demo] ${changes} usuários de demonstração removidos (alunos e empresas).`);
   process.exit(0);
 }
-if (get('SELECT id FROM users WHERE is_demo = 1 LIMIT 1')) {
-  console.log('[seed:demo] dados de demonstração já existem. Use --clean para removê-los.');
+if (get("SELECT id FROM users WHERE is_demo = 1 AND role = 'student' LIMIT 1")) {
+  // Bancos criados antes das empresas parceiras: completa só a parte nova.
+  const students = all<{ id: number }>("SELECT id FROM users WHERE is_demo = 1 AND role = 'student' ORDER BY id").map((u) => u.id);
+  if (seedPartners(students, rnd)) console.log('[seed:demo] empresas parceiras de demonstração criadas. Login: empresa@demo.multiverso.rpv / demo12345');
+  else console.log('[seed:demo] dados de demonstração já existem. Use --clean para removê-los.');
   process.exit(0);
 }
 const courses = all<{ id: number }>('SELECT id FROM courses WHERE published = 1');
@@ -34,8 +42,6 @@ const LAST = ['Silva', 'Souza', 'Oliveira', 'Pereira', 'Costa', 'Rodrigues', 'Al
 const SKINS = ['#f2d6c9', '#e0ac69', '#c68642', '#8d5524', '#5c3a21'];
 const HAIRS = ['short', 'long', 'curly', 'bun', 'afro', 'mohawk'];
 
-let seed = 42;
-const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 const pick = <T>(a: T[]) => a[Math.floor(rnd() * a.length)];
 const int = (min: number, max: number) => min + Math.floor(rnd() * (max - min + 1));
 
@@ -141,7 +147,9 @@ for (const uid of userIds) {
   for (const e of all<{ course_id: number }>('SELECT course_id FROM enrollments WHERE user_id = ?', uid)) recalcEnrollment(uid, e.course_id);
   checkBadges(uid);
 }
+seedPartners(userIds, rnd);
 // Os e-mails gerados pelos alunos fictícios não precisam poluir a caixa de saída.
 run("DELETE FROM email_outbox WHERE to_email LIKE '%@demo.multiverso.rpv'");
 
 console.log(`[seed:demo] ${userIds.length} alunos de demonstração criados. Login: aluno@demo.multiverso.rpv / demo12345`);
+console.log('[seed:demo] empresas parceiras de demonstração criadas. Login: empresa@demo.multiverso.rpv / demo12345');

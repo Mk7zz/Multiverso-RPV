@@ -12,7 +12,10 @@ export type NotificationType =
   | 'friend_request'
   | 'friend_accepted'
   | 'announcement'
-  | 'event';
+  | 'event'
+  | 'partner'
+  | 'talent_invite'
+  | 'job_application';
 
 /** Cria uma notificação na plataforma e a entrega em tempo real (SSE) se o usuário estiver online. */
 export function notify(userId: number, type: NotificationType, title: string, body?: string, link?: string) {

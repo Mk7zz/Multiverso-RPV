@@ -7,6 +7,7 @@ import { Spinner } from '../../components/ui';
 import { useAuth } from '../../lib/auth';
 import { fmtNum } from '../../lib/format';
 import { useApi, useDocumentTitle } from '../../lib/hooks';
+import { homeFor } from '../../lib/partners';
 
 /** Moldura de tela cheia com o cenário do Vale ao fundo (início, cadastro e login). */
 export function GameShell({ children, wide }: { children: ReactNode; wide?: boolean }) {
@@ -44,7 +45,7 @@ export function TitleScreen() {
   }, [navigate]);
 
   if (!ready) return <Spinner />;
-  if (user) return <Navigate to={user.role === 'admin' ? '/admin' : '/painel'} replace />;
+  if (user) return <Navigate to={homeFor(user.role)} replace />;
 
   return (
     <div className={`title-screen time-${time}`}>
@@ -72,6 +73,9 @@ export function TitleScreen() {
           </Link>
           <Link to="/cursos" className="title-option">
             <PixelIcon name="books" size={18} /> Ver cursos
+          </Link>
+          <Link to="/empresas" className="title-option">
+            <PixelIcon name="briefcase" size={18} /> Sou empresa
           </Link>
         </nav>
         <p className="press-start" aria-hidden>

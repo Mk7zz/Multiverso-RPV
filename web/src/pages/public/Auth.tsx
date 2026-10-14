@@ -4,6 +4,7 @@ import { ErrorBox, Field } from '../../components/ui';
 import { api } from '../../lib/api';
 import { useAuth } from '../../lib/auth';
 import { useDocumentTitle } from '../../lib/hooks';
+import { homeFor } from '../../lib/partners';
 import { GameShell } from '../start/TitleScreen';
 
 function useSubmit() {
@@ -40,7 +41,7 @@ export function Login() {
     e.preventDefault();
     run(async () => {
       const user = await login(email, password);
-      navigate(safeNext(params.get('next'), user.role === 'admin' ? '/admin' : '/painel'), { replace: true });
+      navigate(safeNext(params.get('next'), homeFor(user.role)), { replace: true });
     });
   };
 
@@ -68,6 +69,9 @@ export function Login() {
         </button>
         <p className="center small" style={{ margin: 0 }}>
           Primeira vez aqui? <Link to={`/comecar${params.get('next') ? `?next=${encodeURIComponent(params.get('next')!)}` : ''}`}>Começar um novo jogo</Link>
+        </p>
+        <p className="center small" style={{ margin: 0 }}>
+          É uma empresa? <Link to="/empresas/cadastro">Cadastre-se como parceira</Link>
         </p>
       </form>
     </GameShell>
@@ -139,7 +143,7 @@ export function ResetPassword() {
             if (password !== confirm) throw new Error('As senhas não conferem.');
             const r = await api.post('/auth/reset-password', { token, password });
             acceptToken(r.token, r.user);
-            navigate(r.user.role === 'admin' ? '/admin' : '/painel', { replace: true });
+            navigate(homeFor(r.user.role), { replace: true });
           });
         }}
       >

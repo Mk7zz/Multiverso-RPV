@@ -113,6 +113,59 @@ export const emails = {
       ], { label: 'Ver meus certificados', url: link('/certificados') }),
     );
   },
+  partnerReceived(to: string, name: string, company: string) {
+    sendMail(
+      to,
+      'Recebemos o cadastro da sua empresa',
+      layout(`Olá, ${escapeHtml(name)}!`, [
+        `O cadastro da <b>${escapeHtml(company)}</b> como empresa parceira foi recebido e está em análise pela equipe do Multiverso.`,
+        'Assim que for aprovado, você poderá publicar oportunidades e buscar talentos na vitrine.',
+      ], { label: 'Acompanhar cadastro', url: link('/empresa') }),
+    );
+  },
+  partnerReviewed(to: string, name: string, company: string, approved: boolean, note?: string | null) {
+    sendMail(
+      to,
+      approved ? 'Sua empresa foi aprovada no Multiverso' : 'Atualização sobre o cadastro da sua empresa',
+      layout(`Olá, ${escapeHtml(name)}`, [
+        approved
+          ? `A <b>${escapeHtml(company)}</b> agora é parceira do Multiverso. A vitrine de talentos e a publicação de oportunidades já estão liberadas.`
+          : `O acesso da <b>${escapeHtml(company)}</b> à vitrine de talentos não está ativo no momento.`,
+        ...(note ? [`Observação da equipe: ${escapeHtml(note)}`] : []),
+      ], { label: approved ? 'Encontrar talentos' : 'Acessar a área da empresa', url: link(approved ? '/empresa/talentos' : '/empresa') }),
+    );
+  },
+  talentInvite(to: string, name: string, company: string) {
+    sendMail(
+      to,
+      `${company} quer conversar com você`,
+      layout(`Olá, ${escapeHtml(name)}!`, [
+        `A empresa parceira <b>${escapeHtml(company)}</b> viu sua trajetória no Multiverso e enviou um convite.`,
+        'Seu contato só é compartilhado se você aceitar.',
+      ], { label: 'Ver convite', url: link('/oportunidades?aba=convites') }),
+    );
+  },
+  inviteAnswered(to: string, name: string, talent: string, accepted: boolean) {
+    sendMail(
+      to,
+      accepted ? `${talent} aceitou seu convite` : `${talent} respondeu ao seu convite`,
+      layout(`Olá, ${escapeHtml(name)}`, [
+        accepted
+          ? `<b>${escapeHtml(talent)}</b> aceitou o convite. O contato já está liberado no perfil do talento.`
+          : `<b>${escapeHtml(talent)}</b> preferiu não seguir com o convite agora.`,
+      ], { label: 'Ver convites', url: link('/empresa/convites') }),
+    );
+  },
+  newApplication(to: string, name: string, talent: string, job: string, jobId: number) {
+    sendMail(
+      to,
+      `Nova candidatura: ${job}`,
+      layout(`Olá, ${escapeHtml(name)}`, [`<b>${escapeHtml(talent)}</b> se candidatou à oportunidade <b>${escapeHtml(job)}</b>.`], {
+        label: 'Ver candidatos',
+        url: link(`/empresa/vagas/${jobId}`),
+      }),
+    );
+  },
   internalMessage(to: string, name: string, subject: string) {
     sendMail(
       to,

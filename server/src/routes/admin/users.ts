@@ -38,7 +38,7 @@ adminUsersRouter.get('/', (req, res) => {
     where.push('(u.name LIKE ? OR u.email LIKE ? OR u.municipality LIKE ? OR u.school LIKE ?)');
     params.push(`%${q}%`, `%${q}%`, `%${q}%`, `%${q}%`);
   }
-  if (req.query.role === 'student' || req.query.role === 'admin') {
+  if (req.query.role === 'student' || req.query.role === 'admin' || req.query.role === 'company') {
     where.push('u.role = ?');
     params.push(String(req.query.role));
   }

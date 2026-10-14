@@ -11,7 +11,7 @@ interface AdminUser {
   id: number;
   name: string;
   email: string;
-  role: 'student' | 'admin';
+  role: 'student' | 'admin' | 'company';
   municipality: string | null;
   school: string | null;
   points: number;
@@ -73,6 +73,7 @@ export function AdminUsers() {
           <option value="">Todos os perfis</option>
           <option value="student">Alunos</option>
           <option value="admin">Administradores</option>
+          <option value="company">Empresas parceiras</option>
         </select>
         <select className="input" style={{ width: 150 }} value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}>
           <option value="">Todos</option>
@@ -108,16 +109,20 @@ export function AdminUsers() {
                       </td>
                       <td>{u.municipality ?? '—'}</td>
                       <td>
-                        <select
-                          className="input"
-                          style={{ minHeight: 32, padding: '4px 8px', width: 140 }}
-                          value={u.role}
-                          disabled={u.id === me?.id}
-                          onChange={(e) => patch(u, { role: e.target.value }, 'Perfil atualizado')}
-                        >
-                          <option value="student">Aluno</option>
-                          <option value="admin">Administrador</option>
-                        </select>
+                        {u.role === 'company' ? (
+                          <span className="pill info">Empresa</span>
+                        ) : (
+                          <select
+                            className="input"
+                            style={{ minHeight: 32, padding: '4px 8px', width: 140 }}
+                            value={u.role}
+                            disabled={u.id === me?.id}
+                            onChange={(e) => patch(u, { role: e.target.value }, 'Perfil atualizado')}
+                          >
+                            <option value="student">Aluno</option>
+                            <option value="admin">Administrador</option>
+                          </select>
+                        )}
                       </td>
                       <td className="num">
                         {u.completed}/{u.enrollments}

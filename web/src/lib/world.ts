@@ -27,6 +27,7 @@ export const PLACES: Place[] = [
   { id: 'academia', label: 'Academia', hint: 'Cursos e trilhas', to: '/cursos', icon: 'books', kind: 'house', x: 78, y: 84, w: 46, roof: '#12a3a0', wall: '#f1e6cf' },
   { id: 'torre', label: 'Torre do Mapa', hint: 'Mapa do Vale', to: '/jornada', icon: 'map', kind: 'tower', x: 150, y: 76, roof: '#1f7a4d' },
   { id: 'quadro', label: 'Quadro de Missões', hint: 'Missões diárias e semanais', to: '/missoes', icon: 'target', kind: 'board', x: 212, y: 98 },
+  { id: 'feira', label: 'Feira de Talentos', hint: 'Oportunidades das empresas parceiras', to: '/oportunidades', icon: 'briefcase', kind: 'house', x: 24, y: 96, w: 30, roof: '#23384a', wall: '#e9eef2' },
   { id: 'casa', label: 'Sua casa', hint: 'Perfil, medalhas e avatar', to: '/perfil', icon: 'home', kind: 'house', x: 36, y: 142, w: 32, roof: '#d64545', wall: '#f4ead8' },
   { id: 'praca', label: 'Praça das Conexões', hint: 'Amigos e comparações', to: '/conexoes', icon: 'users', kind: 'fountain', x: 150, y: 134 },
   { id: 'correio', label: 'Correio', hint: 'Mensagens', to: '/mensagens', icon: 'mail', kind: 'post', x: 96, y: 164, roof: '#e8772e' },

@@ -105,6 +105,8 @@ const ART: Record<string, readonly string[]> = {
   trash: ['....kkkk....', 'kkkkkkkkkkkk', 'kssssssssssk', 'kkkkkkkkkkkk', '.kSsSSsSSsk.', '.kSsSSsSSsk.', '.kSsSSsSSsk.', '.kSsSSsSSsk.', '.kSsSSsSSsk.', '.kSSSSSSSSk.', '..kkkkkkkk..', '............'],
   warning: ['.....kk.....', '....kyyk....', '....kyyk....', '...kyyyyk...', '...kykkyk...', '..kyykkyyk..', '..kyykkyyk..', '.kyyyyyyyyk.', '.kyyykkyyyk.', 'kyyyykkyyyyk', 'kkkkkkkkkkkk', '............'],
   menu: ['............', '............', 'cccccccccccc', 'cccccccccccc', '............', '............', 'cccccccccccc', 'cccccccccccc', '............', '............', 'cccccccccccc', 'cccccccccccc'],
+  briefcase: ['............', '...kkkkkk...', '...k....k...', 'kkkkkkkkkkkk', 'kBBBBBBBBBBk', 'kBBBBBBBBBBk', 'kbbbbkkbbbbk', 'kkkkkyykkkkk', 'kBBBBkkBBBBk', 'kBBBBBBBBBBk', 'kbbbbbbbbbbk', 'kkkkkkkkkkkk'],
+  building: ['....kkkk....', '....kSSk....', '.kkkkSSkkkk.', '.kSSSSSSSSk.', '.kSRSRRSRSk.', '.kSSSSSSSSk.', '.kSRSRRSRSk.', '.kSSSSSSSSk.', '.kSRSkkSRSk.', '.kSSSkkSSSk.', '.kSSSkkSSSk.', 'kkkkkkkkkkkk'],
   close: ['............', '.cc......cc.', '.ccc....ccc.', '..ccc..ccc..', '...cccccc...', '....cccc....', '....cccc....', '...cccccc...', '..ccc..ccc..', '.ccc....ccc.', '.cc......cc.', '............'],
 };
 

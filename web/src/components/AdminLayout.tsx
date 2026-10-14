@@ -10,6 +10,7 @@ const LINKS: { group?: string; to: string; label: string; icon: string; end?: bo
   { to: '/admin/avaliacoes', label: 'Avaliações', icon: 'pencil' },
   { to: '/admin/certificados', label: 'Certificados e feedback', icon: 'scroll' },
   { group: 'Pessoas', to: '/admin/usuarios', label: 'Usuários e acessos', icon: 'users' },
+  { to: '/admin/empresas', label: 'Empresas parceiras', icon: 'building' },
   { to: '/admin/comunicacao', label: 'Comunicação', icon: 'megaphone' },
   { group: 'Sistema', to: '/admin/logs', label: 'Logs de auditoria', icon: 'list' },
   { to: '/admin/emails', label: 'E-mails enviados', icon: 'mail' },
