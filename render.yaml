@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: multiverso-rpv
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    # O seed é idempotente: cria banco, admin e cursos só se ainda não existirem.
+    startCommand: npm run seed && npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 22.13.0
+      - key: JWT_SECRET
+        generateValue: true
+      - key: APP_URL
+        sync: false
