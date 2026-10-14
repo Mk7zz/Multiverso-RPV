@@ -1,0 +1,50 @@
+/**
+ * Mapa do mundo 2D (a "base" do aluno). Coordenadas em pixels lógicos de um mundo de 320×180.
+ * x/y é a porta de cada lugar: onde o personagem para para entrar. Para outra instância
+ * (white label), basta renomear, mover ou trocar as rotas aqui.
+ */
+export type PlaceKind = 'house' | 'tower' | 'board' | 'fountain' | 'post' | 'hall' | 'arena' | 'stage';
+
+export interface Place {
+  id: string;
+  label: string;
+  hint: string;
+  to: string;
+  icon: string;
+  kind: PlaceKind;
+  x: number;
+  y: number;
+  /** Largura da construção (apenas casas). */
+  w?: number;
+  roof?: string;
+  wall?: string;
+}
+
+export const WORLD_W = 320;
+export const WORLD_H = 180;
+
+export const PLACES: Place[] = [
+  { id: 'academia', label: 'Academia', hint: 'Cursos e trilhas', to: '/cursos', icon: 'books', kind: 'house', x: 78, y: 84, w: 46, roof: '#12a3a0', wall: '#f1e6cf' },
+  { id: 'torre', label: 'Torre do Mapa', hint: 'Mapa do Vale', to: '/jornada', icon: 'map', kind: 'tower', x: 150, y: 76, roof: '#1f7a4d' },
+  { id: 'quadro', label: 'Quadro de Missões', hint: 'Missões diárias e semanais', to: '/missoes', icon: 'target', kind: 'board', x: 212, y: 98 },
+  { id: 'casa', label: 'Sua casa', hint: 'Perfil, medalhas e avatar', to: '/perfil', icon: 'home', kind: 'house', x: 36, y: 142, w: 32, roof: '#d64545', wall: '#f4ead8' },
+  { id: 'praca', label: 'Praça das Conexões', hint: 'Amigos e comparações', to: '/conexoes', icon: 'users', kind: 'fountain', x: 150, y: 134 },
+  { id: 'correio', label: 'Correio', hint: 'Mensagens', to: '/mensagens', icon: 'mail', kind: 'post', x: 96, y: 164, roof: '#e8772e' },
+  { id: 'salao', label: 'Salão dos Troféus', hint: 'Certificados', to: '/certificados', icon: 'trophy', kind: 'hall', x: 206, y: 164, roof: '#f2b705' },
+  { id: 'arena', label: 'Arena', hint: 'Ranking', to: '/ranking', icon: 'crown', kind: 'arena', x: 294, y: 94 },
+  { id: 'palco', label: 'Palco', hint: 'Eventos', to: '/eventos', icon: 'calendar', kind: 'stage', x: 292, y: 164 },
+];
+
+/** Caminho principal (leste-oeste) e ponte sobre o rio. */
+export const MAIN_PATH = { y: 122, h: 8 };
+export const SPAWN = { x: 150, y: 150 };
+export const BOUNDS = { x0: 8, x1: 312, y0: 52, y1: 176 };
+
+export const riverX = (y: number) => 252 + Math.round(Math.sin(y / 16) * 3);
+export const RIVER_HALF = 6;
+export const BRIDGE = { y0: MAIN_PATH.y - 3, y1: MAIN_PATH.y + MAIN_PATH.h + 2 };
+
+export function inRiver(x: number, y: number) {
+  if (y >= BRIDGE.y0 && y <= BRIDGE.y1) return false;
+  return Math.abs(x - riverX(y)) < RIVER_HALF + 2;
+}

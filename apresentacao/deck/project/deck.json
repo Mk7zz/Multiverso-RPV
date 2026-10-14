@@ -1,0 +1,19 @@
+{
+  "v": 4,
+  "createdOnFiles": { "v": 1, "at": "2026-10-13T21:40:00-03:00" },
+  "lists": "css",
+  "title": "Multiverso RPV — Apresentação",
+  "order": ["cover", "jornada", "rpv-origem", "rpv-numeros", "fluxo", "tela-inicio", "tela-personagem", "tela-mundo", "curiosidade-rio", "mobile", "niveis", "gamificacao", "cataguases", "primeira-turma", "admin", "certificado", "whitelabel", "tecnologia", "mvp", "fim"],
+  "sections": {
+    "s1": { "description": "Abertura: o que é o Multiverso e por que ele é um jogo", "start": "cover" },
+    "s2": { "description": "O Rio Pomba Valley: origem e números", "start": "rpv-origem" },
+    "s3": { "description": "As telas da plataforma, no computador e no celular", "start": "fluxo" },
+    "s4": { "description": "Gamificação e curiosidades do território", "start": "niveis" },
+    "s5": { "description": "Gestão, certificação, white label e tecnologia", "start": "admin" },
+    "s6": { "description": "O MVP da Semana Tech e o encerramento", "start": "mvp" }
+  },
+  "faces": {
+    "pixelify-sans": { "family": "Pixelify Sans", "href": "https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap" },
+    "nunito-sans": { "family": "Nunito Sans", "href": "https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" }
+  }
+}
