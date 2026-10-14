@@ -10,7 +10,7 @@ const env = process.env;
 export const config = {
   isProd: env.NODE_ENV === 'production',
   port: Number(env.PORT ?? 3333),
-  appUrl: (env.APP_URL ?? 'http://localhost:5173').replace(/\/$/, ''),
+  appUrl: (env.APP_URL || env.RENDER_EXTERNAL_URL || 'http://localhost:5173').replace(/\/$/, ''),
   jwtSecret: env.JWT_SECRET ?? 'dev-secret-change-me',
   jwtExpiresIn: '7d',
   dbPath: path.resolve(serverRoot, env.DATABASE_PATH ?? 'data/multiverso.db'),

@@ -1,16 +1,32 @@
+# Blueprint do Render: um único Web Service (API Express + frontend compilado em web/dist).
+# No painel do Render: New > Blueprint > selecione este repositório.
 services:
   - type: web
     name: multiverso-rpv
     runtime: node
     plan: free
     buildCommand: npm ci --include=dev && npm run build
-    # O seed é idempotente: cria banco, admin e cursos só se ainda não existirem.
+    # O seed é idempotente: só cria a trilha/cursos iniciais se o banco estiver vazio.
     startCommand: npm run seed && npm start
-    healthCheckPath: /
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION
-        value: 22.13.0
+        value: "22"
       - key: JWT_SECRET
         generateValue: true
-      - key: APP_URL
-        sync: false
+      - key: APP_TIMEZONE
+        value: America/Sao_Paulo
+      - key: ADMIN_EMAIL
+        value: admin@multiverso.rpv
+      - key: ADMIN_PASSWORD
+        sync: false # definido por você no painel ao criar o Blueprint
+      # No plano free o disco é efêmero: banco e uploads somem a cada deploy/reinício.
+      # Para persistir, troque "plan: free" por "plan: starter" e descomente o disco abaixo.
+      # - key: DATABASE_PATH
+      #   value: /var/data/multiverso.db
+      # - key: UPLOADS_DIR
+      #   value: /var/data/uploads
+    # disk:
+    #   name: multiverso-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
