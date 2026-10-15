@@ -4,6 +4,7 @@
  * Para liberar um lugar novo: troque o item "Em breve" por um lugar com `kind`/`to` próprios
  * e cadastre as perguntas dele em QUESTIONS.
  */
+import type { Clip } from './vozes';
 import { PLACES, type Place } from './world';
 
 export interface Option {
@@ -591,10 +592,9 @@ export function setMuted(v: boolean) {
   } catch {
     /* ignorado */
   }
-  if (v) window.speechSynthesis?.cancel();
+  if (v) stopVoice();
 }
 
-/** Lê o texto em voz alta (português do Brasil), para quem ainda não lê sozinho. */
 /**
  * Jeito de falar de quem fala: voz de homem ou de mulher, velocidade e tom.
  * As vozes "naturais" (Edge: Francisca, Antonio, Thalita; Chrome: Google) soam bem mais
@@ -631,20 +631,72 @@ function pickVoice(gender: 'm' | 'f') {
   return pt.sort((a, b) => score(b) - score(a))[0];
 }
 
-/** Lê o texto em voz alta (português do Brasil), para quem ainda não lê sozinho. `who` é o id do mestre. */
-export function speak(text: string, who = 'narrador') {
+/** Tira os emojis (apoio visual na tela): a voz não lê o nome deles. */
+export const clean = (text: string) => text.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim();
+
+/** Lê um texto com a voz do navegador, no jeito de falar de `who`. */
+function tts(text: string, who: string, onEnd?: () => void) {
   const synth = window.speechSynthesis;
-  if (!synth || isMuted()) return;
-  synth.cancel();
-  // Emojis são apoio visual: a voz não lê o nome deles.
-  const u = new SpeechSynthesisUtterance(text.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim());
+  if (!synth) return onEnd?.();
+  const u = new SpeechSynthesisUtterance(clean(text));
   const style = VOICES[who] ?? VOICES.narrador;
   u.lang = 'pt-BR';
   u.rate = style.rate;
   u.pitch = style.pitch;
   const voice = pickVoice(style.gender);
   if (voice) u.voice = voice;
+  if (onEnd) u.onend = onEnd;
   synth.speak(u);
+}
+
+let playing: HTMLAudioElement | null = null;
+let turn = 0;
+/** Gravações que não existem (não tenta baixar de novo). */
+const missing = new Set<string>();
+
+/** Para qualquer fala em andamento (gravada ou do navegador). */
+export function stopVoice() {
+  turn++;
+  playing?.pause();
+  playing = null;
+  window.speechSynthesis?.cancel();
+}
+
+/**
+ * Fala uma sequência de trechos. Cada trecho com `id` toca a gravação de `who`
+ * (web/public/vozes/<who>/<id>.mp3, veja lib/vozes.ts); sem gravação, a voz do navegador lê.
+ */
+export function say(parts: Clip[], who = 'narrador') {
+  stopVoice();
+  if (isMuted()) return;
+  const mine = turn;
+  const next = (i: number) => {
+    if (mine !== turn || i >= parts.length) return;
+    const { id, text } = parts[i];
+    const url = id ? `/vozes/${who}/${id}.mp3` : null;
+    if (!url || missing.has(url)) return tts(text, who, () => next(i + 1));
+    const audio = new Audio(url);
+    playing = audio;
+    let failed = false;
+    const fallback = () => {
+      if (failed || mine !== turn) return;
+      failed = true;
+      missing.add(url);
+      tts(text, who, () => next(i + 1));
+    };
+    audio.onended = () => next(i + 1);
+    audio.onerror = fallback;
+    audio.play().catch((e: unknown) => {
+      // Navegador bloqueou o som antes do primeiro toque: não insiste.
+      if (!(e instanceof DOMException && e.name === 'NotAllowedError')) fallback();
+    });
+  };
+  next(0);
+}
+
+/** Lê o texto em voz alta (português do Brasil), para quem ainda não lê sozinho. `who` é o id do mestre. */
+export function speak(text: string, who = 'narrador') {
+  say([{ text }], who);
 }
 
 let ctx: AudioContext | null = null;

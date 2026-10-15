@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "roteiro": "esbuild scripts/roteiro-vozes.ts --bundle --platform=node --format=esm --log-level=warning --outfile=node_modules/.cache/roteiro-vozes.mjs && node node_modules/.cache/roteiro-vozes.mjs"
   },
   "dependencies": {
     "react": "^19.2.0",

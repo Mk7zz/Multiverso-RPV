@@ -4,7 +4,8 @@ import { useTypewriter } from '../../components/Dialogue';
 import { MasterPixels, MasterPortrait, masterHeight, type MasterFrame } from '../../components/Mestres';
 import { PixelIcon } from '../../components/PixelIcon';
 import { useDayTime, type DayTime } from '../../components/Scene';
-import { addPoints, getPoints, hasVisited, hello, markSeen, markVisited, MASTER_PLACES, nextQuestion, sfx, shuffle, speak, type Option } from '../../lib/cidade';
+import { addPoints, getPoints, hasVisited, markSeen, markVisited, MASTER_PLACES, nextQuestion, say, sfx, shuffle, stopVoice, type Option } from '../../lib/cidade';
+import { questionClips, rightClip, STARS, welcomeClips, wrongClip, type Clip } from '../../lib/vozes';
 import type { Place } from '../../lib/world';
 import { ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
 import { ROOMS, VH, VW } from './MestreRooms';
@@ -15,12 +16,13 @@ import { Confetti } from './PlaceVisit';
  * faz uma pergunta curiosa e, acertando ou errando, completa a resposta com o que ele sabe.
  * Na primeira visita ele se apresenta; quem volta é recebido de um jeito mais curto (sorteado).
  * As reações ao acerto e ao erro também são sorteadas, no jeito de falar de cada mestre.
+ * Cada fala toca a gravação do mestre quando ela existe (veja lib/vozes.ts).
  */
 
 type Stage = 'intro' | 'ask' | 'right' | 'wrong';
 type Choice = Option & { right: boolean };
 
-const one = <T,>(xs: readonly T[]): T => xs[Math.floor(Math.random() * xs.length)];
+const roll = (n: number) => Math.floor(Math.random() * n);
 
 export function MestreVisit() {
   const { id = '' } = useParams();
@@ -35,12 +37,9 @@ function Visit({ place }: { place: Place }) {
   const time = useDayTime();
   const [stage, setStage] = useState<Stage>('intro');
   const [line, setLine] = useState(0);
-  const [lines] = useState(() => {
-    const oi = hello();
-    return (hasVisited(place.id) ? one(master.back) : master.intro).map((l) => l.replaceAll('{oi}', oi));
-  });
+  const [lines] = useState(() => welcomeClips(master, hasVisited(place.id) ? roll(master.back.length) : null));
   /** Fala do mestre logo depois da resposta e o título da janelinha. */
-  const [react, setReact] = useState({ say: '', title: '' });
+  const [react, setReact] = useState<{ say: Clip; title: string }>({ say: { text: '' }, title: '' });
   const [question, setQuestion] = useState(() => nextQuestion(place.id));
   const choices = useMemo<Choice[]>(() => (question ? shuffle(question.options.map((o, i) => ({ ...o, right: i === 0 }))) : []), [question]);
   const [earned, setEarned] = useState(0);
@@ -48,22 +47,30 @@ function Visit({ place }: { place: Place }) {
   const [ready, setReady] = useState(false);
 
   const right = question?.options[0];
-  const say = stage === 'intro' ? lines[line] : stage === 'ask' ? (question?.hook ?? question?.text ?? '') : react.say;
-  const { shown, done, finish } = useTypewriter(ready ? say : '', 28);
+  const qc = question ? questionClips(question) : null;
+  const shownText = stage === 'intro' ? lines[line].text : stage === 'ask' ? (question?.hook ?? question?.text ?? '') : react.say.text;
+  /** O que o mestre fala em voz alta nesta etapa. */
+  const voice: Clip[] = !qc
+    ? []
+    : stage === 'intro'
+      ? [lines[line]]
+      : stage === 'ask'
+        ? [qc.hook, qc.text].filter((c): c is Clip => !!c)
+        : stage === 'right'
+          ? [react.say, STARS, qc.fact]
+          : [react.say, qc.answer, qc.fact];
+  const { shown, done, finish } = useTypewriter(ready ? shownText : '', 28);
 
   useEffect(() => {
     const t = setTimeout(() => setReady(true), 1100);
     return () => {
       clearTimeout(t);
-      window.speechSynthesis?.cancel();
+      stopVoice();
     };
   }, []);
 
   useEffect(() => {
-    if (!ready || !question) return;
-    if (stage === 'intro' || stage === 'ask') speak(stage === 'ask' ? `${say} ${question.text}` : say, place.id);
-    else if (stage === 'right') speak(`${react.say} Você ganhou ${earned} estrelas! ${question.fact}`, place.id);
-    else speak(`${react.say} A resposta certa é: ${right?.text}. ${question.fact}`, place.id);
+    if (ready && question) say(voice, place.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, stage, line, question]);
 
@@ -97,12 +104,12 @@ function Visit({ place }: { place: Place }) {
     if (c.right) {
       setEarned(10);
       setPoints(addPoints(10));
-      setReact({ say: one(master.right), title: one(master.win) });
+      setReact({ say: rightClip(master, roll(master.right.length)), title: master.win[roll(master.win.length)] });
       setStage('right');
       sfx('ok');
     } else {
       setEarned(0);
-      setReact({ say: one(master.wrong), title: one(master.oops) });
+      setReact({ say: wrongClip(master, roll(master.wrong.length)), title: master.oops[roll(master.oops.length)] });
       setStage('wrong');
       sfx('oops');
     }
@@ -133,7 +140,7 @@ function Visit({ place }: { place: Place }) {
         </div>
       </header>
 
-      <button className={`mz-zico ${mood}`} onClick={() => (sfx('pop'), speak(stage === 'ask' ? question.text : say, place.id))} aria-label={`${master.name}: ouvir de novo`}>
+      <button className={`mz-zico ${mood}`} onClick={() => (sfx('pop'), say(stage === 'ask' && qc ? [qc.text] : voice, place.id))} aria-label={`${master.name}: ouvir de novo`}>
         <span className="mz-glow" aria-hidden />
         <svg viewBox={`0 0 16 ${masterHeight(place.id)}`} shapeRendering="crispEdges" aria-hidden>
           <MasterPixels id={place.id} frame={frame} />
@@ -176,7 +183,7 @@ function Visit({ place }: { place: Place }) {
               <MasterPortrait id={place.id} size={48} />
             </span>
             <p className="quiz-q">{question.text}</p>
-            <button className="quiz-listen" onClick={() => speak(question.text, place.id)} aria-label="Ouvir a pergunta" title="Ouvir a pergunta">
+            <button className="quiz-listen" onClick={() => qc && say([qc.text], place.id)} aria-label="Ouvir a pergunta" title="Ouvir a pergunta">
               🔊
             </button>
           </div>

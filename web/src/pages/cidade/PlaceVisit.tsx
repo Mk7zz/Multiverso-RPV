@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { PixelIcon } from '../../components/PixelIcon';
 import { GuideSprite, useDayTime } from '../../components/Scene';
-import { addPoints, CITY_INFO, getPoints, markSeen, nextQuestion, sfx, shuffle, speak, type CityPlace, type Option } from '../../lib/cidade';
+import { addPoints, CITY_INFO, getPoints, markSeen, nextQuestion, sfx, shuffle, speak, stopVoice, type CityPlace, type Option } from '../../lib/cidade';
 import { ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
 import { PlaceScene } from './PlaceScene';
 
@@ -50,7 +50,7 @@ function Visit({ place }: { place: CityPlace }) {
     const t = setTimeout(() => setReady(true), 1200);
     return () => {
       clearTimeout(t);
-      window.speechSynthesis?.cancel();
+      stopVoice();
     };
   }, []);
 
