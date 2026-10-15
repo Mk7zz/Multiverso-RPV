@@ -4,7 +4,12 @@ import { PixelIcon } from '../../components/PixelIcon';
 import { GuideSprite, useDayTime } from '../../components/Scene';
 import { addPoints, CITY_INFO, getPoints, markSeen, nextQuestion, sfx, shuffle, speak, stopVoice, type CityPlace, type Option } from '../../lib/cidade';
 import { ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
+import { MuseuScene } from './MuseuScene';
 import { PlaceScene } from './PlaceScene';
+import { PonteScene } from './PonteScene';
+
+/** Cena de cada ponto focal (a Praça Santa Rita é a cena padrão). */
+const SCENES: Record<string, typeof PlaceScene> = { ponte: PonteScene, museu: MuseuScene };
 
 const CONFETTI = ['#f2b705', '#12a3a0', '#d64545', '#8cc63f', '#2f5fb3', '#ec6a8c'];
 
@@ -33,6 +38,7 @@ export function PlaceVisit() {
 
 function Visit({ place }: { place: CityPlace }) {
   useCityTitle(place.title);
+  const Scene = SCENES[place.id] ?? PlaceScene;
   const time = useDayTime();
   const [question, setQuestion] = useState(() => nextQuestion(place.id));
   const choices = useMemo<Choice[]>(() => (question ? shuffle(question.options.map((o, i) => ({ ...o, right: i === 0 }))) : []), [question]);
@@ -87,7 +93,7 @@ function Visit({ place }: { place: CityPlace }) {
   return (
     <div className={`visit time-${time}`}>
       <div className="visit-scene">
-        <PlaceScene place={place} time={time} onPoints={setPoints} />
+        <Scene place={place} time={time} onPoints={setPoints} />
       </div>
 
       <header className="visit-top">

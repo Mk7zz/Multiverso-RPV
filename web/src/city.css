@@ -238,6 +238,9 @@ html, body { overscroll-behavior: none; }
 @keyframes ps-ray { 50% { opacity: 0.14; } }
 .ps-canopy { transform-box: fill-box; transform-origin: 0 0; animation: ps-branch 5.5s ease-in-out infinite alternate; }
 .ps-canopy.shake { animation: cw-shake 0.65s ease-out; }
+/* Ponte Metálica: as luzes da ponte refletidas no rio tremem com a água. */
+.pn-streak { animation: pn-streak 2.4s steps(4) infinite; }
+@keyframes pn-streak { 0%, 100% { opacity: 0.9; transform: translateX(0); } 50% { opacity: 0.5; transform: translateX(1px); } }
 @keyframes ps-branch { from { transform: rotate(-1.2deg); } to { transform: rotate(1.4deg); } }
 button.visit-dove { left: 6%; top: 34%; background: none; border: 0; padding: 0; cursor: pointer; }
 .ps-dove-say { left: 0; top: -4px; transform: translate(-14px, -100%); white-space: normal; width: max-content; max-width: min(280px, 70vw); text-align: left; animation: ps-say 0.25s ease-out; }
@@ -310,7 +313,7 @@ button.visit-dove { left: 6%; top: 34%; background: none; border: 0; padding: 0;
 .win-fact p { margin: 4px 0 0; font-size: 1.05rem; line-height: 1.35; }
 
 @media (prefers-reduced-motion: reduce) {
-  .city-stage.entering, .w-smoke rect, .start-tagline, .cw-featured, .mz-cloud, .mz-steam rect, .mz-fire, .mz-tail, .mz-neon, .mz-woofer, .mz-spin, .mz-beam, .mz-notes > g, .mz-roll, .w-light, .mz-zico, .mz-zico svg, .mz-glow, .mz-bubble, .mz-modal-zico svg, .mz-talk .kid-btn.mz-go, .cw-sway, .cw-tree, .start-play, .visit-scene, .visit-dove, .quiz, .ps-drag, .ps-found-list span, .ps-ray, .ps-canopy, .quiz-opt, .kid-modal, .win-stars .px-icon { animation: none !important; }
+  .city-stage.entering, .w-smoke rect, .start-tagline, .cw-featured, .mz-cloud, .mz-steam rect, .mz-fire, .mz-tail, .mz-neon, .mz-woofer, .mz-spin, .mz-beam, .mz-notes > g, .mz-roll, .w-light, .mz-zico, .mz-zico svg, .mz-glow, .mz-bubble, .mz-modal-zico svg, .mz-talk .kid-btn.mz-go, .cw-sway, .cw-tree, .start-play, .visit-scene, .visit-dove, .quiz, .ps-drag, .ps-found-list span, .ps-ray, .ps-canopy, .pn-streak, .quiz-opt, .kid-modal, .win-stars .px-icon { animation: none !important; }
   .city-flash { animation-duration: 0.3s; }
 }
 

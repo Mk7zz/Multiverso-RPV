@@ -98,7 +98,7 @@ const PALM = [
   '.........bB......',
   '........bbBb.....',
 ];
-const palmRuns = toRuns(outline(fromAscii(PALM, { l: '#3aa655', L: '#8cc63f', b: '#8a5a2b', B: '#a0703e', c: '#6b4423' }), '#0f3d2a'));
+export const palmRuns = toRuns(outline(fromAscii(PALM, { l: '#3aa655', L: '#8cc63f', b: '#8a5a2b', B: '#a0703e', c: '#6b4423' }), '#0f3d2a'));
 
 const PIGEON_PAL = { g: '#a7b1b8', G: '#6f7b84', n: '#4f9a8a', k: INK, y: '#e07a3c', w: '#e4e9ec' };
 const pigeonStand = toRuns(fromAscii(['.......gg.', '.......gky', '.GGggggng.', '..GGgwwgg.', '....y..y..'], PIGEON_PAL));

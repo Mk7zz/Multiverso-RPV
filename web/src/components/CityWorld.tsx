@@ -8,6 +8,7 @@ import { Dialogue } from './Dialogue';
 import { MasterSprite, type MasterFrame } from './Mestres';
 import { PixelIcon } from './PixelIcon';
 import { birdDown, birdUp, Pixels, treeRuns, TREE_H, TREE_W, type DayTime } from './Scene';
+import { BridgeDeck } from './Landmarks';
 import { Building, Character, makeTrees } from './World';
 
 /*
@@ -57,7 +58,7 @@ export function randomLook(): AvatarConfig {
 
 const NPC_LINES_DAY = ['Oi! 👋', 'Que dia bonito! ☀️', 'Já foi na Praça Santa Rita? ⛪', 'Bora explorar Cataguases!', '🎵 lá lá lá', 'Olha a pombinha! 🕊️', 'Bom passeio! 😊', 'Já foi prosear com o Seu Zico? 🏡', 'O Sektor tá no estúdio! 🎧', 'A Dona Cida tá bordando! 🧵'];
 const NPC_LINES_NIGHT = ['Boa noite! 🌙', 'Olha os vagalumes! ✨', 'Que céu estrelado! ⭐', 'Hora de passear 🚶'];
-const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️', 'Pruu! Na Rua dos Mestres moram os Mestres do Saber! 🏡'];
+const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️', 'Pruu! Na Rua dos Mestres moram os Mestres do Saber! 🏡', 'Pruu! Vamos atravessar a Ponte Velha? 🌉', 'Pruu! Já visitou o Museu Energisa? ⚡'];
 
 /** Onde o Mestre do Saber fica parado, à esquerda da porta de casa. */
 const masterSpot = (p: Place) => (p.variant === 'hiphop' ? -15 : -13);
@@ -180,7 +181,7 @@ const Ground = memo(function Ground({ places, scenery }: { places: Place[]; scen
       <rect x={10} y={MAIN_PATH.y - 1} width={W - 20} height={MAIN_PATH.h + 2} fill="#c9b27a" />
       <rect x={10} y={MAIN_PATH.y} width={W - 20} height={MAIN_PATH.h} fill={pathC} />
       {places
-        .filter((p) => p.kind !== 'fountain')
+        .filter((p) => p.kind !== 'fountain' && p.kind !== 'bridge')
         .map((p) => {
           const y0 = Math.min(p.y, MAIN_PATH.y);
           const y1 = Math.max(p.y, MAIN_PATH.y + MAIN_PATH.h);
@@ -198,7 +199,7 @@ const Ground = memo(function Ground({ places, scenery }: { places: Place[]; scen
       <ellipse cx={150} cy={130} rx={24} ry={12} fill="#d9d2bf" />
       <ellipse cx={150} cy={130} rx={17} ry={8} fill="none" stroke="#c9c0a6" strokeWidth={1} />
       {/* Sombras das construções */}
-      {places.map((p) => (
+      {places.filter((p) => p.kind !== 'bridge').map((p) => (
         <ellipse key={p.id} cx={p.x + (p.kind === 'church' ? 6 : 2)} cy={p.y + 1} rx={p.kind === 'church' ? 34 : p.kind === 'board' ? 18 : 24} ry={3} fill="#000" opacity={0.13} />
       ))}
       {/* Rio e ponte */}
@@ -209,13 +210,7 @@ const Ground = memo(function Ground({ places, scenery }: { places: Place[]; scen
           <rect x={x - RIVER_HALF + 2} y={36 + i} width={2} height={1} fill="#0e8f8c" />
         </g>
       ))}
-      <rect x={bx - 12} y={BRIDGE.y1 + 2} width={24} height={2} fill="#000" opacity={0.15} />
-      <rect x={bx - 11} y={BRIDGE.y0 + 1} width={22} height={BRIDGE.y1 - BRIDGE.y0 - 1} fill="#a0703e" />
-      {Array.from({ length: 5 }, (_, i) => (
-        <rect key={i} x={bx - 11 + i * 5} y={BRIDGE.y0 + 1} width={1} height={BRIDGE.y1 - BRIDGE.y0 - 1} fill="#7a4a25" />
-      ))}
-      <rect x={bx - 12} y={BRIDGE.y0} width={24} height={2} fill="#5c3a1c" />
-      <rect x={bx - 12} y={BRIDGE.y1} width={24} height={2} fill="#5c3a1c" />
+      <BridgeDeck bx={bx} />
     </g>
   );
 });
@@ -1185,7 +1180,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
 
         {/* Placas fixas (não se mexem) e balões de fala */}
         {places.map((pl) => (
-          <div key={pl.id} className={`cw-label ${pl.soon ? 'soon' : ''} ${near?.id === pl.id || hover === pl.id ? 'show' : ''}`} style={pct(pl.x, pl.y + (pl.kind === 'church' ? 11 : pl.kind === 'mestre' ? 7 : 4))}>
+          <div key={pl.id} className={`cw-label ${pl.soon ? 'soon' : ''} ${near?.id === pl.id || hover === pl.id ? 'show' : ''}`} style={pct(pl.x, pl.y + (pl.kind === 'church' ? 11 : pl.kind === 'mestre' ? 7 : pl.kind === 'bridge' ? 18 : 4))}>
             {pl.label}
           </div>
         ))}

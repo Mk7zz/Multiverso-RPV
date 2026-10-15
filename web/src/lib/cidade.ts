@@ -5,7 +5,7 @@
  * e cadastre as perguntas dele em QUESTIONS.
  */
 import type { Clip } from './vozes';
-import { PLACES, type Place } from './world';
+import { BRIDGE, MAIN_PATH, PLACES, riverX, type Place } from './world';
 
 export interface Option {
   text: string;
@@ -42,6 +42,39 @@ const SANTA_RITA: CityPlace = {
   x: 74,
   y: 86,
 };
+
+/*
+ * Pontos focais de Cataguases: cada um tem a sua cena (pages/cidade) e as suas perguntas.
+ * - Ponte Metálica ("Ponte Velha"): é a própria ponte do mapa sobre o Rio Pomba.
+ * - Museu Energisa: casarão art nouveau perto do rio, com a história da energia elétrica.
+ */
+const PONTE: CityPlace = {
+  id: 'ponte',
+  label: 'Ponte Metálica',
+  title: 'Ponte Metálica',
+  hint: 'A Ponte Velha sobre o Rio Pomba',
+  intro: 'Chegamos na Ponte Metálica, a Ponte Velha! Ela atravessa o Rio Pomba desde 1915.',
+  to: '/lugar/ponte',
+  icon: 'map',
+  kind: 'bridge',
+  x: riverX(MAIN_PATH.y + 4),
+  y: BRIDGE.y0,
+};
+
+const MUSEU: CityPlace = {
+  id: 'museu',
+  label: 'Museu Energisa',
+  title: 'Museu Energisa',
+  hint: 'A história da energia elétrica',
+  intro: 'Chegamos no Museu Energisa! Aqui mora a história da energia elétrica de Cataguases.',
+  to: '/lugar/museu',
+  icon: 'star',
+  kind: 'museum',
+  x: 212,
+  y: 98,
+};
+
+const LANDMARKS = [SANTA_RITA, PONTE, MUSEU];
 
 /*
  * Mestres do Saber: pessoas da cultura popular que guardam histórias, músicas e costumes.
@@ -146,12 +179,12 @@ const MASTERS = [SEU_ZICO, SEKTOR, DONA_CIDA];
 
 /** Os demais lugares do mapa ficam com cadeado até ganharem desenho e perguntas. */
 export const CITY_PLACES: Place[] = [
-  SANTA_RITA,
+  ...LANDMARKS,
   ...MASTERS,
-  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
+  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao', 'quadro'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
 ];
 
-export const CITY_INFO: Record<string, CityPlace> = { [SANTA_RITA.id]: SANTA_RITA };
+export const CITY_INFO: Record<string, CityPlace> = Object.fromEntries(LANDMARKS.map((p) => [p.id, p]));
 
 /** Casas dos Mestres do Saber que já podem ser visitadas. */
 export const MASTER_PLACES: Record<string, Place> = Object.fromEntries(MASTERS.map((m) => [m.id, m]));
@@ -338,6 +371,150 @@ export const QUESTIONS: Record<string, Question[]> = {
         { text: 'Na máquina de lavar', emoji: '🧺' },
       ],
       fact: 'No fogão a lenha! A comida fica com gostinho de fumaça. Por isso sai fumaça da chaminé!',
+    },
+  ],
+  ponte: [
+    {
+      id: 'apelido',
+      text: 'Como o povo chama a Ponte Metálica?',
+      options: [
+        { text: 'Ponte Velha', emoji: '🌉' },
+        { text: 'Ponte do Arco-Íris', emoji: '🌈' },
+        { text: 'Ponte de Chocolate', emoji: '🍫' },
+      ],
+      fact: 'O povo chama de Ponte Velha! Ela é o cartão-postal de Cataguases.',
+    },
+    {
+      id: 'rio',
+      text: 'Qual rio passa embaixo da ponte?',
+      options: [
+        { text: 'Rio Pomba', emoji: '🏞️' },
+        { text: 'Rio Amazonas', emoji: '🐊' },
+        { text: 'Rio Nilo', emoji: '🐫' },
+      ],
+      fact: 'É o Rio Pomba! A ponte atravessa o rio e liga um lado da cidade ao outro.',
+    },
+    {
+      id: 'ferro',
+      text: 'Do que é feita a Ponte Metálica?',
+      options: [
+        { text: 'De ferro', emoji: '🔩' },
+        { text: 'De madeira', emoji: '🪵' },
+        { text: 'De papel', emoji: '📄' },
+      ],
+      fact: 'De ferro! As peças são presas com rebites, uns pinos de metal. Parece um quebra-cabeça gigante!',
+    },
+    {
+      id: 'idade',
+      text: 'A ponte foi inaugurada em 1915. Quantos anos ela tem?',
+      options: [
+        { text: 'Mais de 100 anos', emoji: '🎂' },
+        { text: 'Só 1 ano', emoji: '🍼' },
+        { text: '10 anos', emoji: '🔟' },
+      ],
+      fact: 'Mais de 100 anos! Ela foi inaugurada no dia 14 de julho de 1915.',
+    },
+    {
+      id: 'cor',
+      text: 'Qual é a cor da ponte hoje?',
+      options: [
+        { text: 'Vermelha', emoji: '🔴' },
+        { text: 'Roxa', emoji: '🟣' },
+        { text: 'Verde', emoji: '🟢' },
+      ],
+      fact: 'Hoje ela é vermelha! Mas já foi pintada de branco e de prateado.',
+    },
+    {
+      id: 'servir',
+      text: 'Para que serve uma ponte?',
+      options: [
+        { text: 'Atravessar o rio', emoji: '🚶' },
+        { text: 'Guardar brinquedos', emoji: '🧸' },
+        { text: 'Fazer bolo', emoji: '🎂' },
+      ],
+      fact: 'Atravessar o rio! Com a ponte, a cidade cresceu para o outro lado do Rio Pomba.',
+    },
+    {
+      id: 'noite',
+      text: 'O que acontece com a ponte quando fica de noite?',
+      options: [
+        { text: 'Ela fica toda iluminada', emoji: '💡' },
+        { text: 'Ela vira um barco', emoji: '⛵' },
+        { text: 'Ela vai dormir', emoji: '😴' },
+      ],
+      fact: 'Ela fica toda iluminada! E as luzes aparecem de novo no rio, que nem um espelho.',
+    },
+  ],
+  museu: [
+    {
+      id: 'historia',
+      text: 'O Museu Energisa conta a história de quê?',
+      options: [
+        { text: 'Da energia elétrica', emoji: '⚡' },
+        { text: 'Dos dinossauros', emoji: '🦕' },
+        { text: 'Dos piratas', emoji: '🦜' },
+      ],
+      fact: 'Da energia elétrica! O museu conta como a luz chegou em Cataguases e na região.',
+    },
+    {
+      id: 'turbina',
+      text: 'Como a água do rio vira energia elétrica?',
+      options: [
+        { text: 'Girando uma turbina', emoji: '🌀' },
+        { text: 'Esquentando no fogão', emoji: '🔥' },
+        { text: 'Virando gelo', emoji: '🧊' },
+      ],
+      fact: 'Girando uma turbina! A água empurra a turbina, ela gira e o gerador faz a energia.',
+    },
+    {
+      id: 'lampada',
+      text: 'Qual destas coisas precisa de energia elétrica?',
+      options: [
+        { text: 'A lâmpada', emoji: '💡' },
+        { text: 'A pedra', emoji: '🪨' },
+        { text: 'A árvore', emoji: '🌳' },
+      ],
+      fact: 'A lâmpada! A energia vem pelos fios dos postes até a nossa casa.',
+    },
+    {
+      id: 'cor',
+      text: 'Qual é a cor do prédio do museu?',
+      options: [
+        { text: 'Amarelo', emoji: '🟡' },
+        { text: 'Preto', emoji: '⚫' },
+        { text: 'Roxo', emoji: '🟣' },
+      ],
+      fact: 'Amarelinho, com enfeites brancos! É um casarão bem antigo, no estilo art nouveau.',
+    },
+    {
+      id: 'enfeites',
+      text: 'O que os enfeites de ferro do portão imitam?',
+      options: [
+        { text: 'Flores e folhas', emoji: '🌸' },
+        { text: 'Carros', emoji: '🚗' },
+        { text: 'Foguetes', emoji: '🚀' },
+      ],
+      fact: 'Flores e folhas! O estilo art nouveau gosta de curvas, como as plantas da natureza.',
+    },
+    {
+      id: 'forca-e-luz',
+      text: 'Como se chamava a empresa que trouxe a luz para Cataguases?',
+      options: [
+        { text: 'Força e Luz', emoji: '⚡' },
+        { text: 'Sorvete e Companhia', emoji: '🍦' },
+        { text: 'Circo da Alegria', emoji: '🎪' },
+      ],
+      fact: 'Companhia Força e Luz Cataguazes-Leopoldina! Ela nasceu em 1905 e hoje se chama Energisa.',
+    },
+    {
+      id: 'economizar',
+      text: 'Como a gente pode economizar energia?',
+      options: [
+        { text: 'Apagar a luz ao sair', emoji: '💡' },
+        { text: 'Deixar a TV ligada', emoji: '📺' },
+        { text: 'Abrir a geladeira toda hora', emoji: '🧊' },
+      ],
+      fact: 'Apagando a luz quando sai do quarto! Cada luz apagada é energia guardada.',
     },
   ],
   'santa-rita': [
@@ -646,7 +823,7 @@ export function speak(text: string, who = 'narrador') {
 
 let ctx: AudioContext | null = null;
 
-type Sfx = 'ok' | 'oops' | 'pop' | 'bell' | 'splash' | 'rustle' | 'chirp';
+export type Sfx = 'ok' | 'oops' | 'pop' | 'bell' | 'splash' | 'rustle' | 'chirp' | 'honk' | 'clang' | 'zap' | 'whir' | 'creak';
 
 /** Cada som: notas (Hz), duração de cada nota, forma de onda e volume. Pequenas variações a cada toque. */
 const SOUNDS: Record<Sfx, { notes: number[]; step: number; wave: OscillatorType; vol: number; tail?: number }> = {
@@ -657,6 +834,11 @@ const SOUNDS: Record<Sfx, { notes: number[]; step: number; wave: OscillatorType;
   splash: { notes: [900, 620, 420], step: 0.04, wave: 'sine', vol: 0.07 },
   rustle: { notes: [220, 260, 200, 240], step: 0.035, wave: 'sawtooth', vol: 0.02 },
   chirp: { notes: [1800, 2300, 1900], step: 0.05, wave: 'sine', vol: 0.04 },
+  honk: { notes: [392, 392], step: 0.16, wave: 'square', vol: 0.05, tail: 0.7 },
+  clang: { notes: [1320, 990, 1480], step: 0.05, wave: 'triangle', vol: 0.06, tail: 7 },
+  zap: { notes: [220, 440, 880, 1760], step: 0.04, wave: 'sawtooth', vol: 0.025 },
+  whir: { notes: [98, 131, 175, 233, 311, 415], step: 0.09, wave: 'triangle', vol: 0.06 },
+  creak: { notes: [190, 160, 175, 140], step: 0.1, wave: 'sawtooth', vol: 0.02 },
 };
 
 /** Sons de videogame gerados na hora (sem arquivos de áudio). */
