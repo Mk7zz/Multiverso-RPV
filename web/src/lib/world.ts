@@ -8,8 +8,8 @@ export type PlaceKind = 'house' | 'tower' | 'board' | 'fountain' | 'post' | 'hal
 /** Mestre do Saber: personagem da cultura popular que mora numa casinha do mapa e conversa com a criança. */
 export interface Master {
   name: string;
-  /** Falas da conversa, uma por caixa de diálogo. */
-  lines: string[];
+  /** Falas de boas-vindas na casa dele, uma por vez, antes das perguntas. */
+  intro: string[];
   /** Frases curtas que aparecem no balão quando ele está parado na porta. */
   greetings: string[];
 }

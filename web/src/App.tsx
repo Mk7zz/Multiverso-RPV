@@ -50,6 +50,7 @@ import { Ranking } from './pages/student/Ranking';
 import { Onboarding } from './pages/start/Onboarding';
 import { TitleScreen } from './pages/start/TitleScreen';
 import { CityMap } from './pages/cidade/CityMap';
+import { MestreVisit } from './pages/cidade/MestreVisit';
 import { PlaceVisit } from './pages/cidade/PlaceVisit';
 import { StartScreen } from './pages/cidade/StartScreen';
 
@@ -75,6 +76,7 @@ export function App() {
       <Route index element={<StartScreen />} />
       <Route path="mapa" element={<CityMap />} />
       <Route path="lugar/:id" element={<PlaceVisit />} />
+      <Route path="mestre/:id" element={<MestreVisit />} />
 
       {/* Plataforma Multiverso original: início, novo jogo e acesso */}
       <Route path="multiverso" element={<TitleScreen />} />

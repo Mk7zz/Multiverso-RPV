@@ -96,6 +96,11 @@ export function ZicoSprite({ x, y, frame }: { x: number; y: number; frame: ZicoF
   );
 }
 
+/** Seu Zico em tamanho grande (para a casa dele): preenche um <svg viewBox="0 0 16 24">. */
+export function ZicoPixels({ frame }: { frame: ZicoFrame }) {
+  return <Pixels runs={ZICO[frame]} />;
+}
+
 /** Rosto do Seu Zico para a caixa de diálogo. */
 export function ZicoPortrait({ size = 64 }: { size?: number }) {
   return (

@@ -371,7 +371,7 @@ export function PlaceArt({ p, night = false }: { p: Place; night?: boolean }) {
   );
 }
 
-export const Building = memo(function Building({ p, night, onEnter, highlight }: { p: Place; night: boolean; onEnter: (p: Place) => void; highlight: boolean }) {
+export const Building = memo(function Building({ p, night, onEnter, highlight, noSign }: { p: Place; night: boolean; onEnter: (p: Place) => void; highlight: boolean; noSign?: boolean }) {
   const parts = buildingParts(p, night ? '#ffd76a' : '#bfe9f2');
   return (
     <g
@@ -385,7 +385,7 @@ export const Building = memo(function Building({ p, night, onEnter, highlight }:
     >
       <Block body={parts.body} details={parts.details} />
       {parts.extra}
-      <Sign x={parts.sign[0]} y={parts.sign[1]} icon={p.soon ? 'lock' : p.icon} />
+      {!noSign && <Sign x={parts.sign[0]} y={parts.sign[1]} icon={p.soon ? 'lock' : p.icon} />}
     </g>
   );
 });

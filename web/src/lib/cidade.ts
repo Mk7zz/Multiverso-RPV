@@ -15,6 +15,8 @@ export interface Option {
 export interface Question {
   id: string;
   text: string;
+  /** Provocação do Mestre do Saber antes da pergunta (só nas casas dos mestres). */
+  hook?: string;
   /** A primeira opção é sempre a certa; a ordem é embaralhada na tela. */
   options: [Option, Option, Option];
   /** Curiosidade mostrada depois do acerto. */
@@ -49,7 +51,7 @@ const SEU_ZICO: Place = {
   id: 'seu-zico',
   label: 'Casa do Seu Zico',
   hint: 'Converse com o Mestre do Saber',
-  to: '/mapa',
+  to: '/mestre/seu-zico',
   icon: 'scroll',
   kind: 'mestre',
   x: 36,
@@ -58,11 +60,10 @@ const SEU_ZICO: Place = {
   roof: '#c4553a',
   master: {
     name: 'Seu Zico',
-    lines: [
-      'Ô de casa! Quem chegou? Eu sou o Seu Zico, Mestre do Saber aqui de Cataguases!',
+    intro: [
+      'Ô de casa! Que alegria, uma visita! Eu sou o Seu Zico, Mestre do Saber aqui de Cataguases.',
       'Mestre do Saber é quem guarda as histórias, as músicas e os costumes do nosso povo.',
-      'Tudo o que eu sei, aprendi escutando os mais velhos. Agora é a sua vez de aprender!',
-      'Logo, logo vou te contar os meus causos. Volte sempre para prosear comigo!',
+      'E eu sei umas coisas que pouca gente sabe... Quer descobrir comigo?',
     ],
     greetings: ['Ô de casa! 👋', 'Vem prosear! ☕', 'Eu sou o Seu Zico!', 'Quer ouvir um causo? 📜', 'Bom dia, criançada! 🌞'],
   },
@@ -93,8 +94,79 @@ export const CITY_PLACES: Place[] = [
 
 export const CITY_INFO: Record<string, CityPlace> = { [SANTA_RITA.id]: SANTA_RITA };
 
+/** Casas dos Mestres do Saber que já podem ser visitadas. */
+export const MASTER_PLACES: Record<string, Place> = { [SEU_ZICO.id]: SEU_ZICO };
+
 // Textos provisórios: revisar com a equipe pedagógica antes de publicar.
 export const QUESTIONS: Record<string, Question[]> = {
+  'seu-zico': [
+    {
+      id: 'causo',
+      hook: 'Lá em casa a gente fala muito em causo. Mas você sabe o que é?',
+      text: 'O que é um causo?',
+      options: [
+        { text: 'Uma história contada de boca em boca', emoji: '🗣️' },
+        { text: 'Um tipo de doce', emoji: '🍬' },
+        { text: 'Uma pipa', emoji: '🪁' },
+      ],
+      fact: 'Causo é uma história contada na roda de conversa, passando dos avós para os netos. Cada um que conta, aumenta um pouquinho!',
+    },
+    {
+      id: 'rio-pomba',
+      hook: 'Da minha janela eu escuto o barulhinho da água. Duvido você saber de onde vem!',
+      text: 'Qual rio passa por Cataguases?',
+      options: [
+        { text: 'Rio Pomba', emoji: '🏞️' },
+        { text: 'Rio Amazonas', emoji: '🐊' },
+        { text: 'Rio Nilo', emoji: '🐫' },
+      ],
+      fact: 'O Rio Pomba atravessa a cidade. Antigamente era nele que muita gente pescava, lavava roupa e se refrescava no calor!',
+    },
+    {
+      id: 'pao-de-queijo',
+      hook: 'Tem um cheirinho saindo do meu forno agora mesmo... Adivinha o que é?',
+      text: 'Qual é a quitanda mais famosa de Minas Gerais?',
+      options: [
+        { text: 'Pão de queijo', emoji: '🧀' },
+        { text: 'Sushi', emoji: '🍣' },
+        { text: 'Taco', emoji: '🌮' },
+      ],
+      fact: 'Em Minas, bolo, biscoito e pão de queijo se chamam quitanda. E o pão de queijo vai pro forno quentinho, pro café da tarde!',
+    },
+    {
+      id: 'folia',
+      hook: 'No comecinho do ano, uma festa bate na porta de casa cantando. Você conhece?',
+      text: 'O que é a Folia de Reis?',
+      options: [
+        { text: 'Um grupo que canta visitando as casas', emoji: '🎶' },
+        { text: 'Um jogo de futebol', emoji: '⚽' },
+        { text: 'Uma corrida de carro', emoji: '🏎️' },
+      ],
+      fact: 'Os foliões andam com bandeira, viola e sanfona, cantando de casa em casa entre o Natal e o Dia de Reis, 6 de janeiro.',
+    },
+    {
+      id: 'piao',
+      hook: 'Quando eu era menino não tinha videogame, não. Mas a gente brincava muito! Sabe de quê?',
+      text: 'Qual destas é uma brincadeira de antigamente?',
+      options: [
+        { text: 'Pião', emoji: '🪀' },
+        { text: 'Videogame', emoji: '🎮' },
+        { text: 'Celular', emoji: '📱' },
+      ],
+      fact: 'Pião, peteca, bola de gude e pipa! A gente mesmo fazia os brinquedos, com madeira, palha e papel.',
+    },
+    {
+      id: 'fogao-lenha',
+      hook: 'A comida da minha casa é feita de um jeitinho especial. Será que você descobre?',
+      text: 'Onde se cozinha na roça de Minas?',
+      options: [
+        { text: 'No fogão a lenha', emoji: '🔥' },
+        { text: 'Na geladeira', emoji: '🧊' },
+        { text: 'Na máquina de lavar', emoji: '🧺' },
+      ],
+      fact: 'O fogão a lenha esquenta a casa toda e deixa a comida com um gostinho de fumaça. É por isso que sai fumaça da minha chaminé!',
+    },
+  ],
   'santa-rita': [
     {
       id: 'azulejo-cor',

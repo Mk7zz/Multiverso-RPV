@@ -8,7 +8,7 @@ import { PlaceScene } from './PlaceScene';
 
 const CONFETTI = ['#f2b705', '#12a3a0', '#d64545', '#8cc63f', '#2f5fb3', '#ec6a8c'];
 
-function Confetti() {
+export function Confetti() {
   const bits = useMemo(
     () => Array.from({ length: 40 }, (_, i) => ({ left: Math.random() * 100, delay: Math.random() * 0.8, dur: 1.6 + Math.random() * 1.4, c: CONFETTI[i % CONFETTI.length] })),
     [],

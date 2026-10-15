@@ -1,17 +1,18 @@
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from 'react';
-import { sfx, speak } from '../lib/cidade';
+import { sfx } from '../lib/cidade';
 import { seeded } from '../lib/pixel';
 import type { AvatarConfig } from '../lib/types';
 import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, riverX, RIVER_HALF, SPAWN, WORLD_H as H, WORLD_W as W, type Place } from '../lib/world';
 import { AVATAR_PALETTES, DEFAULT_AVATAR } from './Avatar';
 import { Dialogue } from './Dialogue';
-import { ZicoPortrait, ZicoSprite, type ZicoFrame } from './Mestres';
+import { ZicoSprite, type ZicoFrame } from './Mestres';
 import { PixelIcon } from './PixelIcon';
 import { birdDown, birdUp, Pixels, treeRuns, TREE_H, TREE_W, type DayTime } from './Scene';
 import { Building, Character, makeTrees } from './World';
 
 /*
  * Mapa da cidade em tela cheia. Diferente da base do aluno (World), aqui:
+ * - quem chama a atenção é o desenho: sem placas, e o nome do lugar só aparece de perto (ou ao passar o mouse);
  * - o mundo cobre a tela inteira e uma câmera segue o personagem (ou é arrastada com o dedo);
  * - o cenário tem vida própria com movimentos aleatórios (moradores, borboletas, vagalumes,
  *   nuvens, passarinhos, brilhos no rio, folhas caindo), para nada parecer repetido;
@@ -356,7 +357,7 @@ let uid = 1;
 function initLife(places: Place[], targets: Vec[]) {
   const fountain = places.find((p) => p.kind === 'fountain');
   return {
-    npcs: Array.from({ length: 5 }, (): Npc => {
+    npcs: Array.from({ length: 4 }, (): Npc => {
       const at = pick(targets);
       return { id: uid++, x: at.x, y: at.y, path: [], wait: rnd(0, 3), walk: 0, speed: rnd(16, 26), config: randomLook(), say: null, sayUntil: 0 };
     }),
@@ -369,7 +370,7 @@ function initLife(places: Place[], targets: Vec[]) {
     glows: Array.from({ length: 18 }, (): Glow => ({ x: rnd(10, 310), y: rnd(56, 176), ph: rnd(0, 6), f: rnd(1.2, 3.2), vx: rnd(-3, 3), vy: rnd(-2, 2) })),
     clouds: Array.from({ length: 5 }, (): Cloud => ({ x: rnd(-40, W), y: rnd(2, 24), w: rnd(14, 32), speed: rnd(1.2, 3.6) })),
     flocks: [] as Flock[],
-    timers: { spark: 0, leaf: rnd(1, 3), flock: rnd(4, 12), drop: 0, dust: 0 },
+    timers: { spark: 0, leaf: rnd(1, 3), flock: rnd(4, 12), drop: 0, dust: 0, glint: 0 },
     fountain: fountain ? { x: fountain.x, y: fountain.y - 8 } : null,
   };
 }
@@ -429,7 +430,8 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
   const [, render] = useReducer((n: number) => n + 1, 0);
   const [shaking, setShaking] = useState<string | null>(null);
   const [soon, setSoon] = useState<{ p: Place; until: number } | null>(null);
-  const [talk, setTalk] = useState<{ p: Place; i: number } | null>(null);
+  const [hover, setHover] = useState<string | null>(null);
+  const [hint, setHint] = useState(true);
   /** Mestres do Saber parados na porta de casa: balão de saudação e piscadas, cada um no seu tempo. */
   const masters = useRef(new Map<string, { say: string | null; until: number; next: number; blink: number }>());
   const [intro, setIntro] = useState<number | null>(() => {
@@ -448,28 +450,11 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
       setSoon({ p, until: clock.current + 2.6 });
       return;
     }
-    if (p.master) {
-      sfx('pop');
-      setTalk({ p, i: 0 });
-      speak(p.master.lines[0]);
-      return;
-    }
     const { s } = size.current;
     onArrive?.(p, { x: (p.x - cam.current.x) * s, y: (p.y - 14 - cam.current.y) * s });
   };
 
-  const talkTo = (i: number) => {
-    if (!talk?.p.master) return;
-    if (i >= talk.p.master.lines.length) return closeTalk();
-    sfx('pop');
-    setTalk({ p: talk.p, i });
-    speak(talk.p.master.lines[i]);
-  };
-  const closeTalk = () => {
-    setTalk(null);
-    window.speechSynthesis?.cancel();
-    viewport.current?.focus({ preventScroll: true });
-  };
+
 
   const spawn = (kind: PKind, x: number, y: number, o: Partial<Particle> = {}) => {
     const list = life.current.particles;
@@ -531,6 +516,13 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
   useEffect(() => {
     if (!demo) viewport.current?.focus({ preventScroll: true });
   }, [demo]);
+
+  // A dica de como andar some sozinha depois de um tempo (ou no primeiro toque no chão).
+  useEffect(() => {
+    if (intro !== null) return;
+    const id = setTimeout(() => setHint(false), 9000);
+    return () => clearTimeout(id);
+  }, [intro]);
 
   // Laço principal: personagem, câmera, pomba, moradores e todo o ambiente.
   useEffect(() => {
@@ -691,7 +683,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
           n.path.shift();
           if (!n.path.length) {
             n.wait = rnd(1.5, 6);
-            if (Math.random() < 0.3 && t > n.sayUntil) {
+            if (Math.random() < 0.15 && t > n.sayUntil) {
               n.say = pick(night ? NPC_LINES_NIGHT : NPC_LINES_DAY);
               n.sayUntil = t + 2.6;
             }
@@ -700,6 +692,17 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
           n.x += (vx / dist) * n.speed * dt;
           n.y += (vy / dist) * n.speed * dt;
           n.walk += dt;
+        }
+      }
+
+      // Brilhinhos em volta da casa de quem já pode ser visitado (chamam o olhar sem exagero)
+      L.timers.glint -= dt;
+      if (L.timers.glint <= 0) {
+        L.timers.glint = rnd(0.35, 0.8);
+        const fx = places.filter((pl) => pl.master && !pl.soon);
+        if (fx.length) {
+          const pl = pick(fx);
+          spawn('spark', pl.x + rnd(-22, 22), pl.y - rnd(4, 32), { life: rnd(0.6, 1.1), vy: rnd(-5, -2), c: pick(['#fff3b0', '#ffffff', '#ffd76a']) });
         }
       }
 
@@ -859,13 +862,6 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
   const onKeyDown = (e: KeyboardEvent) => {
     if (demo) return;
     const key = e.key.toLowerCase();
-    if (talk) {
-      if (key === 'enter' || key === ' ') {
-        e.preventDefault();
-        talkTo(talk.i + 1);
-      } else if (key === 'escape') closeTalk();
-      return;
-    }
     if (intro !== null && introLines) {
       if (key === 'enter' || key === ' ') {
         e.preventDefault();
@@ -910,7 +906,8 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
   };
 
   const onGroundClick = (e: MouseEvent<SVGSVGElement>) => {
-    if (suppress.current || demo || intro !== null || talk) return;
+    if (suppress.current || demo || intro !== null) return;
+    setHint(false);
     const { x, y } = toWorld(e);
     if (Math.abs(x - riverX(y)) < RIVER_HALF + 1 && (y < BRIDGE.y0 || y > BRIDGE.y1)) {
       sfx('splash');
@@ -966,7 +963,15 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
 
   // Profundidade: quem está mais embaixo na tela é desenhado por cima.
   const entities: { key: string; y: number; node: ReactNode }[] = [
-    ...places.map((pl) => ({ key: pl.id, y: pl.y, node: <Building p={pl} night={night} onEnter={enterPlace} highlight={near?.id === pl.id} /> })),
+    ...places.map((pl) => ({
+      key: pl.id,
+      y: pl.y,
+      node: (
+        <g className={pl.master && !pl.soon ? 'cw-featured' : undefined} onPointerEnter={() => setHover(pl.id)} onPointerLeave={() => setHover((h) => (h === pl.id ? null : h))}>
+          <Building p={pl} night={night} onEnter={enterPlace} highlight={near?.id === pl.id} noSign />
+        </g>
+      ),
+    })),
     ...scenery.trees.map((tr) => ({
       key: `t${tr.x}:${tr.y}`,
       y: tr.y,
@@ -1177,7 +1182,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
 
         {/* Placas fixas (não se mexem) e balões de fala */}
         {places.map((pl) => (
-          <div key={pl.id} className={`cw-label ${pl.soon ? 'soon' : ''} ${near?.id === pl.id ? 'show' : ''}`} style={pct(pl.x, pl.y + (pl.kind === 'church' ? 11 : pl.kind === 'mestre' ? 7 : 4))}>
+          <div key={pl.id} className={`cw-label ${pl.soon ? 'soon' : ''} ${near?.id === pl.id || hover === pl.id ? 'show' : ''}`} style={pct(pl.x, pl.y + (pl.kind === 'church' ? 11 : pl.kind === 'mestre' ? 7 : 4))}>
             {pl.label}
           </div>
         ))}
@@ -1190,7 +1195,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
           ))}
         {places.map((pl) => {
           const m = masters.current.get(pl.id);
-          if (!pl.master || !m?.say || m.until <= t || talk) return null;
+          if (!pl.master || !m?.say || m.until <= t) return null;
           return (
             <div key={`m${pl.id}`} className="cw-bubble mestre" style={pct(pl.x - 13, pl.y - 14)}>
               {m.say}
@@ -1243,35 +1248,14 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
 
       {children}
 
-      {!demo && near && !near.soon && intro === null && !talk && (
+      {!demo && near && !near.soon && intro === null && (
         <button className="cw-prompt" onClick={() => arriveRef.current(near)}>
           <PixelIcon name={near.icon} size={22} />
           <span>{near.label}</span>
           <strong>{near.master ? 'Conversar ▶' : 'Entrar ▶'}</strong>
         </button>
       )}
-      {talk?.p.master && (
-        <div className="cw-dialogue">
-          <Dialogue key={talk.i} text={talk.p.master.lines[talk.i]} speaker={`${talk.p.master.name} · Mestre do Saber`} portrait={<ZicoPortrait />}>
-            {talk.i < talk.p.master.lines.length - 1 ? (
-              <button className="btn accent sm" onClick={() => talkTo(talk.i + 1)}>
-                Próximo ›
-              </button>
-            ) : (
-              <button className="btn accent sm" onClick={closeTalk}>
-                Até logo! ›
-              </button>
-            )}
-            <button className="btn ghost sm" onClick={() => speak(talk.p.master!.lines[talk.i])} aria-label="Ouvir de novo">
-              🔊
-            </button>
-            <button className="btn ghost sm" onClick={closeTalk}>
-              Sair
-            </button>
-          </Dialogue>
-        </div>
-      )}
-      {!demo && !near && intro === null && !talk && <div className="cw-hint">Toque no chão para andar · toque nos lugares para explorar</div>}
+      {!demo && !near && intro === null && hint && <div className="cw-hint">Toque no chão para andar · toque nos lugares para explorar</div>}
       {intro !== null && introLines && (
         <div className="cw-dialogue">
           <Dialogue key={intro} text={introLines[intro]}>
