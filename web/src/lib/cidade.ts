@@ -193,28 +193,6 @@ export const QUESTIONS: Record<string, Question[]> = {
       fact: 'Grafite é arte pintada no muro! Mas antes tem que pedir licença pro dono do muro.',
     },
     {
-      id: 'mc',
-      hook: 'Pega esse microfone aqui! Quem rima no rap é chamado de...',
-      text: 'Como se chama quem canta rimando no rap?',
-      options: [
-        { text: 'MC', emoji: '🎤' },
-        { text: 'Juiz', emoji: '⚖️' },
-        { text: 'Piloto', emoji: '✈️' },
-      ],
-      fact: 'É o MC! Quer dizer mestre de cerimônias: quem rima e anima a galera.',
-    },
-    {
-      id: 'origem',
-      hook: 'O Hip Hop rodou o mundo até chegar aqui. Sabe onde ele nasceu?',
-      text: 'Onde o Hip Hop nasceu?',
-      options: [
-        { text: 'Nos bairros de Nova York', emoji: '🗽' },
-        { text: 'No fundo do mar', emoji: '🐠' },
-        { text: 'Na Lua', emoji: '🌙' },
-      ],
-      fact: 'Nasceu em Nova York, nas festas de rua, lá nos anos 1970. Depois chegou no Brasil!',
-    },
-    {
       id: 'freeze',
       hook: 'No breaking tem um passo em que a gente fica paradinho, igual estátua. Qual é?',
       text: 'Qual destes é um passo do breaking?',

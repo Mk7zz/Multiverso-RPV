@@ -2,7 +2,7 @@
 
 > Gerado a partir do jogo (`npm run roteiro -w web`). Não edite à mão: mude a fala no código e gere de novo.
 
-São 51 falas curtas, divididas entre os três mestres e gravadas por crianças. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
+São 47 falas curtas, divididas entre os três mestres e gravadas por crianças. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
 
 ## Como gravar
 
@@ -90,10 +90,6 @@ São 51 falas curtas, divididas entre os três mestres e gravadas por crianças.
 | `dj-curiosidade.mp3` | É o DJ! Ele escolhe as músicas e mexe o disco pra lá e pra cá: zigue-zigue! |
 | `grafite-pergunta.mp3` | Olha esse muro colorido atrás de mim! Sabe o que é o grafite? |
 | `grafite-curiosidade.mp3` | Grafite é arte pintada no muro! Mas antes tem que pedir licença pro dono do muro. |
-| `mc-pergunta.mp3` | Pega esse microfone aqui! Quem rima no rap é chamado de... |
-| `mc-curiosidade.mp3` | É o MC! Quer dizer mestre de cerimônias: quem rima e anima a galera. |
-| `origem-pergunta.mp3` | O Hip Hop rodou o mundo até chegar aqui. Sabe onde ele nasceu? |
-| `origem-curiosidade.mp3` | Nasceu em Nova York, nas festas de rua, lá nos anos 1970. Depois chegou no Brasil! |
 | `freeze-pergunta.mp3` | No breaking tem um passo em que a gente fica paradinho, igual estátua. Qual é? |
 | `freeze-curiosidade.mp3` | É o freeze: congelar numa pose! O breaking já foi até esporte nas Olimpíadas. |
 

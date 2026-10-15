@@ -6,8 +6,8 @@
  * com a voz do navegador. Dá para gravar aos poucos: o que ainda não foi gravado continua
  * funcionando.
  *
- * Por mestre são 17 falas: 1 de entrada, 2 de acerto, 2 de erro e, para cada uma das
- * 6 perguntas, a pergunta e a curiosidade.
+ * Por mestre: 1 fala de entrada, 2 de acerto, 2 de erro e, para cada pergunta dele,
+ * a pergunta e a curiosidade.
  * O roteiro sai de `npm run roteiro -w web` (docs/ROTEIRO-VOZES.md). Mudou o texto, regrave.
  */
 import { MASTER_PLACES, QUESTIONS, type Question } from './cidade';
