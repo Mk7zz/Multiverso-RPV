@@ -86,10 +86,10 @@ São 47 falas curtas, divididas entre os três mestres e gravadas por crianças.
 | --- | --- |
 | `elementos-pergunta.mp3` | O Hip Hop tem uns elementos que andam sempre juntos. Sabe um deles? |
 | `elementos-curiosidade.mp3` | O Hip Hop tem DJ, MC, breaking e grafite. E o quinto elemento: o conhecimento! |
-| `dj-pergunta.mp3` | Tá vendo esses toca-discos girando aqui do lado? Sabe quem mexe neles? |
-| `dj-curiosidade.mp3` | É o DJ! Ele escolhe as músicas e mexe o disco pra lá e pra cá: zigue-zigue! |
 | `grafite-pergunta.mp3` | Olha esse muro colorido atrás de mim! Sabe o que é o grafite? |
 | `grafite-curiosidade.mp3` | Grafite é arte pintada no muro! Mas antes tem que pedir licença pro dono do muro. |
+| `origem-pergunta.mp3` | O Hip Hop rodou o mundo até chegar aqui. Sabe onde ele nasceu? |
+| `origem-curiosidade.mp3` | Nasceu em Nova York, nas festas de rua, lá nos anos 1970. Depois chegou no Brasil! |
 | `freeze-pergunta.mp3` | No breaking tem um passo em que a gente fica paradinho, igual estátua. Qual é? |
 | `freeze-curiosidade.mp3` | É o freeze: congelar numa pose! O breaking já foi até esporte nas Olimpíadas. |
 

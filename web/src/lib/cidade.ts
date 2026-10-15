@@ -171,17 +171,6 @@ export const QUESTIONS: Record<string, Question[]> = {
       fact: 'O Hip Hop tem DJ, MC, breaking e grafite. E o quinto elemento: o conhecimento!',
     },
     {
-      id: 'dj',
-      hook: 'Tá vendo esses toca-discos girando aqui do lado? Sabe quem mexe neles?',
-      text: 'Quem solta o som e mexe nos discos?',
-      options: [
-        { text: 'O DJ', emoji: '🎧' },
-        { text: 'O goleiro', emoji: '🧤' },
-        { text: 'O padeiro', emoji: '🥖' },
-      ],
-      fact: 'É o DJ! Ele escolhe as músicas e mexe o disco pra lá e pra cá: zigue-zigue!',
-    },
-    {
       id: 'grafite',
       hook: 'Olha esse muro colorido atrás de mim! Sabe o que é o grafite?',
       text: 'O que é o grafite do Hip Hop?',
@@ -191,6 +180,17 @@ export const QUESTIONS: Record<string, Question[]> = {
         { text: 'Um tipo de sorvete', emoji: '🍦' },
       ],
       fact: 'Grafite é arte pintada no muro! Mas antes tem que pedir licença pro dono do muro.',
+    },
+    {
+      id: 'origem',
+      hook: 'O Hip Hop rodou o mundo até chegar aqui. Sabe onde ele nasceu?',
+      text: 'Onde o Hip Hop nasceu?',
+      options: [
+        { text: 'Nos bairros de Nova York', emoji: '🗽' },
+        { text: 'No fundo do mar', emoji: '🐠' },
+        { text: 'Na Lua', emoji: '🌙' },
+      ],
+      fact: 'Nasceu em Nova York, nas festas de rua, lá nos anos 1970. Depois chegou no Brasil!',
     },
     {
       id: 'freeze',
@@ -575,11 +575,17 @@ let playing: HTMLAudioElement | null = null;
 let turn = 0;
 /** Gravações que não existem (não tenta baixar de novo). */
 const missing = new Set<string>();
+/** Formato que já funcionou para cada mestre: é o primeiro a tentar nas próximas falas dele. */
+const foundExt: Record<string, string> = {};
 
 /** Para qualquer fala em andamento (gravada ou do navegador). */
 export function stopVoice() {
   turn++;
-  playing?.pause();
+  if (playing) {
+    // Solta os avisos antes de pausar: a fala interrompida não pode passar por gravação que falta.
+    playing.onended = playing.onerror = null;
+    playing.pause();
+  }
   playing = null;
   window.speechSynthesis?.cancel();
 }
@@ -602,26 +608,31 @@ export function say(parts: Clip[], who = 'narrador') {
     const speakIt = () => tts(text, who, () => next(i + 1));
     if (!id) return speakIt();
     const base = `/vozes/${who}/${id}`;
+    const exts = foundExt[who] ? [foundExt[who], ...AUDIO_EXT.filter((e) => e !== foundExt[who])] : AUDIO_EXT;
     const tryExt = (k: number) => {
       if (mine !== turn) return;
-      const url = `${base}.${AUDIO_EXT[k]}`;
-      if (k >= AUDIO_EXT.length) return speakIt();
+      if (k >= exts.length) return speakIt();
+      const url = `${base}.${exts[k]}`;
       if (missing.has(url)) return tryExt(k + 1);
       const audio = new Audio(url);
       playing = audio;
       let failed = false;
       const fail = () => {
-        if (failed) return;
+        if (failed || mine !== turn) return;
         failed = true;
         missing.add(url);
         tryExt(k + 1);
       };
       audio.onended = () => next(i + 1);
       audio.onerror = fail;
-      audio.play().catch((e: unknown) => {
-        // Navegador bloqueou o som antes do primeiro toque: não insiste.
-        if (!(e instanceof DOMException && e.name === 'NotAllowedError')) fail();
-      });
+      audio.play().then(
+        () => (foundExt[who] = exts[k]),
+        (e: unknown) => {
+          // Navegador bloqueou o som antes do primeiro toque (NotAllowed) ou a fala foi
+          // interrompida por outra (Abort): a gravação existe, não é para cair na voz do navegador.
+          if (!(e instanceof DOMException && (e.name === 'NotAllowedError' || e.name === 'AbortError'))) fail();
+        },
+      );
     };
     tryExt(0);
   };
