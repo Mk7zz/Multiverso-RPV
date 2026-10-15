@@ -174,6 +174,29 @@ export function markSeen(placeId: string, questionId: string) {
   save(p);
 }
 
+/* ---- Descobertas: coisas da cena do lugar que a criança já tocou ---- */
+
+const FOUND_KEY = 'cidade:descobertas';
+
+export function getFound(placeId: string): string[] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(FOUND_KEY) ?? 'null');
+    if (raw && Array.isArray(raw[placeId])) return raw[placeId].filter((k: unknown) => typeof k === 'string');
+  } catch {
+    /* sem armazenamento: começa do zero */
+  }
+  return [];
+}
+
+export function saveFound(placeId: string, found: string[]) {
+  try {
+    const raw = JSON.parse(localStorage.getItem(FOUND_KEY) ?? 'null');
+    localStorage.setItem(FOUND_KEY, JSON.stringify({ ...(raw && typeof raw === 'object' ? raw : {}), [placeId]: found }));
+  } catch {
+    /* ignorado */
+  }
+}
+
 export function shuffle<T>(items: readonly T[]): T[] {
   const a = [...items];
   for (let i = a.length - 1; i > 0; i--) {

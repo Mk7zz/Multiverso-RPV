@@ -96,9 +96,6 @@ html, body { overscroll-behavior: none; }
 /* A cena ocupa a área acima do quiz; abaixo dela continua a calçada da praça. */
 .visit-scene { position: absolute; top: 0; left: 0; right: 0; bottom: var(--quiz-h); animation: visit-open 1s steps(10) both; }
 .visit-art { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
-.visit-art .cloud { animation: drift 70s linear infinite; }
-.visit-art .cloud.c2 { animation-duration: 95s; animation-delay: -40s; }
-.visit-art .twinkle { animation: blink 1.8s steps(1) infinite; }
 @keyframes visit-open {
   from { clip-path: circle(0% at 50% 60%); transform: scale(1.35); }
   to { clip-path: circle(120% at 50% 60%); transform: scale(1); }
@@ -135,7 +132,7 @@ html, body { overscroll-behavior: none; }
 .quiz-opt.off { opacity: 0.45; cursor: not-allowed; box-shadow: 0 2px 0 var(--line); transform: translateY(4px); }
 .quiz-emoji { font-size: 2.6rem; line-height: 1; }
 @media (max-width: 560px) {
-  .visit { --quiz-h: 300px; }
+  .visit { --quiz-h: 326px; }
   .quiz-options { grid-template-columns: 1fr; gap: 8px; }
   .quiz-opt { flex-direction: row; min-height: 60px; justify-content: flex-start; gap: 14px; padding: 8px 14px; }
   .quiz-emoji { font-size: 2rem; }
@@ -143,6 +140,57 @@ html, body { overscroll-behavior: none; }
   .visit-back { padding: 6px 10px; font-size: 1rem; }
   .visit-title { display: none; }
   .visit-top { justify-content: space-between; }
+}
+
+/* ---- Cena viva do lugar: descobertas, avisos e dicas da pomba ---- */
+.ps { position: absolute; inset: 0; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+.ps .cw-bubble { z-index: 3; }
+.ps::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(ellipse 80% 75% at 50% 58%, transparent 58%, rgba(8, 18, 28, 0.3)); }
+.ps-ray { opacity: 0.06; animation: ps-ray 7s ease-in-out infinite; }
+@keyframes ps-ray { 50% { opacity: 0.14; } }
+.ps-canopy { transform-box: fill-box; transform-origin: 0 0; animation: ps-branch 5.5s ease-in-out infinite alternate; }
+.ps-canopy.shake { animation: cw-shake 0.65s ease-out; }
+@keyframes ps-branch { from { transform: rotate(-1.2deg); } to { transform: rotate(1.4deg); } }
+button.visit-dove { left: 6%; top: 34%; background: none; border: 0; padding: 0; cursor: pointer; }
+.ps-dove-say { left: 0; top: -4px; transform: translate(-14px, -100%); white-space: normal; width: max-content; max-width: min(280px, 70vw); text-align: left; animation: ps-say 0.25s ease-out; }
+.ps-dove-say::after { left: 34px; }
+@keyframes ps-say { from { transform: translate(-14px, -80%) scale(0.7); opacity: 0; } }
+.ps-found { position: absolute; z-index: 4; top: 72px; left: 12px; display: flex; align-items: center; gap: 8px; background: rgba(255, 253, 245, 0.93); border: 3px solid var(--line); border-radius: 8px; box-shadow: 0 4px 0 var(--line); padding: 4px 10px; font-family: 'Nunito Sans', var(--font); font-weight: 800; color: var(--line); }
+.ps-found.done { background: #fff6d6; }
+.ps-found-count { font-family: var(--font-pixel); font-size: 1.15rem; white-space: nowrap; }
+.ps-found-list { display: flex; gap: 3px; }
+.ps-found-list span { width: 26px; height: 26px; display: grid; place-items: center; font-size: 1.05rem; border-radius: 5px; background: #e8e2cf; filter: grayscale(1); opacity: 0.45; }
+.ps-found-list span.on { filter: none; opacity: 1; background: #fff6d6; }
+.ps-found-list span.new { animation: ps-new 0.6s steps(3) 2; }
+@keyframes ps-new { 50% { transform: scale(1.5) rotate(-8deg); background: #f2b705; } }
+.ps-toast { position: absolute; z-index: 4; left: 50%; top: 72px; transform: translateX(-50%); white-space: nowrap; pointer-events: none; background: #fffdf5; color: var(--line); border: 3px solid var(--line); border-radius: 8px; box-shadow: 0 4px 0 var(--line); padding: 6px 14px; font-family: 'Nunito Sans', var(--font); font-weight: 800; font-size: clamp(0.9rem, 2vw, 1.2rem); text-transform: uppercase; animation: ps-toast 0.35s steps(4) both; }
+.ps-toast.big { background: linear-gradient(#fff8d6, #fffdf5); color: #1f7a4d; font-size: clamp(1.1rem, 2.6vw, 1.5rem); }
+@keyframes ps-toast { from { transform: translate(-50%, -14px) scale(0.7); opacity: 0; } }
+.ps-drag { position: absolute; z-index: 3; left: 50%; top: 118px; transform: translateX(-50%); white-space: nowrap; pointer-events: none; background: rgba(12, 32, 24, 0.78); color: #fff; border: 2px solid var(--line); border-radius: 6px; padding: 4px 12px; font-family: 'Nunito Sans', var(--font); font-weight: 800; font-size: 0.95rem; animation: ps-nudge 1.4s ease-in-out infinite; }
+@keyframes ps-nudge { 50% { transform: translateX(calc(-50% + 8px)); } }
+@media (hover: hover) and (pointer: fine) { .ps-drag { display: none; } }
+@media (max-width: 560px) {
+  .ps-found { top: 62px; left: 8px; gap: 5px; padding: 3px 6px; }
+  .ps-found-count { font-size: 1rem; }
+  .ps-found-list span { width: 20px; height: 20px; font-size: 0.8rem; }
+  .ps-toast { top: 100px; }
+  .ps-drag { top: 104px; font-size: 0.85rem; }
+  button.visit-dove { top: 40%; left: 4%; }
+}
+/* Celular deitado (tela baixa): quiz mais compacto e painéis fora do caminho. */
+@media (max-height: 520px) and (min-width: 561px) {
+  .visit { --quiz-h: 140px; }
+  .quiz { padding: 8px 10px; bottom: 8px; }
+  .quiz-q { font-size: 1.05rem; }
+  .quiz-listen { width: 42px; height: 42px; font-size: 1.2rem; }
+  .quiz-options { gap: 8px; margin-top: 8px; }
+  .quiz-opt { flex-direction: row; min-height: 52px; gap: 8px; font-size: 0.95rem; }
+  .quiz-emoji { font-size: 1.6rem; }
+  .quiz-portrait { display: none; }
+  .ps-found { left: auto; right: 12px; top: 64px; }
+  .ps-found-list { display: none; }
+  .ps-toast { top: 64px; }
+  button.visit-dove { top: 56%; left: 2%; }
 }
 
 /* ---- Pop-ups ---- */
@@ -174,7 +222,7 @@ html, body { overscroll-behavior: none; }
 .win-fact p { margin: 4px 0 0; font-size: 1.05rem; line-height: 1.35; }
 
 @media (prefers-reduced-motion: reduce) {
-  .city-stage.entering, .cw-sway, .cw-tree, .start-play, .visit-scene, .visit-dove, .quiz, .quiz-opt, .kid-modal, .win-stars .px-icon { animation: none !important; }
+  .city-stage.entering, .cw-sway, .cw-tree, .start-play, .visit-scene, .visit-dove, .quiz, .ps-drag, .ps-found-list span, .ps-ray, .ps-canopy, .quiz-opt, .kid-modal, .win-stars .px-icon { animation: none !important; }
   .city-flash { animation-duration: 0.3s; }
 }
 

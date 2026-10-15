@@ -38,7 +38,7 @@ function route(from: Vec, to: Vec): Vec[] {
   return [{ x: bx - dir * 16, y: by }, { x: bx + dir * 16, y: by }, to];
 }
 
-function randomLook(): AvatarConfig {
+export function randomLook(): AvatarConfig {
   return {
     ...DEFAULT_AVATAR,
     skin: pick(AVATAR_PALETTES.skin),
@@ -101,7 +101,7 @@ function makeScenery(places: Place[]) {
 
 type Scenery = ReturnType<typeof makeScenery>;
 
-const ridgePath = (base: number, peaks: [number, number][], x0: number, x1: number, bottom: number) => {
+export const ridgePath = (base: number, peaks: [number, number][], x0: number, x1: number, bottom: number) => {
   let d = `M${x0} ${bottom}`;
   for (let x = x0; x < x1; x++) d += ` V${Math.round(Math.min(base, ...peaks.map(([px, py]) => py + Math.abs(x - px) * 0.8)))} H${x + 1}`;
   return `${d} V${bottom} Z`;

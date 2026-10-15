@@ -88,7 +88,7 @@ function Visit({ place }: { place: CityPlace }) {
   return (
     <div className={`visit time-${time}`}>
       <div className="visit-scene">
-        <PlaceScene place={place} time={time} />
+        <PlaceScene place={place} time={time} onPoints={setPoints} />
       </div>
 
       <header className="visit-top">
@@ -103,8 +103,6 @@ function Visit({ place }: { place: CityPlace }) {
           <SoundToggle />
         </div>
       </header>
-
-      <GuideSprite className="visit-dove" size={64} flying />
 
       {ready && (
         <section className="quiz" aria-live="polite">
