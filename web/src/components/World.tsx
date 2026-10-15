@@ -10,7 +10,7 @@ import type { AvatarConfig, PublicUser } from '../lib/types';
 import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, PLACES, riverX, RIVER_HALF, SPAWN, WORLD_H, WORLD_W, type Place } from '../lib/world';
 import { Avatar, AvatarSprite, SPRITE_H, SPRITE_W } from './Avatar';
 import { Dialogue } from './Dialogue';
-import { bridgeParts, museumParts } from './Landmarks';
+import { bridgeParts, chacaraParts, museumParts, stationParts } from './Landmarks';
 import { mestreParts } from './MestreHouses';
 import { LevelBadge, XpBar } from './Game';
 import { iconRuns, PixelIcon } from './PixelIcon';
@@ -240,6 +240,10 @@ export function buildingParts(p: Place, glass: string, yard = true): { body: Par
       return bridgeParts(p, glass === '#ffd76a');
     case 'museum':
       return museumParts(p, glass);
+    case 'station':
+      return stationParts(p, glass);
+    case 'chacara':
+      return chacaraParts(p, glass);
     case 'stage': {
       const x0 = x - 22;
       return {
@@ -402,7 +406,7 @@ const NPC_SPOTS = [
   [190, 108],
 ];
 
-const WIDE: Place['kind'][] = ['house', 'hall', 'arena', 'stage', 'mestre', 'museum'];
+const WIDE: Place['kind'][] = ['house', 'hall', 'arena', 'stage', 'mestre', 'museum', 'station', 'chacara'];
 
 /** Árvores espalhadas sem invadir caminhos, rio e construções. */
 export function makeTrees(places: Place[] = PLACES, seed = 1234) {

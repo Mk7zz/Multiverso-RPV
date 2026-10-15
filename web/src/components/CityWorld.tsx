@@ -58,7 +58,7 @@ export function randomLook(): AvatarConfig {
 
 const NPC_LINES_DAY = ['Oi! 👋', 'Que dia bonito! ☀️', 'Já foi na Praça Santa Rita? ⛪', 'Bora explorar Cataguases!', '🎵 lá lá lá', 'Olha a pombinha! 🕊️', 'Bom passeio! 😊', 'Já foi prosear com o Seu Zico? 🏡', 'O Sektor tá no estúdio! 🎧', 'A Dona Rosa tá bordando! 🧵'];
 const NPC_LINES_NIGHT = ['Boa noite! 🌙', 'Olha os vagalumes! ✨', 'Que céu estrelado! ⭐', 'Hora de passear 🚶'];
-const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️', 'Pruu! Na Rua dos Mestres moram os Mestres do Saber! 🏡', 'Pruu! Vamos atravessar a Ponte Velha? 🌉', 'Pruu! Já visitou o Museu Energisa? ⚡'];
+const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️', 'Pruu! Na Rua dos Mestres moram os Mestres do Saber! 🏡', 'Pruu! Vamos atravessar a Ponte Velha? 🌉', 'Pruu! Já visitou o Museu Energisa? ⚡', 'Pruu! O trem chegou na estação! 🚂', 'Pruu! Vamos na Chácara Dona Catarina? 🏡'];
 
 /** Onde o Mestre do Saber fica parado, à esquerda da porta de casa. */
 const masterSpot = (p: Place) => (p.variant === 'hiphop' ? -15 : -13);

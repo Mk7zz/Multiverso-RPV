@@ -47,6 +47,8 @@ const SANTA_RITA: CityPlace = {
  * Pontos focais de Cataguases: cada um tem a sua cena (pages/cidade) e as suas perguntas.
  * - Ponte Metálica ("Ponte Velha"): é a própria ponte do mapa sobre o Rio Pomba.
  * - Museu Energisa: casarão art nouveau perto do rio, com a história da energia elétrica.
+ * - Estação Cataguases: a estação de trem de tijolinho, do outro lado do rio.
+ * - Chácara Dona Catarina: a casa laranja com renda branca no telhado e o jardim com laguinho.
  */
 const PONTE: CityPlace = {
   id: 'ponte',
@@ -74,7 +76,33 @@ const MUSEU: CityPlace = {
   y: 98,
 };
 
-const LANDMARKS = [SANTA_RITA, PONTE, MUSEU];
+const ESTACAO: CityPlace = {
+  id: 'estacao',
+  label: 'Estação Cataguases',
+  title: 'Estação Cataguases',
+  hint: 'A estação de trem',
+  intro: 'Chegamos na Estação Cataguases! Olha o trem chegando.',
+  to: '/lugar/estacao',
+  icon: 'flag',
+  kind: 'station',
+  x: 294,
+  y: 94,
+};
+
+const CHACARA: CityPlace = {
+  id: 'chacara',
+  label: 'Chácara Dona Catarina',
+  title: 'Chácara Dona Catarina',
+  hint: 'A casa laranja do jardim',
+  intro: 'Chegamos na Chácara Dona Catarina! Que jardim bonito.',
+  to: '/lugar/chacara',
+  icon: 'heart',
+  kind: 'chacara',
+  x: 24,
+  y: 96,
+};
+
+const LANDMARKS = [SANTA_RITA, PONTE, MUSEU, ESTACAO, CHACARA];
 
 /*
  * Mestres do Saber: pessoas da cultura popular que guardam histórias, músicas e costumes.
@@ -181,7 +209,7 @@ const MASTERS = [SEU_ZICO, SEKTOR, DONA_ROSA];
 export const CITY_PLACES: Place[] = [
   ...LANDMARKS,
   ...MASTERS,
-  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao', 'quadro'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
+  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao', 'quadro', 'arena', 'feira'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
 ];
 
 export const CITY_INFO: Record<string, CityPlace> = Object.fromEntries(LANDMARKS.map((p) => [p.id, p]));
@@ -370,6 +398,70 @@ export const QUESTIONS: Record<string, Question[]> = {
         { text: 'Abrir a geladeira toda hora', emoji: '🧊' },
       ],
       fact: 'Apagando a luz ao sair!',
+    },
+  ],
+  estacao: [
+    {
+      id: 'nome',
+      text: 'O que está escrito na estação?',
+      options: [
+        { text: 'Cataguazes', emoji: '🚉' },
+        { text: 'Paris', emoji: '🗼' },
+        { text: 'Lua', emoji: '🌙' },
+      ],
+      fact: 'Cataguazes, com Z! É o jeito antigo de escrever.',
+    },
+    {
+      id: 'trem',
+      text: 'Quem para na estação?',
+      options: [
+        { text: 'O trem', emoji: '🚂' },
+        { text: 'O barco', emoji: '⛵' },
+        { text: 'O avião', emoji: '✈️' },
+      ],
+      fact: 'O trem! Ele anda em cima dos trilhos.',
+    },
+    {
+      id: 'tijolo',
+      text: 'Do que é feita a parede da estação?',
+      options: [
+        { text: 'De tijolinho', emoji: '🧱' },
+        { text: 'De gelo', emoji: '🧊' },
+        { text: 'De papel', emoji: '📄' },
+      ],
+      fact: 'De tijolinho vermelho!',
+    },
+  ],
+  chacara: [
+    {
+      id: 'cor',
+      text: 'Qual é a cor da casa da chácara?',
+      options: [
+        { text: 'Laranja', emoji: '🟠' },
+        { text: 'Azul', emoji: '🔵' },
+        { text: 'Preta', emoji: '⚫' },
+      ],
+      fact: 'Laranja, com enfeites brancos!',
+    },
+    {
+      id: 'renda',
+      text: 'O enfeite branco do telhado parece o quê?',
+      options: [
+        { text: 'Uma renda', emoji: '🤍' },
+        { text: 'Um peixe', emoji: '🐟' },
+        { text: 'Uma bola', emoji: '⚽' },
+      ],
+      fact: 'Uma renda! E ela é feita de madeira.',
+    },
+    {
+      id: 'jardim',
+      text: 'O que tem na frente da casa?',
+      options: [
+        { text: 'Um jardim', emoji: '🌳' },
+        { text: 'Uma piscina', emoji: '🏊' },
+        { text: 'Um vulcão', emoji: '🌋' },
+      ],
+      fact: 'Um jardim, com laguinho e pontezinha!',
     },
   ],
   'santa-rita': [
@@ -649,7 +741,7 @@ export function speak(text: string, who = 'narrador') {
 
 let ctx: AudioContext | null = null;
 
-export type Sfx = 'ok' | 'oops' | 'pop' | 'bell' | 'splash' | 'rustle' | 'chirp' | 'honk' | 'clang' | 'zap' | 'whir' | 'creak';
+export type Sfx = 'ok' | 'oops' | 'pop' | 'bell' | 'splash' | 'rustle' | 'chirp' | 'honk' | 'clang' | 'zap' | 'whir' | 'creak' | 'apito' | 'tictac' | 'ribbit';
 
 /** Cada som: notas (Hz), duração de cada nota, forma de onda e volume. Pequenas variações a cada toque. */
 const SOUNDS: Record<Sfx, { notes: number[]; step: number; wave: OscillatorType; vol: number; tail?: number }> = {
@@ -665,6 +757,9 @@ const SOUNDS: Record<Sfx, { notes: number[]; step: number; wave: OscillatorType;
   zap: { notes: [220, 440, 880, 1760], step: 0.04, wave: 'sawtooth', vol: 0.025 },
   whir: { notes: [98, 131, 175, 233, 311, 415], step: 0.09, wave: 'triangle', vol: 0.06 },
   creak: { notes: [190, 160, 175, 140], step: 0.1, wave: 'sawtooth', vol: 0.02 },
+  apito: { notes: [784, 784, 988, 988, 988], step: 0.16, wave: 'square', vol: 0.045, tail: 1.1 },
+  tictac: { notes: [1400, 900, 1400, 900], step: 0.18, wave: 'square', vol: 0.03, tail: 0.3 },
+  ribbit: { notes: [180, 240, 160], step: 0.07, wave: 'square', vol: 0.05, tail: 0.8 },
 };
 
 /** Sons de videogame gerados na hora (sem arquivos de áudio). */

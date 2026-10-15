@@ -3,7 +3,7 @@
  * x/y é a porta de cada lugar: onde o personagem para para entrar. Para outra instância
  * (white label), basta renomear, mover ou trocar as rotas aqui.
  */
-export type PlaceKind = 'house' | 'tower' | 'board' | 'fountain' | 'post' | 'hall' | 'arena' | 'stage' | 'church' | 'mestre' | 'bridge' | 'museum';
+export type PlaceKind = 'house' | 'tower' | 'board' | 'fountain' | 'post' | 'hall' | 'arena' | 'stage' | 'church' | 'mestre' | 'bridge' | 'museum' | 'station' | 'chacara';
 
 /** Mestre do Saber: personagem da cultura popular que mora numa casinha do mapa e conversa com a criança. */
 export interface Master {

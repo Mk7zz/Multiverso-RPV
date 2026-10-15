@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { BRIDGE, MAIN_PATH, type Place } from '../lib/world';
+import { shade } from '../lib/pixel';
 import type { HouseParts, Part } from './MestreHouses';
 
 /*
@@ -161,6 +162,104 @@ export function museumParts(p: Place, glass: string): HouseParts {
         {/* Escada subindo pela esquerda */}
         {Array.from({ length: 6 }, (_, i) => (
           <rect key={`e${i}`} x={x0 - 6 + i} y={y - 2 - i * 2} width={3} height={2} fill={i % 2 ? '#e9e2d0' : white} />
+        ))}
+      </g>
+    ),
+  };
+}
+
+/** Estação Cataguases no mapa: a fachada de tijolinho com o frontão à esquerda, o prédio comprido e os trilhos na frente. */
+export function stationParts(p: Place, glass: string): HouseParts {
+  const { x, y } = p;
+  const brick = '#c0573e';
+  const roof = '#8a5a3a';
+  const roofDk = '#6b4423';
+  const gx = x - 24;
+  const body: Part[] = [
+    [gx, y - 14, 16, 14, brick],
+    ...Array.from({ length: 8 }, (_, i) => [gx + i, y - 15 - i, 16 - 2 * i, 1, brick] as Part),
+    [gx + 16, y - 12, 31, 12, brick],
+    ...Array.from({ length: 9 }, (_, i) => [gx + 16 - i, y - 14 - i, 34 + i, 1, i % 3 === 0 ? roofDk : roof] as Part),
+  ];
+  const details: Part[] = [
+    [gx + 2, y - 11, 12, 2, '#f4f1de'],
+    [gx + 5, y - 18, 2, 2, '#2a1a12'],
+    [gx + 9, y - 18, 2, 2, '#2a1a12'],
+    [gx + 6, y - 8, 4, 8, '#3d2a1e'],
+    [gx + 20, y - 9, 3, 6, glass],
+    [gx + 27, y - 9, 3, 6, glass],
+    [x - 2, y - 9, 4, 9, '#3d2a1e'],
+    [gx + 41, y - 9, 3, 6, glass],
+  ];
+  return {
+    body,
+    details,
+    sign: [x - 5, y - 36],
+    under: (
+      <g>
+        <rect x={gx} y={y - 3} width={47} height={3} fill="#d9c9a3" />
+        <rect x={gx + 4} y={y - 11} width={8} height={1} fill="#8a6a4a" />
+      </g>
+    ),
+    extra: (
+      <g>
+        {/* Trilhos na frente da plataforma */}
+        <rect x={gx - 8} y={y + 2} width={330 - gx} height={6} fill="#9a8f7a" />
+        {Array.from({ length: Math.ceil((330 - gx) / 3) }, (_, i) => (
+          <rect key={i} x={gx - 8 + i * 3} y={y + 2} width={2} height={6} fill="#6b4423" />
+        ))}
+        <rect x={gx - 8} y={y + 3} width={330 - gx} height={1} fill="#5f6d76" />
+        <rect x={gx - 8} y={y + 6} width={330 - gx} height={1} fill="#5f6d76" />
+      </g>
+    ),
+  };
+}
+
+/** Chácara Dona Catarina no mapa: casa laranja com o frontão de renda branca no meio e as alas dos lados. */
+export function chacaraParts(p: Place, glass: string): HouseParts {
+  const { x, y } = p;
+  const wall = '#f08a24';
+  const roof = '#b5523b';
+  const white = '#fbf7ec';
+  const body: Part[] = [
+    [x - 20, y - 13, 40, 13, wall],
+    ...Array.from({ length: 6 }, (_, i) => [x - 21 + i, y - 14 - i, 42 - 2 * i, 1, i % 2 ? shade(roof, -0.2) : roof] as Part),
+    [x - 7, y - 20, 15, 20, wall],
+    ...Array.from({ length: 7 }, (_, i) => [x - 8 + i, y - 21 - i, 17 - 2 * i, 1, wall] as Part),
+  ];
+  const details: Part[] = [
+    [x - 6, y - 15, 3, 9, glass],
+    [x - 1, y - 15, 3, 9, '#3d2a1e'],
+    [x + 4, y - 15, 3, 9, glass],
+    [x - 17, y - 10, 3, 6, glass],
+    [x - 12, y - 10, 3, 6, glass],
+    [x + 11, y - 10, 3, 6, glass],
+    [x + 16, y - 10, 3, 6, glass],
+  ];
+  return {
+    body,
+    details,
+    sign: [x - 5, y - 40],
+    under: (
+      <g>
+        <rect x={x - 20} y={y - 3} width={40} height={3} fill="#8d969c" />
+        <rect x={x - 7} y={y - 20} width={1} height={17} fill={white} />
+        <rect x={x + 7} y={y - 20} width={1} height={17} fill={white} />
+        <rect x={x - 7} y={y - 21} width={15} height={1} fill={white} />
+        <rect x={x} y={y - 25} width={1} height={1} fill={white} />
+      </g>
+    ),
+    extra: (
+      <g fill={white}>
+        {/* Renda de madeira (lambrequim) na beira do frontão */}
+        {Array.from({ length: 8 }, (_, i) => (
+          <g key={i}>
+            <rect x={x - 9 + i} y={y - 21 - i} width={1} height={i % 2 ? 2 : 1} />
+            <rect x={x + 9 - i} y={y - 21 - i} width={1} height={i % 2 ? 2 : 1} />
+          </g>
+        ))}
+        {Array.from({ length: 10 }, (_, i) => (
+          <rect key={`w${i}`} x={x - 20 + i * 4} y={y - 14} width={2} height={1} />
         ))}
       </g>
     ),

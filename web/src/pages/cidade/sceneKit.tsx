@@ -234,6 +234,34 @@ export function useCamera(focus: number | ((vw: number) => number)) {
   return { box, svg, step, view, toWorld, handlers, guard, dragged };
 }
 
+/* ---- Letras de placa (3×5) ---- */
+
+const FONT: Record<string, string[]> = {
+  M: ['1.1', '111', '1.1', '1.1', '1.1'],
+  U: ['1.1', '1.1', '1.1', '1.1', '111'],
+  S: ['111', '1..', '111', '..1', '111'],
+  E: ['111', '1..', '11.', '1..', '111'],
+  N: ['11.', '1.1', '1.1', '1.1', '1.1'],
+  R: ['11.', '1.1', '11.', '1.1', '1.1'],
+  G: ['111', '1..', '1.1', '1.1', '111'],
+  I: ['1', '1', '1', '1', '1'],
+  A: ['111', '1.1', '111', '1.1', '1.1'],
+  C: ['111', '1..', '1..', '1..', '111'],
+  T: ['111', '.1.', '.1.', '.1.', '.1.'],
+  Z: ['111', '..1', '.1.', '1..', '111'],
+};
+/** Palavra em letras de pixel 3×5 (placas das construções). */
+export function PixelText({ text, x, y, fill }: { text: string; x: number; y: number; fill: string }) {
+  const out: ReactNode[] = [];
+  let cx = x;
+  for (const ch of text) {
+    const g = FONT[ch];
+    g.forEach((row, r) => [...row].forEach((c, k) => c === '1' && out.push(<rect key={`${cx}${r}${k}`} x={cx + k} y={y + r} width={1} height={1} />)));
+    cx += g[0].length + 1;
+  }
+  return <g fill={fill}>{out}</g>;
+}
+
 /* ---- Sprites ---- */
 
 /** Grade de caracteres → faixas de pixels, com uma borda vazia em volta para o contorno caber. */
@@ -810,6 +838,28 @@ export const BackTree = memo(function BackTree({ id, x, ground, dur, delay, shak
     >
       <g className={`cw-tree ${shaking ? 'shake' : ''}`} style={{ animationDuration: shaking ? undefined : `${dur}s`, animationDelay: shaking ? undefined : `${delay}s`, '--a': '1.6deg' } as CSSProperties}>
         <g transform={`translate(${x - 9} ${ground - 21}) scale(2)`}>
+          <Pixels runs={treeRuns} />
+        </g>
+      </g>
+    </g>
+  );
+});
+
+/** Árvore grande (a árvore do mapa ampliada `s` vezes), com o pé em (x, ground). */
+export const BigTree = memo(function BigTree({ id, x, ground, s, shaking, onTap }: { id: string; x: number; ground: number; s: number; shaking: boolean; onTap: (id: string, x: number, top: number) => void }) {
+  const w = 11 * s;
+  const h = 13 * s;
+  return (
+    <g
+      className="cw-tap"
+      onClick={(e) => {
+        e.stopPropagation();
+        onTap(id, x, ground - h * 0.8);
+      }}
+    >
+      <ellipse cx={x} cy={ground} rx={w * 0.4} ry={1.4} fill="#000" opacity={0.16} />
+      <g className={`cw-tree ${shaking ? 'shake' : ''}`} style={{ animationDuration: shaking ? undefined : '5s', '--a': '0.9deg' } as CSSProperties}>
+        <g transform={`translate(${x - w / 2} ${ground - h}) scale(${s})`}>
           <Pixels runs={treeRuns} />
         </g>
       </g>

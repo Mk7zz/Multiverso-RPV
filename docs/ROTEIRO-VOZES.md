@@ -2,7 +2,7 @@
 
 > Gerado a partir do jogo (`npm run roteiro -w web`). Não edite à mão: mude a fala no código e gere de novo.
 
-São 52 falas curtas, gravadas por crianças: 30 com menina e 22 com menino. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
+São 64 falas curtas, gravadas por crianças: 42 com menina e 22 com menino. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
 
 ## Como gravar
 
@@ -92,6 +92,28 @@ São 52 falas curtas, gravadas por crianças: 30 com menina e 22 com menino. Nã
 | `museu-turbina-curiosidade.mp3` | Girando a turbina! |  |
 | `museu-economizar-pergunta.mp3` | Como a gente economiza energia? |  |
 | `museu-economizar-curiosidade.mp3` | Apagando a luz ao sair! |  |
+
+#### Estação Cataguases
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `estacao-nome-pergunta.mp3` | O que está escrito na estação? |  |
+| `estacao-nome-curiosidade.mp3` | Cataguazes, com Z! É o jeito antigo de escrever. |  |
+| `estacao-trem-pergunta.mp3` | Quem para na estação? |  |
+| `estacao-trem-curiosidade.mp3` | O trem! Ele anda em cima dos trilhos. |  |
+| `estacao-tijolo-pergunta.mp3` | Do que é feita a parede da estação? |  |
+| `estacao-tijolo-curiosidade.mp3` | De tijolinho vermelho! |  |
+
+#### Chácara Dona Catarina
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `chacara-cor-pergunta.mp3` | Qual é a cor da casa da chácara? |  |
+| `chacara-cor-curiosidade.mp3` | Laranja, com enfeites brancos! |  |
+| `chacara-renda-pergunta.mp3` | O enfeite branco do telhado parece o quê? |  |
+| `chacara-renda-curiosidade.mp3` | Uma renda! E ela é feita de madeira. |  |
+| `chacara-jardim-pergunta.mp3` | O que tem na frente da casa? |  |
+| `chacara-jardim-curiosidade.mp3` | Um jardim, com laguinho e pontezinha! |  |
 
 ## Falas para gravar com menino
 

@@ -23,6 +23,7 @@ import {
   NearHills,
   ParticleLayer,
   pick,
+  PixelText,
   rnd,
   SceneBox,
   SceneHud,
@@ -113,30 +114,6 @@ const DISCOVERIES: Discovery[] = [
 const SIGN_LINES = ['Museu Energisa! ⚡', 'A história da energia! 💡', 'A luz chegou aqui em 1905! ✨', 'Pode entrar, é de graça! 😊'];
 const LINES_DAY = ['Oi! 👋', 'Vamos no museu? 🏛️', 'Que casarão bonito! 💛', 'Bom dia! ☀️', 'Já viu a turbina? 🌀', 'Apague a luz ao sair! 💡'];
 const LINES_NIGHT = ['Boa noite! 🌙', 'Que lampião bonito! 💡', 'O museu fica lindo à noite! ✨'];
-
-/* ---- Letras da placa (3×5) ---- */
-
-const FONT: Record<string, string[]> = {
-  M: ['1.1', '111', '1.1', '1.1', '1.1'],
-  U: ['1.1', '1.1', '1.1', '1.1', '111'],
-  S: ['111', '1..', '111', '..1', '111'],
-  E: ['111', '1..', '11.', '1..', '111'],
-  N: ['11.', '1.1', '1.1', '1.1', '1.1'],
-  R: ['11.', '1.1', '11.', '1.1', '1.1'],
-  G: ['111', '1..', '1.1', '1.1', '111'],
-  I: ['1', '1', '1', '1', '1'],
-  A: ['111', '1.1', '111', '1.1', '1.1'],
-};
-function Letters({ text, x, y, fill }: { text: string; x: number; y: number; fill: string }) {
-  const out: ReactNode[] = [];
-  let cx = x;
-  for (const ch of text) {
-    const g = FONT[ch];
-    g.forEach((row, r) => [...row].forEach((c, k) => c === '1' && out.push(<rect key={`${cx}${r}${k}`} x={cx + k} y={y + r} width={1} height={1} />)));
-    cx += g[0].length + 1;
-  }
-  return <g fill={fill}>{out}</g>;
-}
 
 /* ---- Sprites ---- */
 
@@ -980,8 +957,8 @@ export const MuseuScene = memo(function MuseuScene({ place, time, onPoints }: { 
             <rect x={LOGO.x - 3} y={LOGO.y + 2} width={7} height={1} fill={ORANGE} />
             <rect x={LOGO.x + 4} y={LOGO.y + 1} width={1} height={1} fill={ORANGE} />
           </g>
-          <Letters text="MUSEU" x={97} y={45} fill={TEAL} />
-          <Letters text="ENERGISA" x={90} y={51} fill={TEAL} />
+          <PixelText text="MUSEU" x={97} y={45} fill={TEAL} />
+          <PixelText text="ENERGISA" x={90} y={51} fill={TEAL} />
         </g>
         <Stairs />
         <GatePillars />

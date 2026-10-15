@@ -5,12 +5,14 @@ import { GuideSprite, useDayTime } from '../../components/Scene';
 import { addPoints, CITY_INFO, getPoints, markSeen, nextQuestion, say, sfx, shuffle, stopVoice, type CityPlace, type Option } from '../../lib/cidade';
 import { placeClips, POMBA, POMBA_CLIPS } from '../../lib/vozes';
 import { ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
+import { ChacaraScene } from './ChacaraScene';
+import { EstacaoScene } from './EstacaoScene';
 import { MuseuScene } from './MuseuScene';
 import { PlaceScene } from './PlaceScene';
 import { PonteScene } from './PonteScene';
 
 /** Cena de cada ponto focal (a Praça Santa Rita é a cena padrão). */
-const SCENES: Record<string, typeof PlaceScene> = { ponte: PonteScene, museu: MuseuScene };
+const SCENES: Record<string, typeof PlaceScene> = { ponte: PonteScene, museu: MuseuScene, estacao: EstacaoScene, chacara: ChacaraScene };
 
 const CONFETTI = ['#f2b705', '#12a3a0', '#d64545', '#8cc63f', '#2f5fb3', '#ec6a8c'];
 
