@@ -595,16 +595,54 @@ export function setMuted(v: boolean) {
 }
 
 /** Lê o texto em voz alta (português do Brasil), para quem ainda não lê sozinho. */
-export function speak(text: string) {
+/**
+ * Jeito de falar de quem fala: voz de homem ou de mulher, velocidade e tom.
+ * As vozes "naturais" (Edge: Francisca, Antonio, Thalita; Chrome: Google) soam bem mais
+ * humanas que as do sistema e ganham prioridade quando existem.
+ */
+type Voice = { gender: 'm' | 'f'; rate: number; pitch: number };
+const VOICES: Record<string, Voice> = {
+  narrador: { gender: 'f', rate: 0.95, pitch: 1.1 },
+  'seu-zico': { gender: 'm', rate: 0.86, pitch: 0.85 },
+  sektor: { gender: 'm', rate: 1.02, pitch: 1 },
+  'dona-cida': { gender: 'f', rate: 0.88, pitch: 1.05 },
+};
+const MALE = /antonio|daniel|donato|fabio|humberto|julio|nicolau|valerio|ricardo|male|masculin/i;
+const FEMALE = /francisca|thalita|maria|leila|leticia|manuela|yara|giovanna|brenda|elza|luciana|female|feminin/i;
+
+let voiceList: SpeechSynthesisVoice[] = [];
+if (typeof window !== 'undefined' && window.speechSynthesis) {
+  const load = () => (voiceList = window.speechSynthesis.getVoices());
+  load();
+  window.speechSynthesis.addEventListener?.('voiceschanged', load);
+}
+
+/** A voz em português mais humana disponível, preferindo o gênero pedido. */
+function pickVoice(gender: 'm' | 'f') {
+  const pt = voiceList.filter((v) => v.lang.replace('_', '-').toLowerCase() === 'pt-br');
+  const score = (v: SpeechSynthesisVoice) => {
+    let s = 0;
+    if (/natural|neural|online/i.test(v.name)) s += 10;
+    else if (/google/i.test(v.name)) s += 6;
+    if ((gender === 'm' ? MALE : FEMALE).test(v.name)) s += 4;
+    else if ((gender === 'm' ? FEMALE : MALE).test(v.name)) s -= 4;
+    return s;
+  };
+  return pt.sort((a, b) => score(b) - score(a))[0];
+}
+
+/** Lê o texto em voz alta (português do Brasil), para quem ainda não lê sozinho. `who` é o id do mestre. */
+export function speak(text: string, who = 'narrador') {
   const synth = window.speechSynthesis;
   if (!synth || isMuted()) return;
   synth.cancel();
   // Emojis são apoio visual: a voz não lê o nome deles.
   const u = new SpeechSynthesisUtterance(text.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim());
+  const style = VOICES[who] ?? VOICES.narrador;
   u.lang = 'pt-BR';
-  u.rate = 0.9;
-  u.pitch = 1.15;
-  const voice = synth.getVoices().find((v) => v.lang.replace('_', '-').toLowerCase() === 'pt-br');
+  u.rate = style.rate;
+  u.pitch = style.pitch;
+  const voice = pickVoice(style.gender);
   if (voice) u.voice = voice;
   synth.speak(u);
 }

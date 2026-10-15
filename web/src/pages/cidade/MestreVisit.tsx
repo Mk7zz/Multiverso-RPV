@@ -61,9 +61,9 @@ function Visit({ place }: { place: Place }) {
 
   useEffect(() => {
     if (!ready || !question) return;
-    if (stage === 'intro' || stage === 'ask') speak(stage === 'ask' ? `${say} ${question.text}` : say);
-    else if (stage === 'right') speak(`${react.say} Você ganhou ${earned} estrelas! ${question.fact}`);
-    else speak(`${react.say} A resposta certa é: ${right?.text}. ${question.fact}`);
+    if (stage === 'intro' || stage === 'ask') speak(stage === 'ask' ? `${say} ${question.text}` : say, place.id);
+    else if (stage === 'right') speak(`${react.say} Você ganhou ${earned} estrelas! ${question.fact}`, place.id);
+    else speak(`${react.say} A resposta certa é: ${right?.text}. ${question.fact}`, place.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, stage, line, question]);
 
@@ -133,7 +133,7 @@ function Visit({ place }: { place: Place }) {
         </div>
       </header>
 
-      <button className={`mz-zico ${mood}`} onClick={() => (sfx('pop'), speak(stage === 'ask' ? question.text : say))} aria-label={`${master.name}: ouvir de novo`}>
+      <button className={`mz-zico ${mood}`} onClick={() => (sfx('pop'), speak(stage === 'ask' ? question.text : say, place.id))} aria-label={`${master.name}: ouvir de novo`}>
         <span className="mz-glow" aria-hidden />
         <svg viewBox={`0 0 16 ${masterHeight(place.id)}`} shapeRendering="crispEdges" aria-hidden>
           <MasterPixels id={place.id} frame={frame} />
@@ -176,7 +176,7 @@ function Visit({ place }: { place: Place }) {
               <MasterPortrait id={place.id} size={48} />
             </span>
             <p className="quiz-q">{question.text}</p>
-            <button className="quiz-listen" onClick={() => speak(question.text)} aria-label="Ouvir a pergunta" title="Ouvir a pergunta">
+            <button className="quiz-listen" onClick={() => speak(question.text, place.id)} aria-label="Ouvir a pergunta" title="Ouvir a pergunta">
               🔊
             </button>
           </div>
