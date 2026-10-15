@@ -262,6 +262,11 @@ const FONT: Record<string, string[]> = {
   C: ['111', '1..', '1..', '1..', '111'],
   T: ['111', '.1.', '.1.', '.1.', '.1.'],
   Z: ['111', '..1', '.1.', '1..', '111'],
+  O: ['111', '1.1', '1.1', '1.1', '111'],
+  L: ['1..', '1..', '1..', '1..', '111'],
+  H: ['1.1', '1.1', '111', '1.1', '1.1'],
+  B: ['11.', '1.1', '11.', '1.1', '11.'],
+  ' ': ['..', '..', '..', '..', '..'],
 };
 /** Palavra em letras de pixel 3×5 (placas das construções). */
 export function PixelText({ text, x, y, fill }: { text: string; x: number; y: number; fill: string }) {

@@ -10,7 +10,7 @@ import type { AvatarConfig, PublicUser } from '../lib/types';
 import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, PLACES, riverX, RIVER_HALF, SPAWN, WORLD_H, WORLD_W, type Place } from '../lib/world';
 import { Avatar, AvatarSprite, SPRITE_H, SPRITE_W } from './Avatar';
 import { Dialogue } from './Dialogue';
-import { bridgeParts, chacaraParts, museumParts, stationParts } from './Landmarks';
+import { bridgeParts, chacaraParts, culturalParts, museumParts, stationParts } from './Landmarks';
 import { mestreParts } from './MestreHouses';
 import { LevelBadge, XpBar } from './Game';
 import { iconRuns, PixelIcon } from './PixelIcon';
@@ -244,6 +244,8 @@ export function buildingParts(p: Place, glass: string, yard = true): { body: Par
       return stationParts(p, glass);
     case 'chacara':
       return chacaraParts(p, glass);
+    case 'cultural':
+      return culturalParts(p, glass);
     case 'stage': {
       const x0 = x - 22;
       return {

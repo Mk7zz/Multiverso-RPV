@@ -265,3 +265,47 @@ export function chacaraParts(p: Place, glass: string): HouseParts {
     ),
   };
 }
+
+/** Centro Cultural Humberto Mauro no mapa: prédio pequeno de dois andares com a placa vermelha e a entrada aberta. */
+export function culturalParts(p: Place, glass: string): HouseParts {
+  const { x, y } = p;
+  const wall = '#e6e4c6';
+  const red = '#d42a2a';
+  const brick = '#9a5a48';
+  const night = glass === '#ffd76a';
+  const body: Part[] = [
+    [x - 15, y - 30, 30, 30, wall],
+    [x - 16, y - 32, 32, 2, '#cfcdb0'],
+    [x - 17, y - 14, 34, 6, red],
+  ];
+  const details: Part[] = [
+    [x - 12, y - 26, 9, 7, glass],
+    [x + 3, y - 26, 9, 7, glass],
+    [x - 12, y - 8, 24, 8, night ? glass : '#efe2c4'],
+  ];
+  return {
+    body,
+    details,
+    sign: [x - 5, y - 44],
+    under: <rect x={x - 15} y={y - 3} width={30} height={3} fill="#8d969c" />,
+    extra: (
+      <g>
+        {/* Logo branco e as letrinhas da placa */}
+        <rect x={x - 15} y={y - 13} width={3} height={4} fill="#ffffff" />
+        <rect x={x - 10} y={y - 12} width={14} height={1} fill="#ffffff" />
+        <rect x={x + 6} y={y - 11} width={8} height={1} fill="#ffffff" />
+        {/* Elevador vermelho e as cadeiras do teatro lá dentro */}
+        <rect x={x - 9} y={y - 7} width={4} height={7} fill="#c8262b" />
+        <rect x={x + 3} y={y - 3} width={8} height={2} fill="#c8262b" />
+        {/* Pilares de cobogó */}
+        {[x - 15, x + 12].map((px) => (
+          <g key={px}>
+            <rect x={px} y={y - 8} width={3} height={8} fill={brick} />
+            <rect x={px + 1} y={y - 7} width={1} height={1} fill="#4a2a22" />
+            <rect x={px + 1} y={y - 4} width={1} height={1} fill="#4a2a22" />
+          </g>
+        ))}
+      </g>
+    ),
+  };
+}

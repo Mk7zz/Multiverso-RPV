@@ -49,6 +49,7 @@ const SANTA_RITA: CityPlace = {
  * - Museu Energisa: casarão art nouveau perto do rio, com a história da energia elétrica.
  * - Estação Cataguases: a estação de trem de tijolinho, do outro lado do rio.
  * - Chácara Dona Catarina: a casa laranja com renda branca no telhado e o jardim com laguinho.
+ * - Centro Cultural Humberto Mauro: o prédio pequeno da placa vermelha, com galeria, teatro e cinema.
  */
 const PONTE: CityPlace = {
   id: 'ponte',
@@ -102,7 +103,20 @@ const CHACARA: CityPlace = {
   y: 96,
 };
 
-const LANDMARKS = [SANTA_RITA, PONTE, MUSEU, ESTACAO, CHACARA];
+const CULTURAL: CityPlace = {
+  id: 'cultural',
+  label: 'Centro Cultural Humberto Mauro',
+  title: 'Centro Cultural Humberto Mauro',
+  hint: 'Arte, teatro e cinema',
+  intro: 'Chegamos no Centro Cultural Humberto Mauro! Aqui tem arte, teatro e cinema.',
+  to: '/lugar/cultural',
+  icon: 'palette',
+  kind: 'cultural',
+  x: 150,
+  y: 76,
+};
+
+const LANDMARKS = [SANTA_RITA, PONTE, MUSEU, ESTACAO, CHACARA, CULTURAL];
 
 /*
  * Mestres do Saber: pessoas da cultura popular que guardam histórias, músicas e costumes.
@@ -209,7 +223,7 @@ const MASTERS = [SEU_ZICO, SEKTOR, DONA_ROSA];
 export const CITY_PLACES: Place[] = [
   ...LANDMARKS,
   ...MASTERS,
-  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao', 'quadro', 'arena', 'feira'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
+  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao', 'quadro', 'arena', 'feira', 'torre'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
 ];
 
 export const CITY_INFO: Record<string, CityPlace> = Object.fromEntries(LANDMARKS.map((p) => [p.id, p]));
@@ -462,6 +476,38 @@ export const QUESTIONS: Record<string, Question[]> = {
         { text: 'Um vulcão', emoji: '🌋' },
       ],
       fact: 'Um jardim, com laguinho e pontezinha!',
+    },
+  ],
+  cultural: [
+    {
+      id: 'cinema',
+      text: 'Humberto Mauro fazia o quê?',
+      options: [
+        { text: 'Filmes', emoji: '🎬' },
+        { text: 'Bolos', emoji: '🎂' },
+        { text: 'Carros', emoji: '🚗' },
+      ],
+      fact: 'Filmes! Ele fez cinema aqui em Cataguases.',
+    },
+    {
+      id: 'cadeiras',
+      text: 'De que cor são as cadeiras do teatro?',
+      options: [
+        { text: 'Vermelhas', emoji: '🔴' },
+        { text: 'Verdes', emoji: '🟢' },
+        { text: 'Amarelas', emoji: '🟡' },
+      ],
+      fact: 'Vermelhas! E cabe muita gente.',
+    },
+    {
+      id: 'quadros',
+      text: 'O que tem nas paredes da galeria?',
+      options: [
+        { text: 'Quadros', emoji: '🖼️' },
+        { text: 'Peixes', emoji: '🐟' },
+        { text: 'Árvores', emoji: '🌳' },
+      ],
+      fact: 'Quadros! A galeria é lugar de ver arte.',
     },
   ],
   'santa-rita': [
@@ -741,7 +787,7 @@ export function speak(text: string, who = 'narrador') {
 
 let ctx: AudioContext | null = null;
 
-export type Sfx = 'ok' | 'oops' | 'pop' | 'bell' | 'splash' | 'rustle' | 'chirp' | 'honk' | 'clang' | 'zap' | 'whir' | 'creak' | 'apito' | 'tictac' | 'ribbit';
+export type Sfx = 'ok' | 'oops' | 'pop' | 'bell' | 'splash' | 'rustle' | 'chirp' | 'honk' | 'clang' | 'zap' | 'whir' | 'creak' | 'apito' | 'tictac' | 'ribbit' | 'plim' | 'palmas' | 'musica';
 
 /** Cada som: notas (Hz), duração de cada nota, forma de onda e volume. Pequenas variações a cada toque. */
 const SOUNDS: Record<Sfx, { notes: number[]; step: number; wave: OscillatorType; vol: number; tail?: number }> = {
@@ -760,6 +806,9 @@ const SOUNDS: Record<Sfx, { notes: number[]; step: number; wave: OscillatorType;
   apito: { notes: [784, 784, 988, 988, 988], step: 0.16, wave: 'square', vol: 0.045, tail: 1.1 },
   tictac: { notes: [1400, 900, 1400, 900], step: 0.18, wave: 'square', vol: 0.03, tail: 0.3 },
   ribbit: { notes: [180, 240, 160], step: 0.07, wave: 'square', vol: 0.05, tail: 0.8 },
+  plim: { notes: [1318, 1046], step: 0.28, wave: 'sine', vol: 0.06, tail: 1.6 },
+  palmas: { notes: [320, 290, 340, 300, 330, 280, 310], step: 0.07, wave: 'square', vol: 0.025, tail: 0.25 },
+  musica: { notes: [523, 659, 784, 659, 880, 784, 659, 523, 587, 659, 523], step: 0.2, wave: 'triangle', vol: 0.05, tail: 0.6 },
 };
 
 /** Sons de videogame gerados na hora (sem arquivos de áudio). */

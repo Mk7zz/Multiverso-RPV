@@ -2,7 +2,7 @@
 
 > Gerado a partir do jogo (`npm run roteiro -w web`). Não edite à mão: mude a fala no código e gere de novo.
 
-São 64 falas curtas, gravadas por crianças: 42 com menina e 22 com menino. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
+São 70 falas curtas, gravadas por crianças: 48 com menina e 22 com menino. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
 
 ## Como gravar
 
@@ -114,6 +114,17 @@ São 64 falas curtas, gravadas por crianças: 42 com menina e 22 com menino. Nã
 | `chacara-renda-curiosidade.mp3` | Uma renda! E ela é feita de madeira. |  |
 | `chacara-jardim-pergunta.mp3` | O que tem na frente da casa? |  |
 | `chacara-jardim-curiosidade.mp3` | Um jardim, com laguinho e pontezinha! |  |
+
+#### Centro Cultural Humberto Mauro
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `cultural-cinema-pergunta.mp3` | Humberto Mauro fazia o quê? |  |
+| `cultural-cinema-curiosidade.mp3` | Filmes! Ele fez cinema aqui em Cataguases. |  |
+| `cultural-cadeiras-pergunta.mp3` | De que cor são as cadeiras do teatro? |  |
+| `cultural-cadeiras-curiosidade.mp3` | Vermelhas! E cabe muita gente. |  |
+| `cultural-quadros-pergunta.mp3` | O que tem nas paredes da galeria? |  |
+| `cultural-quadros-curiosidade.mp3` | Quadros! A galeria é lugar de ver arte. |  |
 
 ## Falas para gravar com menino
 
