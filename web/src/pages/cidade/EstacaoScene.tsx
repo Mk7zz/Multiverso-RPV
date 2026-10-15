@@ -152,6 +152,65 @@ const Shops = memo(function Shops({ night }: { night: boolean }) {
   );
 });
 
+/** Rua de asfalto do lado dos trilhos: meio-fio, faixa do meio, remendos, rachaduras, bueiro e a calçada do outro lado. */
+const ROAD = { x0: STREET_X + 4, x1: 300, mid: 251 };
+const Street = memo(function Street({ night }: { night: boolean }) {
+  const d = useMemo(() => {
+    const rand = seeded(73);
+    const grain = Array.from({ length: 420 }, () => {
+      const z = ZMIN + 2 + rand() ** 1.6 * 500;
+      const x = ROAD.x0 + rand() * (ROAD.x1 - ROAD.x0);
+      const [a, b] = P(x, RAIL_Y, z);
+      return { a, b, s: sc(z), c: rand() < 0.5 ? '#7e858a' : '#4d5358' };
+    });
+    const dashes = Array.from({ length: 40 }, (_, k) => ZMIN + k * 22).map((z) => floorQuad(ROAD.mid - 1, ROAD.mid + 1, RAIL_Y, z, z + 11));
+    const patches = Array.from({ length: 7 }, () => {
+      const z = rand() * 220 - 40;
+      const x = ROAD.x0 + 6 + rand() * 70;
+      return floorQuad(x, x + 8 + rand() * 12, RAIL_Y, z, z + 6 + rand() * 14);
+    });
+    const cracks = Array.from({ length: 10 }, () => {
+      const z = rand() * 260 - 50;
+      const x = ROAD.x0 + 4 + rand() * 90;
+      return pts([[x, RAIL_Y, z], [x + 3, RAIL_Y, z + 4], [x + 1, RAIL_Y, z + 9], [x + 5, RAIL_Y, z + 13]]);
+    });
+    return { grain, dashes, patches, cracks };
+  }, []);
+  const asphalt = night ? '#363c41' : '#5d646a';
+  const [ma, mb] = P(ROAD.x0 + 14, RAIL_Y, -20);
+  const ms = sc(-20);
+  return (
+    <g>
+      <polygon points={floorQuad(STREET_X, 900, RAIL_Y, ZMIN, ZFAR)} fill={asphalt} />
+      {d.patches.map((q, i) => (
+        <polygon key={`p${i}`} points={q} fill={night ? '#2e3438' : '#535a60'} />
+      ))}
+      {d.grain.map((g, i) => (
+        <rect key={i} x={g.a} y={g.b} width={Math.max(0.7, g.s * 1.6)} height={Math.max(0.5, g.s * 0.8)} fill={g.c} opacity={0.7} />
+      ))}
+      {d.cracks.map((c, i) => (
+        <polyline key={`k${i}`} points={c} fill="none" stroke="#3f454a" strokeWidth={0.5} />
+      ))}
+      {d.dashes.map((q, i) => (
+        <polygon key={`d${i}`} points={q} fill={night ? '#c9b46a' : '#f2d36b'} />
+      ))}
+      {/* Faixas brancas das beiradas, o meio-fio do lado dos trilhos e a calçada do outro lado */}
+      <polygon points={floorQuad(ROAD.x0 + 1, ROAD.x0 + 2, RAIL_Y, ZMIN, ZFAR)} fill="#e9e2d0" opacity={0.8} />
+      <polygon points={floorQuad(ROAD.x1 - 2, ROAD.x1 - 1, RAIL_Y, ZMIN, ZFAR)} fill="#e9e2d0" opacity={0.8} />
+      <polygon points={floorQuad(STREET_X, ROAD.x0, RAIL_Y - 1, ZMIN, ZFAR)} fill="#c9c2ae" />
+      <polygon points={sideQuad(ROAD.x0, RAIL_Y - 1, RAIL_Y, ZMIN, ZFAR)} fill="#8d969c" />
+      <polygon points={floorQuad(ROAD.x1, 900, RAIL_Y - 1.5, ZMIN, ZFAR)} fill={night ? '#6b6556' : '#cfc6b0'} />
+      <polygon points={sideQuad(ROAD.x1, RAIL_Y - 1.5, RAIL_Y, ZMIN, ZFAR)} fill="#b5ad9c" />
+      {/* Bueiro */}
+      <ellipse cx={ma} cy={mb} rx={5 * ms} ry={1.6 * ms} fill="#2e3438" />
+      <ellipse cx={ma} cy={mb} rx={4 * ms} ry={1.1 * ms} fill="#4d5358" />
+      {[-2, 0, 2].map((k) => (
+        <rect key={k} x={ma + k * ms - 0.3} y={mb - 0.8 * ms} width={0.6} height={1.6 * ms} fill="#2e3438" />
+      ))}
+    </g>
+  );
+});
+
 /** Chão: praça de paralelepípedo, plataforma, brita com dormentes e trilhos, e a rua. */
 const Ground = memo(function Ground({ night }: { night: boolean }) {
   const dots = useMemo(() => {
@@ -170,8 +229,7 @@ const Ground = memo(function Ground({ night }: { night: boolean }) {
       {dots.map((d, i) => (
         <rect key={i} x={d.a} y={d.b} width={Math.max(1, d.s * 2)} height={Math.max(1, d.s)} fill={d.c} opacity={0.8} />
       ))}
-      <polygon points={floorQuad(STREET_X, 900, RAIL_Y, ZMIN, ZFAR)} fill={night ? '#3f454a' : '#6d7378'} />
-      <polygon points={floorQuad(STREET_X, STREET_X + 3, RAIL_Y, ZMIN, ZFAR)} fill="#b5ad9c" />
+      <Street night={night} />
       <polygon points={floorQuad(PLAT_X, STREET_X, RAIL_Y, ZMIN, ZFAR)} fill={night ? '#5a5244' : '#8d826a'} />
       {sleepers.map((q, i) => (
         <polygon key={i} points={q} fill="#6b4423" />
@@ -185,6 +243,48 @@ const Ground = memo(function Ground({ night }: { night: boolean }) {
     </g>
   );
 });
+
+/** Ponto do telhado: `f` de 0 (cumeeira) a 1 (beiral), na profundidade `z`. */
+const roofAt = (f: number, z: number): [number, number, number] => [71 + 45 * f, 24 + 30 * f, z];
+/** Ponto da cobertura da plataforma: `g` de 0 (parede) a 1 (beirada). */
+const canopyAt = (g: number, z: number): [number, number, number] => [WALL_X + (CAN.x - WALL_X) * g, 54 + (CAN.y - 54) * g, z];
+
+/**
+ * Telhas do telhado e da cobertura (gerado uma vez): canais de telha descendo da cumeeira até o
+ * beiral, fileiras atravessadas, algumas telhas mais claras ou mais escuras, a cumeeira e o beiral.
+ */
+function roofDetail() {
+  const rand = seeded(61);
+  const main: ReactNode[] = [];
+  const canopy: ReactNode[] = [];
+  for (let z = -3, k = 0; z < LEN; z += 3.2, k++) {
+    main.push(<polygon key={`c${k}`} points={pts([roofAt(0, z), roofAt(0, z + 1.3), roofAt(1, z + 1.3), roofAt(1, z)])} fill={ROOF_DK} opacity={0.55} />);
+    main.push(<polygon key={`l${k}`} points={pts([roofAt(0, z + 1.6), roofAt(0, z + 2.2), roofAt(1, z + 2.2), roofAt(1, z + 1.6)])} fill="#a8724c" opacity={0.5} />);
+    if (z > 0) canopy.push(<polygon key={`k${k}`} points={pts([canopyAt(0, z), canopyAt(0, z + 1.3), canopyAt(1, z + 1.3), canopyAt(1, z)])} fill={ROOF_DK} opacity={0.6} />);
+  }
+  // Fileiras de telha (cada uma com um brilho logo abaixo)
+  for (let i = 1; i < 9; i++) {
+    const f = i / 9;
+    main.push(<polyline key={`r${i}`} points={pts([roofAt(f, -3), roofAt(f, LEN)])} stroke="#5a3a22" strokeWidth={0.7} fill="none" />);
+    main.push(<polyline key={`h${i}`} points={pts([roofAt(f + 0.015, -3), roofAt(f + 0.015, LEN)])} stroke="#b88660" strokeWidth={0.4} fill="none" opacity={0.7} />);
+  }
+  // Telhas trocadas: umas mais novas (claras), outras velhas e com limo (escuras)
+  for (let i = 0; i < 70; i++) {
+    const f = Math.floor(rand() * 9) / 9;
+    const z = -3 + Math.floor(rand() * 78) * 3.2;
+    const c = rand() < 0.5 ? '#c08458' : rand() < 0.5 ? '#5e3c24' : '#6b6a3a';
+    main.push(<polygon key={`t${i}`} points={pts([roofAt(f + 0.01, z), roofAt(f + 0.01, z + 3), roofAt(f + 0.1, z + 3), roofAt(f + 0.1, z)])} fill={c} opacity={0.75} />);
+  }
+  // Cumeeira (as telhas de cima) e o beiral de madeira
+  main.push(<polyline key="cume" points={pts([[71, 23, -3], [71, 23, LEN]])} stroke="#5a3a22" strokeWidth={2.2} fill="none" />);
+  main.push(<polyline key="cume2" points={pts([[71, 22.6, -3], [71, 22.6, LEN]])} stroke="#b07a52" strokeWidth={0.8} fill="none" />);
+  for (let z = 0; z < LEN; z += 8) {
+    const [a, b] = P(71, 22.5, z);
+    main.push(<rect key={`cc${z}`} x={a - 0.4} y={b - 0.6} width={0.8} height={1.2} fill="#3a2414" opacity={0.7} />);
+  }
+  main.push(<polygon key="beiral" points={sideQuad(116.5, 54, 55.6, -3, LEN)} fill={WOOD} />);
+  return { main, canopy };
+}
 
 /** Telhado, parede comprida com as portas e janelas em arco, e a cobertura da plataforma. */
 const Building = memo(function Building({ night }: { night: boolean }) {
@@ -213,17 +313,7 @@ const Building = memo(function Building({ night }: { night: boolean }) {
     ];
     brackets.push(<polyline key={z} points={pts(arc)} fill="none" stroke="#3a3f42" strokeWidth={Math.max(0.6, sc(z) * 1.1)} />);
   }
-  const roofLines: ReactNode[] = [];
-  for (let f = 0.2; f < 1; f += 0.2) {
-    const [a, b] = P(71 + 45 * f, 24 + 30 * f, -3);
-    const [c, d] = P(71 + 45 * f, 24 + 30 * f, LEN);
-    roofLines.push(<line key={f} x1={a} y1={b} x2={c} y2={d} stroke={ROOF_DK} strokeWidth={0.8} />);
-  }
-  for (let z = 6; z < LEN; z += 10) {
-    const [a, b] = P(71, 24, z);
-    const [c, d] = P(116, 54, z);
-    roofLines.push(<line key={`z${z}`} x1={a} y1={b} x2={c} y2={d} stroke="#a0704a" strokeWidth={0.5} opacity={0.6} />);
-  }
+  const roof = roofDetail();
   return (
     <g>
       {/* Sombra da estação na plataforma */}
@@ -231,7 +321,7 @@ const Building = memo(function Building({ night }: { night: boolean }) {
       {/* Telhado */}
       <polygon points={pts([[71, 23, -3], [71, 23, LEN], [117, 55, LEN], [117, 55, -3]])} fill={INK} />
       <polygon points={pts([[71, 24, -3], [71, 24, LEN], [116, 54, LEN], [116, 54, -3]])} fill={ROOF} />
-      {roofLines}
+      {roof.main}
       {/* Parede comprida */}
       <polygon points={sideQuad(WALL_X, 52, GROUND, 0, LEN)} fill="url(#es-brick)" />
       <polygon points={sideQuad(WALL_X, 82, GROUND, 0, LEN)} fill={STONE} />
@@ -242,6 +332,7 @@ const Building = memo(function Building({ night }: { night: boolean }) {
       {brackets}
       <polygon points={pts([[WALL_X, 54, 0], [WALL_X, 54, LEN], [CAN.x, CAN.y, LEN], [CAN.x, CAN.y, 0]])} fill={ROOF_DK} />
       <polygon points={pts([[WALL_X + 6, 55, 0], [WALL_X + 6, 55, LEN], [CAN.x - 4, CAN.y - 0.5, LEN], [CAN.x - 4, CAN.y - 0.5, 0]])} fill={ROOF} opacity={0.7} />
+      {roof.canopy}
       <polygon points={sideQuad(CAN.x, CAN.y, CAN.y + 2, 0, LEN)} fill={WOOD} />
     </g>
   );
