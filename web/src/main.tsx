@@ -8,10 +8,12 @@ import { NotificationProvider } from './lib/notifications';
 import './theme.css';
 import './styles.css';
 import './game.css';
+import './city.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    {/* Sem transições: a troca de página não pode esperar o mapa animado (60 quadros/s) ficar ocioso. */}
+    <BrowserRouter useTransitions={false}>
       <AuthProvider>
         <NotificationProvider>
           <GameProvider>

@@ -5,7 +5,7 @@ import { useAuth } from '../lib/auth';
 import { useGame } from '../lib/game';
 import { useApi } from '../lib/hooks';
 import { useNotifications } from '../lib/notifications';
-import { seeded, shade, type Run } from '../lib/pixel';
+import { fromAscii, seeded, shade, toRuns, type Run } from '../lib/pixel';
 import type { AvatarConfig, PublicUser } from '../lib/types';
 import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, PLACES, riverX, RIVER_HALF, SPAWN, WORLD_H, WORLD_W, type Place } from '../lib/world';
 import { Avatar, AvatarSprite, SPRITE_H, SPRITE_W } from './Avatar';
@@ -58,11 +58,101 @@ function roofSteps(x0: number, top: number, w: number, roof: string, rows = 11):
   return Array.from({ length: rows }, (_, i) => [x0 - 3 + i, top - 1 - i, w + 6 - 2 * i, 1, i % 3 === 0 ? dark : roof] as Part);
 }
 
+/** Painel de azulejos da fachada da Igreja de Santa Rita (meia largura, espelhada). */
+const TILE_HALF = [
+  'BBBBBBBBBBBBBBBB',
+  'Bl.l.l.l.l.l.l.l',
+  'B.............bb',
+  'B.....ll.....b..',
+  'B..b...lll...b..',
+  'B.bbb...llll.bbb',
+  'B.b.b..llllllbbb',
+  'B.bbb....llllbbb',
+  'B..........lbbbb',
+  'B.llll......bbbb',
+  'Bllllllllllbbbbb',
+  'Bl.l.l.l.l.l.l.l',
+  'BBBBBBBBBBBBBBBB',
+];
+const tileRuns = toRuns(fromAscii(TILE_HALF.map((r) => r + [...r].reverse().join('')), { B: '#1d3f86', b: '#2f5fb3', l: '#8db6e8', '.': '#f4f8ff' }));
+
+/** Igreja de Santa Rita (Cataguases): fachada curva com azulejos, torre pontuda branca, marquise ondulada e espelho d'água. */
+function churchParts(x: number, y: number, night: boolean, yard: boolean): { body: Part[]; details: Part[]; sign: [number, number]; extra: ReactNode } {
+  const wall = '#e6c77f';
+  const wallDark = '#c9a75c';
+  const white = '#f7f6ef';
+  const x0 = x - 20;
+  const sx = x - 4;
+  const spireW = [10, 10, 8, 8, 6, 6, 4, 4, 2];
+  const spire: Part[] = [[sx - 6, y - 38, 12, 6, white], ...spireW.map((w, i) => [sx - w / 2, y - 40 - 2 * i, w, 2, white] as Part)];
+  return {
+    body: [
+      ...spire,
+      [sx - 1, y - 63, 2, 7, white],
+      [sx - 3, y - 61, 6, 2, white],
+      [x + 18, y - 20, 16, 20, wall],
+      [x + 14, y - 24, 22, 4, white],
+      [x + 14, y - 25, 16, 1, white],
+      [x0, y - 32, 40, 32, wall],
+      [x0 + 2, y - 34, 36, 2, wall],
+      [x0 + 6, y - 35, 28, 1, wall],
+      [x0 - 3, y - 13, 58, 2, white],
+    ],
+    details: [
+      [x0 + 4, y - 31, 32, 13, '#f4f8ff'],
+      [x - 15, y - 10, 30, 10, night ? '#ffd76a' : '#3d5560'],
+      [x + 20, y - 19, 12, 3, '#cfd8dc'],
+    ],
+    sign: [x + 22, y - 38],
+    extra: (
+      <g>
+        {spire.slice(1).map(([px, py, w, h], i) => (
+          <rect key={i} x={px + w / 2} y={py} width={w / 2} height={h} fill="#d9dcd6" />
+        ))}
+        <rect x={sx} y={y - 38} width={6} height={4} fill="#d9dcd6" />
+        <rect x={sx - 2} y={y - 47} width={4} height={5} fill="#2a3a44" />
+        <rect className="w-bell" x={sx - 1} y={y - 45} width={2} height={2} fill="#f2b705" />
+        <g transform={`translate(${x0 + 4} ${y - 31})`}>
+          <Pixels runs={tileRuns} />
+        </g>
+        <rect x={x0} y={y - 16} width={40} height={1} fill={wallDark} />
+        <rect x={x + 18} y={y - 20} width={16} height={1} fill={wallDark} />
+        {Array.from({ length: 5 }, (_, k) => (
+          <rect key={`m${k}`} x={x - 15 + 6 * (k + 0.5)} y={y - 10} width={1} height={10} fill="#22303a" />
+        ))}
+        {Array.from({ length: 14 }, (_, k) => (
+          <rect key={`s${k}`} x={x0 - 2 + 4 * k} y={y - 11} width={2} height={1} fill={white} />
+        ))}
+        <rect x={x0 - 2} y={y - 11} width={1} height={11} fill="#8a8f88" />
+        <rect x={x + 33} y={y - 11} width={1} height={11} fill="#8a8f88" />
+        {yard && (
+          <g>
+            {[x - 27, x + 9].map((px) => (
+              <g key={px}>
+                <rect x={px - 1} y={y + 3} width={20} height={7} fill="#d9d2bf" />
+                <rect x={px} y={y + 4} width={18} height={5} fill="#12a3a0" />
+                <rect className="river-shine" x={px + 3} y={y + 5} width={5} height={1} fill="#7fd8d4" />
+              </g>
+            ))}
+            <rect x={x + 40} y={y - 14} width={2} height={14} fill="#8a5a2b" />
+            <rect x={x + 35} y={y - 17} width={12} height={2} fill="#3aa655" />
+            <rect x={x + 38} y={y - 19} width={6} height={2} fill="#1f7a4d" />
+            <rect x={x + 34} y={y - 15} width={2} height={2} fill="#3aa655" />
+            <rect x={x + 46} y={y - 15} width={2} height={2} fill="#3aa655" />
+          </g>
+        )}
+      </g>
+    ),
+  };
+}
+
 /** Desenho de cada tipo de construção (porta em p.x, p.y). Retorna também as janelas para a iluminação noturna. */
-function buildingParts(p: Place, glass: string): { body: Part[]; details: Part[]; sign: [number, number]; extra?: ReactNode } {
+export function buildingParts(p: Place, glass: string, yard = true): { body: Part[]; details: Part[]; sign: [number, number]; extra?: ReactNode } {
   const { x, y } = p;
   const wood = '#7a4a25';
   switch (p.kind) {
+    case 'church':
+      return churchParts(x, y, glass === '#ffd76a', yard);
     case 'tower': {
       const x0 = x - 10;
       const top = y - 40;
@@ -185,11 +275,22 @@ function buildingParts(p: Place, glass: string): { body: Part[]; details: Part[]
   }
 }
 
-const Building = memo(function Building({ p, night, onEnter, highlight }: { p: Place; night: boolean; onEnter: (p: Place) => void; highlight: boolean }) {
+/** Construção solta (sem placa nem clique), para cenas ampliadas fora do mapa. */
+export function PlaceArt({ p, night = false }: { p: Place; night?: boolean }) {
+  const parts = buildingParts(p, night ? '#ffd76a' : '#bfe9f2', false);
+  return (
+    <g>
+      <Block body={parts.body} details={parts.details} />
+      {parts.extra}
+    </g>
+  );
+}
+
+export const Building = memo(function Building({ p, night, onEnter, highlight }: { p: Place; night: boolean; onEnter: (p: Place) => void; highlight: boolean }) {
   const parts = buildingParts(p, night ? '#ffd76a' : '#bfe9f2');
   return (
     <g
-      className={`w-building ${highlight ? 'near' : ''}`}
+      className={`w-building ${highlight ? 'near' : ''} ${p.soon ? 'soon' : ''}`}
       onClick={(e) => {
         e.stopPropagation();
         onEnter(p);
@@ -199,7 +300,7 @@ const Building = memo(function Building({ p, night, onEnter, highlight }: { p: P
     >
       <Block body={parts.body} details={parts.details} />
       {parts.extra}
-      <Sign x={parts.sign[0]} y={parts.sign[1]} icon={p.icon} />
+      <Sign x={parts.sign[0]} y={parts.sign[1]} icon={p.soon ? 'lock' : p.icon} />
     </g>
   );
 });
@@ -292,8 +393,11 @@ const NPC_SPOTS = [
   [190, 108],
 ];
 
-function makeTrees() {
-  const rand = seeded(1234);
+const WIDE: Place['kind'][] = ['house', 'hall', 'arena', 'stage'];
+
+/** Árvores espalhadas sem invadir caminhos, rio e construções. */
+export function makeTrees(places: Place[] = PLACES, seed = 1234) {
+  const rand = seeded(seed);
   const trees: { x: number; y: number }[] = [];
   const blocked = (x: number, y: number) =>
     y < 54 ||
@@ -304,8 +408,12 @@ function makeTrees() {
     Math.hypot((x - 150) / 30, (y - 132) / 18) < 1 ||
     Math.hypot(x - SPAWN.x, y - SPAWN.y) < 18 ||
     NPC_SPOTS.some(([nx, ny]) => Math.abs(x - nx) < 14 && Math.abs(y - ny) < 16) ||
-    PLACES.some((p) => Math.abs(x - p.x) < (p.kind === 'house' || p.kind === 'hall' || p.kind === 'arena' || p.kind === 'stage' ? 34 : 24) && y > p.y - 52 && y < p.y + 16) ||
-    PLACES.some((p) => Math.abs(x - p.x) < 10 && y > Math.min(p.y, MAIN_PATH.y) - 4 && y < Math.max(p.y, MAIN_PATH.y) + 14) ||
+    places.some((p) =>
+      p.kind === 'church'
+        ? x > p.x - 34 && x < p.x + 54 && y > p.y - 70 && y < p.y + 20
+        : Math.abs(x - p.x) < (WIDE.includes(p.kind) ? 34 : 24) && y > p.y - 52 && y < p.y + 16,
+    ) ||
+    places.some((p) => Math.abs(x - p.x) < 10 && y > Math.min(p.y, MAIN_PATH.y) - 4 && y < Math.max(p.y, MAIN_PATH.y) + 14) ||
     trees.some((t) => Math.abs(t.x - x) < 11 && Math.abs(t.y - y) < 8);
   for (let x = 4; x < WORLD_W; x += 13) if (!blocked(x, 56)) trees.push({ x, y: 56 + Math.round(rand() * 4) });
   for (let i = 0; i < 400 && trees.length < 46; i++) {
@@ -318,7 +426,7 @@ function makeTrees() {
 
 const TREES = makeTrees();
 
-function Character({ x, y, config, frame, name, me }: { x: number; y: number; config: AvatarConfig | null; frame: 0 | 1 | 2; name?: string; me?: boolean }) {
+export function Character({ x, y, config, frame, name, me }: { x: number; y: number; config: AvatarConfig | null; frame: 0 | 1 | 2; name?: string; me?: boolean }) {
   const w = SPRITE_W * AVATAR_SCALE;
   const h = SPRITE_H * AVATAR_SCALE;
   return (

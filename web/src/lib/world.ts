@@ -3,7 +3,7 @@
  * x/y é a porta de cada lugar: onde o personagem para para entrar. Para outra instância
  * (white label), basta renomear, mover ou trocar as rotas aqui.
  */
-export type PlaceKind = 'house' | 'tower' | 'board' | 'fountain' | 'post' | 'hall' | 'arena' | 'stage';
+export type PlaceKind = 'house' | 'tower' | 'board' | 'fountain' | 'post' | 'hall' | 'arena' | 'stage' | 'church';
 
 export interface Place {
   id: string;
@@ -18,6 +18,8 @@ export interface Place {
   w?: number;
   roof?: string;
   wall?: string;
+  /** Lugar ainda não liberado (mostra um cadeado e não abre). */
+  soon?: boolean;
 }
 
 export const WORLD_W = 320;

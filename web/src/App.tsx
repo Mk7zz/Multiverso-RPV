@@ -49,6 +49,9 @@ import { Quests } from './pages/student/Quests';
 import { Ranking } from './pages/student/Ranking';
 import { Onboarding } from './pages/start/Onboarding';
 import { TitleScreen } from './pages/start/TitleScreen';
+import { CityMap } from './pages/cidade/CityMap';
+import { PlaceVisit } from './pages/cidade/PlaceVisit';
+import { StartScreen } from './pages/cidade/StartScreen';
 
 /** Sem `role`, aceita aluno e admin (as telas do aluno). Empresas têm a própria área. */
 function RequireAuth({ children, role, anyRole }: { children: ReactNode; role?: Role; anyRole?: boolean }) {
@@ -68,8 +71,13 @@ function StudentOnly({ children }: { children: ReactNode }) {
 export function App() {
   return (
     <Routes>
-      {/* Telas de jogo em tela cheia: início, novo jogo e acesso */}
-      <Route index element={<TitleScreen />} />
+      {/* Cataguases para crianças: mapa da cidade e visita aos pontos turísticos */}
+      <Route index element={<StartScreen />} />
+      <Route path="mapa" element={<CityMap />} />
+      <Route path="lugar/:id" element={<PlaceVisit />} />
+
+      {/* Plataforma Multiverso original: início, novo jogo e acesso */}
+      <Route path="multiverso" element={<TitleScreen />} />
       <Route path="comecar" element={<Onboarding />} />
       <Route path="entrar" element={<Login />} />
       <Route path="cadastro" element={<Register />} />

@@ -105,7 +105,20 @@ function ridge(width: number, base: number, peaks: [number, number][]) {
 
 export type DayTime = 'day' | 'dusk' | 'night';
 
+const FORCED: Record<string, DayTime> = { dia: 'day', tarde: 'dusk', noite: 'night' };
+
 export function dayTime(date = new Date()): DayTime {
+  // ?hora=dia|tarde|noite fixa o horário do cenário (útil em apresentações).
+  if (typeof location !== 'undefined') {
+    try {
+      const param = new URLSearchParams(location.search).get('hora');
+      if (param !== null) sessionStorage.setItem('hora', param);
+      const forced = FORCED[param ?? sessionStorage.getItem('hora') ?? ''];
+      if (forced) return forced;
+    } catch {
+      /* sem sessionStorage: segue o relógio */
+    }
+  }
   const h = Number(date.toLocaleString('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Sao_Paulo' }));
   if (h >= 6 && h < 17) return 'day';
   if (h >= 17 && h < 19) return 'dusk';
