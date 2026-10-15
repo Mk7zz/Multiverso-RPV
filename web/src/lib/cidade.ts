@@ -606,12 +606,12 @@ export function stopVoice() {
   window.speechSynthesis?.cancel();
 }
 
-/** Formatos aceitos para as gravações, na ordem em que o jogo procura (celular costuma gravar .m4a). */
-const AUDIO_EXT = ['mp3', 'm4a', 'ogg', 'wav'];
+/** Formatos aceitos para as gravações, na ordem em que o jogo procura (celular costuma gravar .m4a; WhatsApp, .opus). */
+const AUDIO_EXT = ['mp3', 'm4a', 'opus', 'ogg', 'wav'];
 
 /**
  * Fala uma sequência de trechos. Cada trecho com `id` toca a gravação de `who`
- * (web/public/vozes/<who>/<id>.mp3, ou .m4a/.ogg/.wav; veja lib/vozes.ts);
+ * (web/public/vozes/<who>/<id>.mp3, ou .m4a/.opus/.ogg/.wav; veja lib/vozes.ts);
  * sem gravação, a voz do navegador lê.
  */
 export function say(parts: Clip[], who = 'narrador') {
