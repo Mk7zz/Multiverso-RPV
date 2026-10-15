@@ -6,8 +6,8 @@
  * com a voz do navegador. Dá para gravar aos poucos: o que ainda não foi gravado continua
  * funcionando.
  *
- * Por mestre são 20 falas: 3 de boas-vindas, 1 de quando a criança volta, 2 de acerto,
- * 2 de erro e, para cada uma das 6 perguntas, a pergunta e a curiosidade.
+ * Por mestre são 17 falas: 1 de entrada, 2 de acerto, 2 de erro e, para cada uma das
+ * 6 perguntas, a pergunta e a curiosidade.
  * O roteiro sai de `npm run roteiro -w web` (docs/ROTEIRO-VOZES.md). Mudou o texto, regrave.
  */
 import { MASTER_PLACES, QUESTIONS, type Question } from './cidade';
@@ -19,9 +19,8 @@ export interface Clip {
   text: string;
 }
 
-/** Boas-vindas: a apresentação ou, para quem volta, a recepção curta. */
-export const welcomeClips = (m: Master, returning: boolean): Clip[] =>
-  returning ? m.back.map((text, i) => ({ id: `volta-${i + 1}`, text })) : m.intro.map((text, i) => ({ id: `intro-${i + 1}`, text }));
+/** O que o mestre diz quando a criança entra na casa. */
+export const enterClip = (m: Master): Clip => ({ id: 'entrada', text: m.enter });
 
 export const rightClip = (m: Master, k: number): Clip => ({ id: `acerto-${k + 1}`, text: m.right[k] });
 export const wrongClip = (m: Master, k: number): Clip => ({ id: `erro-${k + 1}`, text: m.wrong[k] });
@@ -38,8 +37,7 @@ export function questionClips(q: Question) {
 export function allClips(placeId: string): { title: string; clips: Clip[] }[] {
   const m = MASTER_PLACES[placeId].master!;
   return [
-    { title: 'Boas-vindas (primeira visita)', clips: welcomeClips(m, false) },
-    { title: 'Quando a criança volta', clips: welcomeClips(m, true) },
+    { title: 'Quando a criança entra', clips: [enterClip(m)] },
     { title: 'Quando acerta', clips: m.right.map((_, k) => rightClip(m, k)) },
     { title: 'Quando erra', clips: m.wrong.map((_, k) => wrongClip(m, k)) },
     { title: 'Perguntas e curiosidades', clips: (QUESTIONS[placeId] ?? []).flatMap((q) => Object.values(questionClips(q))) },

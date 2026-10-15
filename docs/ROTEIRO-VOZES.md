@@ -2,11 +2,11 @@
 
 > Gerado a partir do jogo (`npm run roteiro -w web`). Não edite à mão: mude a fala no código e gere de novo.
 
-São 60 falas curtas, divididas entre os três mestres e gravadas por crianças. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
+São 51 falas curtas, divididas entre os três mestres e gravadas por crianças. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
 
 ## Como gravar
 
-- **Um arquivo por fala**, com o nome exato da coluna "Arquivo" e terminando em `.mp3` (ex.: `intro-1.mp3`).
+- **Um arquivo por fala**, com o nome exato da coluna "Arquivo" e terminando em `.mp3` (ex.: `entrada.mp3`).
 - Coloque os arquivos na pasta do mestre: `web/public/vozes/<pasta>/` (crie a pasta se ainda não existir). O nome da pasta de cada um aparece no título dele, abaixo.
 - Pode gravar no celular, num lugar silencioso, com o aparelho a um palmo da boca.
 - Fale **devagar e bem claro**: quem escuta também são crianças aprendendo a ler.
@@ -19,19 +19,11 @@ São 60 falas curtas, divididas entre os três mestres e gravadas por crianças.
 
 **Como fala:** Um vovô da roça, calmo e brincalhão. Pode engrossar um pouquinho a voz e falar devagar, sem pressa.
 
-### Boas-vindas (primeira visita)
+### Quando a criança entra
 
 | Arquivo | Fala |
 | --- | --- |
-| `intro-1.mp3` | Ô de fora! Pode chegar, a porta tá aberta! |
-| `intro-2.mp3` | Eu sou o Seu Zico. Sei tudo quanto é causo de Cataguases. |
-| `intro-3.mp3` | Vou te fazer uma pergunta. Se errar, eu te ensino. Bora? |
-
-### Quando a criança volta
-
-| Arquivo | Fala |
-| --- | --- |
-| `volta-1.mp3` | Uai, olha quem voltou! Bora prosear mais um tiquinho? |
+| `entrada.mp3` | Ô de fora! Você entrou na casa do Seu Zico. Bora jogar? |
 
 ### Quando acerta
 
@@ -68,19 +60,11 @@ São 60 falas curtas, divididas entre os três mestres e gravadas por crianças.
 
 **Como fala:** Um rapaz animado do Hip Hop. Fala com ritmo e alegria, como quem está numa roda de dança.
 
-### Boas-vindas (primeira visita)
+### Quando a criança entra
 
 | Arquivo | Fala |
 | --- | --- |
-| `intro-1.mp3` | Salve, salve! Chega mais, o estúdio é seu! |
-| `intro-2.mp3` | Eu sou o Sektor, do Hip Hop: rima, dança e arte no muro! |
-| `intro-3.mp3` | Vou mandar uma pergunta no ritmo. Bora? |
-
-### Quando a criança volta
-
-| Arquivo | Fala |
-| --- | --- |
-| `volta-1.mp3` | Olha quem voltou pro estúdio! Bora pra mais uma? |
+| `entrada.mp3` | Salve! Você entrou no estúdio do Sektor. Bora pro desafio? |
 
 ### Quando acerta
 
@@ -117,19 +101,11 @@ São 60 falas curtas, divididas entre os três mestres e gravadas por crianças.
 
 **Como fala:** Uma vovó carinhosa. Fala devagar e com doçura, como quem conversa com um netinho.
 
-### Boas-vindas (primeira visita)
+### Quando a criança entra
 
 | Arquivo | Fala |
 | --- | --- |
-| `intro-1.mp3` | Oi, minha flor! Entra, que a casa é sua. |
-| `intro-2.mp3` | Eu sou a Dona Cida. Bordo desde pequenininha! |
-| `intro-3.mp3` | Senta do meu ladinho. Vou te fazer uma pergunta, tá bom? |
-
-### Quando a criança volta
-
-| Arquivo | Fala |
-| --- | --- |
-| `volta-1.mp3` | Ô, meu anjo, voltou! Vem aprender mais um pontinho? |
+| `entrada.mp3` | Oi, minha flor! Você entrou na casa da Dona Cida. Vamos brincar? |
 
 ### Quando acerta
 

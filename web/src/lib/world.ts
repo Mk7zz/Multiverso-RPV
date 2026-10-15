@@ -15,10 +15,8 @@ export interface Master {
   /** Cor do mestre (plaquinha, balões e caixa de curiosidade) e a versão clarinha dela. */
   color: string;
   soft: string;
-  /** Falas de boas-vindas na primeira visita, uma por vez, antes das perguntas. */
-  intro: string[];
-  /** Quando a criança volta: recepção mais curta que o `intro`. */
-  back: string[];
+  /** O que ele diz quando a criança entra: de quem é a casa e o convite para jogar. */
+  enter: string;
   /** Reações no balão logo depois da resposta (sorteadas). */
   right: string[];
   wrong: string[];

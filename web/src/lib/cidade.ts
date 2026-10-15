@@ -51,7 +51,8 @@ const SANTA_RITA: CityPlace = {
  *
  * Falas: escritas para quem ainda está aprendendo a ler. Frases curtas, palavras do dia a dia
  * e o jeitinho mineiro de cada um (o "uai", o "sô", o "trem bão"), sem exagerar no sotaque.
- * São poucas de propósito: crianças gravam as vozes (veja lib/vozes.ts). Toda curiosidade
+ * São poucas de propósito: crianças gravam as vozes (veja lib/vozes.ts). Ao entrar, o mestre
+ * diz uma frase só, dizendo de quem é a casa e chamando para o jogo. Toda curiosidade
  * diz a resposta certa, porque ela é a única coisa falada depois de um erro.
  * - Seu Zico: roceiro contador de causo, calmo e brincalhão.
  *   Recebe com "Ô de fora!", a resposta mineira ao "Ô de casa!".
@@ -77,12 +78,7 @@ const SEU_ZICO: Place = {
     room: 'Cozinha do Seu Zico',
     color: '#d6538a',
     soft: '#ffe1ec',
-    intro: [
-      'Ô de fora! Pode chegar, a porta tá aberta! 🏡',
-      'Eu sou o Seu Zico. Sei tudo quanto é causo de Cataguases.',
-      'Vou te fazer uma pergunta. Se errar, eu te ensino. Bora?',
-    ],
-    back: ['Uai, olha quem voltou! Bora prosear mais um tiquinho? 😄'],
+    enter: 'Ô de fora! Você entrou na casa do Seu Zico. Bora jogar? 🏡',
     right: ['Ô trem bão! Acertou em cheio! 🎉', 'Nó, cê sabe das coisas, hein!'],
     wrong: ['Ih, quase! Mas não esquenta, não.', 'Uai, errar faz parte! Escuta só...'],
     win: ['Ô trem bão!', 'Acertou, sô!', 'Nó, que beleza!'],
@@ -108,12 +104,7 @@ const SEKTOR: Place = {
     room: 'Estúdio do Sektor',
     color: '#6b4fa0',
     soft: '#ece4fb',
-    intro: [
-      'Salve, salve! Chega mais, o estúdio é seu! 🎧',
-      'Eu sou o Sektor, do Hip Hop: rima, dança e arte no muro!',
-      'Vou mandar uma pergunta no ritmo. Bora?',
-    ],
-    back: ['Olha quem voltou pro estúdio! Bora pra mais uma? ✌️'],
+    enter: 'Salve! Você entrou no estúdio do Sektor. Bora pro desafio? 🎧',
     right: ['Acertou na batida, resposta garantida! 🎤', 'É nóis! Cê manja muito!'],
     wrong: ['Errar faz parte do rolê. Bora aprender!', 'Sem estresse! Se liga que eu te explico.'],
     win: ['É nóis!', 'Mandou bem!', 'Acertou na batida!'],
@@ -141,12 +132,7 @@ const DONA_CIDA: Place = {
     room: 'Ateliê da Dona Cida',
     color: '#12a3a0',
     soft: '#e2f6f5',
-    intro: [
-      'Oi, minha flor! Entra, que a casa é sua. 🌸',
-      'Eu sou a Dona Cida. Bordo desde pequenininha!',
-      'Senta do meu ladinho. Vou te fazer uma pergunta, tá bom?',
-    ],
-    back: ['Ô, meu anjo, voltou! Vem aprender mais um pontinho? 💛'],
+    enter: 'Oi, minha flor! Você entrou na casa da Dona Cida. Vamos brincar? 🌸',
     right: ['Muito bem, minha flor! Que orgulho! 💛', 'Nossa, que capricho! Acertou!'],
     wrong: ['Quase! Devagarinho a gente aprende.', 'Não tem problema, meu anjo. Eu te explico.'],
     win: ['Que capricho!', 'Muito bem!', 'Que orgulho!'],
@@ -498,29 +484,6 @@ export function markSeen(placeId: string, questionId: string) {
   if (seen.length >= total) seen = [];
   p.seen[placeId] = [...seen, questionId];
   save(p);
-}
-
-/* ---- Visitas às casas dos mestres (para receber de outro jeito quem volta) ---- */
-
-const VISIT_KEY = 'cidade:visitas';
-
-export function hasVisited(placeId: string): boolean {
-  try {
-    const raw = JSON.parse(localStorage.getItem(VISIT_KEY) ?? '[]');
-    return Array.isArray(raw) && raw.includes(placeId);
-  } catch {
-    return false;
-  }
-}
-
-export function markVisited(placeId: string) {
-  if (hasVisited(placeId)) return;
-  try {
-    const raw = JSON.parse(localStorage.getItem(VISIT_KEY) ?? '[]');
-    localStorage.setItem(VISIT_KEY, JSON.stringify([...(Array.isArray(raw) ? raw : []), placeId]));
-  } catch {
-    /* ignorado */
-  }
 }
 
 /* ---- Descobertas: coisas da cena do lugar que a criança já tocou ---- */

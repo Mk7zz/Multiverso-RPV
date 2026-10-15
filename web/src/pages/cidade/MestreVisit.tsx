@@ -4,8 +4,8 @@ import { useTypewriter } from '../../components/Dialogue';
 import { MasterPixels, MasterPortrait, masterHeight, type MasterFrame } from '../../components/Mestres';
 import { PixelIcon } from '../../components/PixelIcon';
 import { useDayTime, type DayTime } from '../../components/Scene';
-import { addPoints, getPoints, hasVisited, markSeen, markVisited, MASTER_PLACES, nextQuestion, say, sfx, shuffle, stopVoice, type Option } from '../../lib/cidade';
-import { questionClips, rightClip, welcomeClips, wrongClip, type Clip } from '../../lib/vozes';
+import { addPoints, getPoints, markSeen, MASTER_PLACES, nextQuestion, say, sfx, shuffle, stopVoice, type Option } from '../../lib/cidade';
+import { enterClip, questionClips, rightClip, wrongClip, type Clip } from '../../lib/vozes';
 import type { Place } from '../../lib/world';
 import { ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
 import { ROOMS, VH, VW } from './MestreRooms';
@@ -14,7 +14,7 @@ import { Confetti } from './PlaceVisit';
 /*
  * Casa de um Mestre do Saber: ele aparece grande dentro de casa, conversa com a criança,
  * faz uma pergunta curiosa e, acertando ou errando, completa a resposta com o que ele sabe.
- * Na primeira visita ele se apresenta; quem volta é recebido de um jeito mais curto.
+ * Ao entrar, ele diz de quem é a casa e chama para o jogo (uma frase só).
  * As reações ao acerto e ao erro também são sorteadas, no jeito de falar de cada mestre.
  * Cada fala toca a gravação do mestre quando ela existe (veja lib/vozes.ts).
  */
@@ -36,8 +36,7 @@ function Visit({ place }: { place: Place }) {
   useCityTitle(master.room);
   const time = useDayTime();
   const [stage, setStage] = useState<Stage>('intro');
-  const [line, setLine] = useState(0);
-  const [lines] = useState(() => welcomeClips(master, hasVisited(place.id)));
+  const enter = enterClip(master);
   /** Fala do mestre logo depois da resposta e o título da janelinha. */
   const [react, setReact] = useState<{ say: Clip; title: string }>({ say: { text: '' }, title: '' });
   const [question, setQuestion] = useState(() => nextQuestion(place.id));
@@ -48,12 +47,12 @@ function Visit({ place }: { place: Place }) {
 
   const right = question?.options[0];
   const qc = question ? questionClips(question) : null;
-  const shownText = stage === 'intro' ? lines[line].text : stage === 'ask' ? (question?.hook ?? question?.text ?? '') : react.say.text;
+  const shownText = stage === 'intro' ? enter.text : stage === 'ask' ? (question?.hook ?? question?.text ?? '') : react.say.text;
   /** O que o mestre fala em voz alta nesta etapa. */
   const voice: Clip[] = !qc
     ? []
     : stage === 'intro'
-      ? [lines[line]]
+      ? [enter]
       : stage === 'ask'
         ? [qc.ask]
         : [react.say, qc.fact];
@@ -70,12 +69,11 @@ function Visit({ place }: { place: Place }) {
   useEffect(() => {
     if (ready && question) say(voice, place.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, stage, line, question]);
+  }, [ready, stage, question]);
 
   useEffect(() => {
     if (stage !== 'ask' || !question) return;
     markSeen(place.id, question.id);
-    markVisited(place.id);
   }, [stage, question, place.id]);
 
   // Animação do mestre: acena enquanto fala e pisca de vez em quando.
@@ -90,11 +88,10 @@ function Visit({ place }: { place: Place }) {
 
   if (!question || !right) return <Navigate to="/mapa" replace />;
 
-  const nextLine = () => {
+  const start = () => {
     if (!done) return finish();
     sfx('pop');
-    if (line < lines.length - 1) setLine(line + 1);
-    else setStage('ask');
+    setStage('ask');
   };
 
   const pick = (c: Choice) => {
@@ -156,7 +153,7 @@ function Visit({ place }: { place: Place }) {
       )}
 
       {ready && stage === 'intro' && (
-        <section className="quiz mz-talk" aria-live="polite" onClick={nextLine}>
+        <section className="quiz mz-talk" aria-live="polite" onClick={start}>
           <div className="mz-talk-head">
             <span className="mz-tag">
               {master.name} · {master.craft.replace('Mestre do Saber · ', '')}
@@ -167,8 +164,8 @@ function Visit({ place }: { place: Place }) {
             {!done && <span className="caret" aria-hidden />}
           </p>
           <div className="mz-talk-actions">
-            <button className={`kid-btn ${line === lines.length - 1 ? 'mz-go' : ''}`} onClick={(e) => (e.stopPropagation(), nextLine())} autoFocus>
-              {line < lines.length - 1 ? 'Próximo ▶' : 'Quero descobrir! 🔍'}
+            <button className="kid-btn mz-go" onClick={(e) => (e.stopPropagation(), start())} autoFocus>
+              Vamos jogar! 🎮
             </button>
           </div>
         </section>
