@@ -320,3 +320,30 @@ button.visit-dove { left: 6%; top: 34%; background: none; border: 0; padding: 0;
 .cw-pointer-dir i { position: absolute; right: -19px; top: 50%; margin-top: -12px; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 18px solid var(--line); }
 .cw-pointer-dir i::after { content: ''; position: absolute; left: -16px; top: -7px; width: 0; height: 0; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 11px solid #f2b705; }
 @keyframes cw-pointer { 50% { box-shadow: 0 4px 0 var(--line), 0 0 0 6px rgba(242, 183, 5, 0.45); } }
+
+/* Quintais dos mestres no mapa: galinhas ciscando, pintinhos, rabo da cachorrinha, galo e caixa de som */
+.yd-roam { animation: yd-roam 8s linear infinite; }
+@keyframes yd-roam { 50% { transform: translateX(7px); } }
+.yd-face { transform-box: fill-box; transform-origin: 50% 50%; animation: yd-face 8s steps(1) infinite; }
+@keyframes yd-face { 0% { transform: none; } 50% { transform: scaleX(-1); } }
+.yd-peck-a { animation: yd-peck-a 1.7s steps(1) infinite; }
+.yd-peck-b { animation: yd-peck-b 1.7s steps(1) infinite; }
+@keyframes yd-peck-a { 0% { opacity: 1; } 62% { opacity: 0; } 74% { opacity: 1; } 82% { opacity: 0; } 90% { opacity: 1; } }
+@keyframes yd-peck-b { 0% { opacity: 0; } 62% { opacity: 1; } 74% { opacity: 0; } 82% { opacity: 1; } 90% { opacity: 0; } }
+.yd-hop { animation: yd-hop 0.9s steps(1) infinite; }
+@keyframes yd-hop { 0% { transform: none; } 70% { transform: translateY(-1px); } 85% { transform: none; } }
+.yd-wag { animation: yd-wag 0.5s steps(1) infinite; }
+@keyframes yd-wag { 0% { transform: none; } 50% { transform: translateY(-1px); } }
+.yd-crow { transform-box: fill-box; transform-origin: 50% 100%; animation: yd-crow 6s steps(1) infinite; }
+@keyframes yd-crow { 0% { transform: none; } 80% { transform: scaleY(1.12) translateX(0.5px); } 84% { transform: none; } 88% { transform: scaleY(1.12) translateX(0.5px); } 92% { transform: none; } }
+.yd-bump { transform-box: fill-box; transform-origin: 50% 100%; animation: yd-bump 0.5s steps(1) infinite; }
+@keyframes yd-bump { 0% { transform: none; } 50% { transform: scale(1.07); } }
+@media (prefers-reduced-motion: reduce) {
+  .yd-roam, .yd-face, .yd-peck-a, .yd-hop, .yd-wag, .yd-crow, .yd-bump { animation: none !important; }
+  .yd-peck-b { animation: none !important; opacity: 0; }
+}
+.mz-peek { animation: mz-peek 7s steps(1) infinite; }
+@keyframes mz-peek { 0% { transform: translateX(8px); } 40% { transform: none; } 75% { transform: translateX(8px); } }
+.mz-pool { animation: mz-pool 2.4s ease-in-out infinite alternate; }
+@keyframes mz-pool { to { opacity: 0.06; } }
+@media (prefers-reduced-motion: reduce) { .mz-peek, .mz-pool { animation: none !important; } }

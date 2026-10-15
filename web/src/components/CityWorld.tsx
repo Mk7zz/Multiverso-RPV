@@ -6,6 +6,7 @@ import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, riverX, RIVER_HALF, SPAWN, WORLD_H 
 import { AVATAR_PALETTES, DEFAULT_AVATAR } from './Avatar';
 import { Dialogue } from './Dialogue';
 import { MasterSprite, type MasterFrame } from './Mestres';
+import { yardGround, yardProps, yardZone, type YardProp } from './MestreYards';
 import { PixelIcon } from './PixelIcon';
 import { birdDown, birdUp, Pixels, treeRuns, TREE_H, TREE_W, type DayTime } from './Scene';
 import { Building, Character, makeTrees } from './World';
@@ -82,7 +83,11 @@ function makeScenery(places: Place[]) {
     Math.hypot((x - 150) / 28, (y - 130) / 15) > 1 &&
     !trees.some((t) => Math.abs(t.x - x) < 6 && Math.abs(t.y - y) < 5) &&
     !places.some((p) => Math.abs(x - p.x) < (p.kind === 'church' ? 30 : 24) && y > p.y - 42 && y < p.y + (p.kind === 'church' ? 12 : 4)) &&
-    !places.some((p) => Math.abs(x - p.x) < 6 && y > Math.min(p.y, MAIN_PATH.y) && y < Math.max(p.y, MAIN_PATH.y));
+    !places.some((p) => Math.abs(x - p.x) < 6 && y > Math.min(p.y, MAIN_PATH.y) && y < Math.max(p.y, MAIN_PATH.y)) &&
+    !places.some((p) => {
+      const z = yardZone(p);
+      return !!z && x > z[0] && x < z[2] && y > z[1] && y < z[3];
+    });
   const scatter = (n: number, make: (x: number, y: number) => Sway) => {
     const out: Sway[] = [];
     for (let i = 0; i < n * 6 && out.length < n; i++) {
@@ -200,6 +205,10 @@ const Ground = memo(function Ground({ places, scenery }: { places: Place[]; scen
       {/* Sombras das construções */}
       {places.map((p) => (
         <ellipse key={p.id} cx={p.x + (p.kind === 'church' ? 6 : 2)} cy={p.y + 1} rx={p.kind === 'church' ? 34 : p.kind === 'board' ? 18 : 24} ry={3} fill="#000" opacity={0.13} />
+      ))}
+      {/* Quintais dos Mestres do Saber */}
+      {places.filter((p) => !p.soon).map((p) => (
+        <g key={`y${p.id}`}>{yardGround(p)}</g>
       ))}
       {/* Rio e ponte */}
       {g.river.map((x, i) => (
@@ -397,6 +406,7 @@ export interface CityWorldProps {
 export function CityWorld({ places, time, onArrive, demo, introLines, introKey = 'cidade:intro:v3', paused, children }: CityWorldProps) {
   const night = time === 'night';
   const scenery = useMemo(() => makeScenery(places), [places]);
+  const yards = useMemo(() => places.filter((pl) => !pl.soon).flatMap((pl) => yardProps(pl).map((it) => ({ pl, it }))), [places]);
   const targets = useMemo<Vec[]>(
     () => [
       ...places.map((p) => ({ x: p.x, y: p.y + 6 })),
@@ -943,6 +953,19 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
     for (let i = 0; i < 5; i++) spawn('spark', d.x + rnd(-4, 4), d.y + rnd(-4, 2), { life: rnd(0.4, 0.8), vy: rnd(-6, -2), vx: rnd(-4, 4), c: '#ffffff' });
   };
 
+  /** Toque numa peça do quintal: ela faz barulho e o mestre conta o que é. */
+  const tapYard = (pl: Place, it: YardProp) => {
+    if (suppress.current || demo || !it.tap) return;
+    sfx(it.tap.sound);
+    for (let i = 0; i < 5; i++) spawn('spark', it.x + rnd(-4, 4), it.y - rnd(3, 10), { life: rnd(0.5, 0.9), vy: rnd(-7, -3), vx: rnd(-4, 4), c: it.tap.c });
+    const m = masters.current.get(pl.id);
+    if (m) {
+      m.say = pick(it.tap.lines);
+      m.until = t + 3.4;
+      m.next = t + rnd(6, 10);
+    }
+  };
+
   const tapMaster = (pl: Place) => {
     if (suppress.current || demo || !pl.master) return;
     const m = masters.current.get(pl.id);
@@ -981,6 +1004,23 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
       node: <CityTree x={tr.x} y={tr.y} dur={tr.dur} delay={tr.delay} shaking={shaking === `${tr.x}:${tr.y}`} onTap={tapTree} />,
     })),
     ...scenery.lamps.map((l) => ({ key: `l${l.x}`, y: l.y, node: <Lamp x={l.x} y={l.y} night={night} /> })),
+    ...yards.map(({ pl, it }) => ({
+      key: it.key,
+      y: it.y,
+      node: it.tap ? (
+        <g
+          className="cw-tap"
+          onClick={(e) => {
+            e.stopPropagation();
+            tapYard(pl, it);
+          }}
+        >
+          {it.node}
+        </g>
+      ) : (
+        it.node
+      ),
+    })),
     ...places
       .filter((pl) => pl.master && !pl.soon)
       .map((pl) => {

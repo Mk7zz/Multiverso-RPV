@@ -12,6 +12,7 @@ import type { Place } from '../../lib/world';
  *   pulsando no ritmo, luzes de palco, discos na parede e o tapete de breaking.
  * - Ateliê da Dona Cida: papel de parede florido, quadro em ponto cruz, bastidores pendurados,
  *   máquina de costura, carretéis coloridos, cesta de novelos e gatinho brincando.
+ * Em todos: luz do sol entrando pela janela e sombra onde a parede encontra o chão e o teto.
  * O Mestre aparece por cima, à esquerda; `fx` é o centro do enquadramento no celular em pé.
  */
 
@@ -41,8 +42,8 @@ function disc(cx: number, cy: number, r: number, fill: string, key = 'd') {
 
 const SKY: Record<DayTime, [string, string]> = { day: ['#6cc4ea', '#dff5f1'], dusk: ['#d9739a', '#ffcf8a'], night: ['#0b1730', '#24405a'] };
 
-/** Vista da janela: céu da hora certa, serra e uma arvorezinha. */
-function View({ x, y, w, h, time, id }: { x: number; y: number; w: number; h: number; time: DayTime; id: string }) {
+/** Vista da janela: céu da hora certa, serra e uma arvorezinha (e, na roça, a cerca e uma galinha no terreiro). */
+function View({ x, y, w, h, time, id, farm }: { x: number; y: number; w: number; h: number; time: DayTime; id: string; farm?: boolean }) {
   const night = time === 'night';
   return (
     <g>
@@ -56,6 +57,41 @@ function View({ x, y, w, h, time, id }: { x: number; y: number; w: number; h: nu
       {night ? rects([[x + 4, y + 3, 1, 1, '#ffffff'], [x + w - 7, y + 5, 1, 1, '#ffffff'], [x + w - 10, y + 3, 3, 3, '#f4f1de']], 's') : rects([[x + 3, y + 4, 8, 2, '#ffffff'], [x + 5, y + 3, 4, 1, '#ffffff']], 'c')}
       <path d={`M${x} ${y + h} V${y + h - 6} L${x + w * 0.35} ${y + h - 11} L${x + w * 0.7} ${y + h - 7} L${x + w} ${y + h - 10} V${y + h} Z`} fill={night ? '#1a4431' : '#3aa655'} />
       {rects([[x + w - 9, y + h - 12, 5, 5, night ? '#16402c' : '#1f7a4d'], [x + w - 7, y + h - 7, 1, 4, '#6b4423']], 't')}
+      {farm && (
+        <g>
+          {rects([[x, y + h - 4, w, 4, night ? '#20503a' : '#6fae3c'], [x, y + h - 4, w, 1, night ? '#2a5e44' : '#8ccb52'], [x, y + h - 6, w, 1, '#8a5a2b']], 'fa')}
+          {Array.from({ length: Math.ceil(w / 4) }, (_, i) => (
+            <rect key={`fp${i}`} x={x + 1 + i * 4} y={y + h - 7} width={1} height={4} fill="#6b4423" />
+          ))}
+          {rects([[x + 5, y + h - 3, 3, 2, night ? '#5c4a3a' : '#c9762b'], [x + 7, y + h - 4, 1, 1, night ? '#5c4a3a' : '#c9762b'], [x + 8, y + h - 4, 1, 1, '#f2b705'], [x + 6, y + h - 4, 1, 1, '#d64545']], 'gl')}
+        </g>
+      )}
+    </g>
+  );
+}
+
+/** Faixa de luz do sol entrando pela janela e caindo no chão (só de dia). */
+function Sunbeam({ x, y, w, time, drift = 26 }: { x: number; y: number; w: number; time: DayTime; drift?: number }) {
+  if (time === 'night') return null;
+  return <path d={`M${x} ${y} H${x + w} L${x + w + drift} ${VH} H${x + drift} Z`} fill={time === 'dusk' ? '#ffcf8a' : '#fff6d0'} opacity={0.16} />;
+}
+
+/** Reboco caído mostrando os tijolinhos de adobe da parede. */
+function BrickPatch({ x, y, k }: { x: number; y: number; k: string }) {
+  return (
+    <g>
+      {rects([[x + 1, y, 9, 1, '#d9cdb8'], [x, y + 1, 12, 5, '#d9cdb8'], [x + 2, y + 6, 7, 1, '#d9cdb8']], `${k}o`)}
+      {rects([[x + 1, y + 1, 4, 2, '#c4553a'], [x + 6, y + 1, 4, 2, '#b5523b'], [x + 2, y + 4, 4, 2, '#b5523b'], [x + 7, y + 4, 3, 2, '#c4553a']], `${k}b`)}
+    </g>
+  );
+}
+
+/** Sombra suave onde a parede encontra o chão e embaixo do teto. */
+function Ambient() {
+  return (
+    <g fill="#000000">
+      <rect y={FLOOR} width={VW} height={2} opacity={0.18} />
+      <rect y={6} width={VW} height={2} opacity={0.12} />
     </g>
   );
 }
@@ -93,6 +129,8 @@ const Kitchen = memo(function Kitchen({ time }: { time: DayTime }) {
       <rect y={47} width={VW} height={1} fill="#fbf7ee" />
       <rect width={VW} height={6} fill="#6b4423" />
       {Array.from({ length: 7 }, (_, i) => box(6 + i * 38, 5, 6, 3, '#8a5a2b', `b${i}`))}
+      <BrickPatch x={60} y={44} k="bp1" />
+      <BrickPatch x={112} y={36} k="bp2" />
       {/* Chão de cimento queimado vermelho */}
       <rect y={FLOOR} width={VW} height={VH - FLOOR} fill="#b5523b" />
       {rects([[0, FLOOR, VW, 1, '#8f3e2c'], [0, 72, VW, 1, '#a24a35'], [0, 82, VW, 1, '#a24a35']], 'f')}
@@ -125,7 +163,7 @@ const Kitchen = memo(function Kitchen({ time }: { time: DayTime }) {
       {rects([[48, 22, 3, 3, '#cfd8dc'], [52, 22, 3, 1, '#f2b705'], [52, 24, 1, 1, '#d64545'], [54, 18, 1, 3, '#5c6970']], 'rd')}
       {/* Janela com folhas azuis abertas e cortininha */}
       {box(70, 14, 30, 26, '#fbf7ee', 'win')}
-      <View x={72} y={16} w={26} h={22} time={time} id="k" />
+      <View x={72} y={16} w={26} h={22} time={time} id="k" farm />
       {rects([[84, 16, 2, 22, '#fbf7ee'], [72, 26, 26, 1, '#fbf7ee'], [72, 16, 26, 2, '#ffffff'], [72, 18, 3, 3, '#ffffff'], [95, 18, 3, 3, '#ffffff']], 'wf')}
       {box(62, 14, 6, 26, '#2f7f8a', 'shl')}
       {box(102, 14, 6, 26, '#2f7f8a', 'shr')}
@@ -139,6 +177,13 @@ const Kitchen = memo(function Kitchen({ time }: { time: DayTime }) {
       ))}
       {box(121, 16, 8, 8, '#3c4a52', 'pan1')}
       {rects([[124, 12, 2, 4, '#3c4a52'], [122, 17, 2, 2, '#5c6970']], 'p1')}
+      {/* Escumadeira e concha penduradas no prego */}
+      {rects([[131, 20, 1, 1, INK], [134, 20, 1, 1, INK], [131, 21, 1, 9, '#9aa5ad'], [130, 30, 3, 3, '#9aa5ad'], [131, 31, 1, 1, '#cfd8dc'], [134, 21, 1, 8, '#9aa5ad'], [133, 29, 3, 2, '#9aa5ad']], 'ut')}
+      {/* Linguiça defumando no fumeiro */}
+      {rects([[182, 21, 16, 1, '#6b4423'], [182, 20, 1, 2, '#4a2c17'], [197, 20, 1, 2, '#4a2c17']], 'fm')}
+      {[184, 188, 192, 195].map((lx, i) => (
+        <g key={lx}>{rects([[lx, 22, 1, 1, '#f4f1e6'], [lx - (i % 2), 23, 2, 5 + (i % 2), '#a8432a'], [lx - (i % 2), 23, 1, 4, '#c4553a'], [lx - (i % 2), 28 + (i % 2), 2, 1, '#7a2f1f']], `lg${i}`)}</g>
+      ))}
       {/* Calendário (folhinha) */}
       {box(200, 12, 11, 14, '#ffffff', 'cal')}
       {rects([[200, 12, 11, 3, '#d64545'], [202, 17, 7, 1, '#9aa5ad'], [202, 19, 7, 1, '#9aa5ad'], [202, 21, 5, 1, '#9aa5ad'], [205, 10, 1, 2, INK]], 'cl')}
@@ -171,6 +216,8 @@ const Kitchen = memo(function Kitchen({ time }: { time: DayTime }) {
       <Steam x={166} y={27} n={2} />
       {rects([[171, 25, 1, 13, '#8a5a2b'], [181, 25, 1, 13, '#8a5a2b'], [170, 25, 13, 1, '#8a5a2b'], [174, 26, 5, 4, '#f4f1e6'], [175, 30, 3, 2, '#e9e1d3'], [176, 32, 1, 1, '#e9e1d3']], 'cf')}
       {box(173, 34, 7, 4, '#ffffff', 'cafe')}
+      {/* Pano de prato pendurado no fogão */}
+      {rects([[168, 43, 9, 1, '#9aa5ad'], [170, 44, 5, 8, '#fdf6e3'], [170, 46, 5, 1, '#d64545'], [170, 50, 5, 1, '#d64545'], [172, 48, 1, 1, '#3aa655']], 'pano')}
       {rects([[174, 35, 5, 1, '#d64545']], 'cf2')}
       {/* Lenha do lado do fogão */}
       {box(190, 52, 16, 12, '#6b4423', 'lenha')}
@@ -203,9 +250,20 @@ const Kitchen = memo(function Kitchen({ time }: { time: DayTime }) {
       {[82, 86, 90, 84, 88].map((x, i) => (
         <g key={i}>{disc(x + 1, i < 3 ? 56 : 54, 1, i % 2 ? '#f2c45c' : '#e8b14a', `pq${i}`)}</g>
       ))}
+      {/* Queijo minas na tábua */}
+      {box(108, 58, 12, 2, '#a0703e', 'tabua')}
+      {box(110, 54, 8, 4, '#fff6d6', 'queijo')}
+      {rects([[110, 54, 8, 1, '#f2e2a8'], [116, 56, 2, 2, '#f2e2a8'], [112, 56, 1, 1, '#e8d590']], 'qj')}
       {box(102, 56, 5, 4, '#ffffff', 'xic')}
       {rects([[107, 57, 1, 2, INK], [101, 60, 7, 1, '#e9e1d3'], [103, 56, 3, 1, '#6b4423']], 'xc')}
       <Steam x={103} y={51} n={2} />
+      {/* Galinha espiando pela porta do quintal */}
+      <g className="mz-peek">
+        {rects([[234, 53, 6, 5, INK], [233, 49, 4, 5, INK]], 'gp')}
+        {rects([[235, 54, 5, 3, '#c9762b'], [234, 50, 2, 3, '#c9762b'], [234, 48, 1, 2, '#d64545'], [233, 51, 1, 1, '#f2b705'], [235, 51, 1, 1, INK], [236, 55, 3, 1, '#8a4a17']], 'gc')}
+      </g>
+      <Sunbeam x={74} y={40} w={22} time={time} />
+      <Ambient />
       {/* Gato laranja dormindo perto do fogão */}
       <g>
         {rects([[150, 67, 10, 4, INK], [151, 66, 7, 1, INK]], 'go')}
@@ -233,10 +291,23 @@ const Studio = memo(function Studio({ time }: { time: DayTime }) {
     }
     return out;
   }, []);
+  // Tijolos com tons diferentes, pra parede não ficar chapada.
+  const shades = useMemo(() => {
+    const rand = seeded(11);
+    const out: R[] = [];
+    for (let r = 0, y = 8; y < FLOOR; r++, y += 4)
+      for (let x = r % 2 ? 4 : 0; x < VW; x += 8) {
+        const k = rand();
+        if (k < 0.18) out.push([x + 1, y, 7, 3, '#86443a']);
+        else if (k < 0.3) out.push([x + 1, y, 7, 3, '#6b322a']);
+      }
+    return out;
+  }, []);
   return (
     <g>
       {/* Parede de tijolo, teto escuro e neon */}
       <rect width={VW} height={FLOOR} fill="#7a3b30" />
+      {rects(shades, 'bs')}
       {rects(bricks, 'br')}
       <rect width={VW} height={7} fill="#2a1f3d" />
       <rect className="mz-neon" y={7} width={VW} height={1} fill="#ff6fd8" />
@@ -310,6 +381,16 @@ const Studio = memo(function Studio({ time }: { time: DayTime }) {
         </g>
       ))}
       {rects([[193, 38, 6, 6, '#2a2a2a'], [194, 39, 1, 1, '#8cc63f'], [196, 39, 1, 1, '#f2b705'], [194, 41, 4, 1, '#ec6a8c']], 'mx')}
+      {/* Disco de ouro emoldurado */}
+      {box(184, 28, 10, 12, '#2a2a2a', 'ouro')}
+      {disc(189, 33, 3, '#f2b705', 'od')}
+      {rects([[189, 33, 1, 1, '#2a2a2a'], [187, 31, 1, 1, '#ffe27a'], [185, 38, 8, 1, '#f2b705']], 'oo')}
+      {/* Cabos da mesa até as caixas de som */}
+      <path d="M222 60 Q226 70 234 66" stroke={INK} strokeWidth={0.8} fill="none" />
+      <path d="M170 60 Q164 72 158 66" stroke={INK} strokeWidth={0.8} fill="none" />
+      {/* Caixote de discos no chão */}
+      {box(198, 68, 22, 10, '#d9a066', 'cx')}
+      {rects([[198, 71, 22, 1, '#a0703e'], [198, 74, 22, 1, '#a0703e'], [200, 64, 2, 4, '#1b1b1b'], [203, 63, 2, 5, '#1b1b1b'], [206, 64, 2, 4, '#d64545'], [209, 63, 2, 5, '#1b1b1b'], [212, 64, 2, 4, '#12a3a0'], [215, 63, 2, 5, '#1b1b1b']], 'cxd')}
       {/* Fone em cima da mesa */}
       {rects([[200, 41, 1, 2, INK], [204, 41, 1, 2, INK], [200, 40, 5, 1, INK]], 'fn')}
       {/* Caixinha de som portátil e tênis no chão */}
@@ -336,6 +417,10 @@ const Studio = memo(function Studio({ time }: { time: DayTime }) {
           </g>
         ))}
       </g>
+      {/* Poças de luz colorida no chão */}
+      <ellipse className="mz-pool" cx={96} cy={FLOOR + 12} rx={16} ry={3} fill={LIGHT_C[0]} opacity={0.18} />
+      <ellipse className="mz-pool" cx={196} cy={FLOOR + 12} rx={16} ry={3} fill={LIGHT_C[1]} opacity={0.18} style={{ animationDelay: '-1.6s' }} />
+      <Ambient />
       {!night && <rect width={VW} height={VH} fill="#2a1f3d" opacity={0.08} />}
     </g>
   );
@@ -419,6 +504,13 @@ const Atelier = memo(function Atelier({ time }: { time: DayTime }) {
       <g transform="translate(104 10) scale(1.5)">
         <Pixels runs={STITCH} />
       </g>
+      {/* Pano de prato bordado pendurado no prego */}
+      {rects([[99, 41, 1, 1, INK], [95, 42, 9, 11, INK], [96, 42, 7, 10, '#fdf6e3'], [96, 51, 7, 1, '#ec6a8c'], [98, 44, 3, 2, '#c9762b'], [100, 43, 1, 1, '#d64545'], [101, 45, 1, 1, '#f2b705'], [98, 47, 1, 1, '#e8a33a'], [100, 47, 1, 1, '#e8a33a']], 'pd')}
+      {/* Manequim com um vestido sendo costurado e a fita métrica */}
+      {box(140, 30, 10, 4, '#e9d9c2', 'mq1')}
+      {box(139, 34, 12, 12, '#ec6a8c', 'mq2')}
+      {rects([[139, 34, 12, 1, '#f7a8c8'], [143, 34, 1, 12, '#d64545'], [146, 36, 1, 1, '#ffffff'], [141, 40, 1, 1, '#ffffff'], [148, 42, 1, 1, '#ffffff'], [139, 44, 12, 2, '#fdf6e3'], [142, 30, 1, 6, '#f2b705'], [148, 30, 1, 5, '#f2b705'], [143, 29, 4, 1, '#c9a227']], 'mq3')}
+      {rects([[144, 46, 2, 12, '#6b4423'], [140, 58, 10, 2, '#6b4423'], [141, 60, 1, 4, '#6b4423'], [148, 60, 1, 4, '#6b4423']], 'mq4')}
       {/* Bastidores pendurados com bordados */}
       {[
         [154, 20, '#d64545', 'heart'],
@@ -452,6 +544,14 @@ const Atelier = memo(function Atelier({ time }: { time: DayTime }) {
       {rects([[186, 33, 20, 1, '#c9a227'], [186, 38, 3, 1, '#c9a227'], [209, 43, 1, 3, '#cfd8dc'], [196, 46, 6, 1, '#c9a227'], [181, 35, 3, 4, '#c9a227']], 'gold')}
       {disc(182, 37, 3, '#4a4a4a', 'vol')}
       {rects([[199, 44, 16, 3, '#fdf6e3'], [202, 45, 2, 1, '#d64545'], [205, 45, 2, 1, '#d64545']], 'pano')}
+      {/* Lata de biscoito (que guarda linha e agulha, claro!) */}
+      {box(218, 44, 12, 6, '#2f5fb3', 'lata')}
+      {rects([[218, 45, 12, 1, '#7fb8ff'], [220, 47, 8, 1, '#f2b705'], [219, 43, 2, 1, '#d64545'], [222, 42, 2, 2, '#f2b705'], [225, 43, 2, 1, '#3aa655'], [227, 42, 2, 2, '#ec6a8c']], 'lt')}
+      {box(229, 38, 2, 6, '#2f5fb3', 'tampa')}
+      {/* Toalhinha de crochê na beirada da mesa */}
+      {Array.from({ length: 14 }, (_, i) => (
+        <g key={`cr${i}`}>{rects([[178 + i * 4, 53, 3, 1, '#ffffff'], [179 + i * 4, 54, 1, 1, '#ffffff']], `cro${i}`)}</g>
+      ))}
       {/* Poltrona com almofada bordada */}
       {box(18, 40, 34, 10, '#2f7fb3', 'enc')}
       {box(14, 46, 42, 10, '#2f7fb3', 'ass')}
@@ -471,6 +571,8 @@ const Atelier = memo(function Atelier({ time }: { time: DayTime }) {
         {rects([[185, 77, 7, 4, '#9aa5ad'], [183, 74, 3, 3, '#9aa5ad'], [183, 72, 1, 1, '#9aa5ad'], [185, 72, 1, 1, '#9aa5ad'], [184, 75, 1, 1, INK], [186, 81, 1, 1, '#9aa5ad'], [190, 81, 1, 1, '#9aa5ad']], 'ct2')}
         <g className="mz-tail">{rects([[193, 76, 1, 3, '#9aa5ad'], [194, 75, 1, 2, '#9aa5ad']], 'cr2')}</g>
       </g>
+      <Sunbeam x={66} y={40} w={22} time={time} />
+      <Ambient />
       {night && <rect width={VW} height={VH} fill="#0d1b2e" opacity={0.2} />}
     </g>
   );

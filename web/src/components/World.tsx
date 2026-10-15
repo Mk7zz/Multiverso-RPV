@@ -11,6 +11,7 @@ import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, PLACES, riverX, RIVER_HALF, SPAWN, 
 import { Avatar, AvatarSprite, SPRITE_H, SPRITE_W } from './Avatar';
 import { Dialogue } from './Dialogue';
 import { mestreParts } from './MestreHouses';
+import { yardZone } from './MestreYards';
 import { LevelBadge, XpBar } from './Game';
 import { iconRuns, PixelIcon } from './PixelIcon';
 import { birdDown, birdUp, Pixels, treeRuns, TREE_H, TREE_W, useDayTime, type DayTime } from './Scene';
@@ -418,6 +419,10 @@ export function makeTrees(places: Place[] = PLACES, seed = 1234) {
         : Math.abs(x - p.x) < (WIDE.includes(p.kind) ? 34 : 24) && y > p.y - 52 && y < p.y + (p.kind === 'mestre' ? 30 : 16),
     ) ||
     places.some((p) => Math.abs(x - p.x) < 10 && y > Math.min(p.y, MAIN_PATH.y) - 4 && y < Math.max(p.y, MAIN_PATH.y) + 14) ||
+    places.some((p) => {
+      const z = yardZone(p);
+      return !!z && x > z[0] - 8 && x < z[2] + 8 && y > z[1] && y < z[3] + 14;
+    }) ||
     trees.some((t) => Math.abs(t.x - x) < 11 && Math.abs(t.y - y) < 8);
   for (let x = 4; x < WORLD_W; x += 13) if (!blocked(x, 56)) trees.push({ x, y: 56 + Math.round(rand() * 4) });
   for (let i = 0; i < 400 && trees.length < 46; i++) {

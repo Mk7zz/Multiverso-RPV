@@ -238,6 +238,19 @@ function hiphop(p: Place, glass: string): HouseParts {
         <rect x={x0 + 30} y={top - 9} width={2} height={5} fill="#5b93cf" />
         <rect x={x0 + 6} y={top - 9} width={5} height={1} fill="#5c6970" />
         <rect x={x0 - 1} y={top - 3} width={w + 2} height={1} fill={shade(concrete, 0.2)} />
+        {/* Antena parabólica e vasinhos na laje */}
+        <rect x={x0 + 15} y={top - 8} width={6} height={1} fill="#cfd8dc" />
+        <rect x={x0 + 14} y={top - 7} width={7} height={2} fill="#e9eef2" />
+        <rect x={x0 + 15} y={top - 5} width={5} height={1} fill="#9aa5ad" />
+        <rect x={x0 + 17} y={top - 4} width={1} height={1} fill="#5c6970" />
+        <rect x={x0 + 19} y={top - 9} width={1} height={2} fill="#5c6970" />
+        {[x0 + 1, x0 + w - 4].map((px, i) => (
+          <g key={px}>
+            <rect x={px} y={top - 6} width={3} height={3} fill="#c4553a" />
+            <rect x={px - 1} y={top - 8} width={5} height={2} fill={i ? '#8cc63f' : '#3aa655'} />
+            <rect x={px + 1} y={top - 9} width={1} height={1} fill={i ? '#ec6a8c' : '#3aa655'} />
+          </g>
+        ))}
         {/* Varal de luzinhas embaixo da platibanda */}
         {Array.from({ length: 14 }, (_, i) => (
           <rect key={i} className="w-light" x={x0 + 1 + i * 3} y={top + (i % 2)} width={1} height={1} fill={LIGHTS[i % 4]} style={{ animationDelay: `${-(i % 4) * 0.35}s` }} />
@@ -260,13 +273,7 @@ function hiphop(p: Place, glass: string): HouseParts {
         <rect x={x - 7} y={y - 3} width={14} height={1} fill={night ? '#ff9cf0' : '#c86bd8'} opacity={0.8} />
         <rect x={x - 6} y={y - 1} width={12} height={1} fill="#6b4fa0" opacity={0.7} />
         <rect x={x - 1} y={y - 6} width={2} height={1} fill="#3c4a52" />
-        {/* Caixa de som portátil na calçada e lata de spray */}
-        <rect x={x + 10} y={y - 6} width={9} height={6} fill={INK} />
-        <rect x={x + 11} y={y - 5} width={7} height={4} fill="#3c4a52" />
-        <rect x={x + 11} y={y - 4} width={2} height={2} fill="#9aa5ad" />
-        <rect x={x + 16} y={y - 4} width={2} height={2} fill="#9aa5ad" />
-        <rect x={x + 14} y={y - 5} width={1} height={1} fill="#ec6a8c" />
-        <rect x={x + 13} y={y - 7} width={3} height={1} fill={INK} />
+        {/* Lata de spray na calçada */}
         <rect x={x0 + 13} y={y - 4} width={2} height={4} fill="#d64545" />
         <rect x={x0 + 13} y={y - 5} width={2} height={1} fill="#f4f4f4" />
         {/* Poste com o par de tênis pendurado no fio */}
@@ -335,6 +342,18 @@ function bordado(p: Place, glass: string): HouseParts {
         <rect x={x + 4} y={y - 13} width={3} height={3} fill="#ffffff" />
         <rect x={x + 5} y={y - 12} width={1} height={1} fill="#d64545" />
         <rect x={x + 4} y={y - 13} width={1} height={1} fill="#3aa655" />
+        {/* Bandeirinhas de fuxico no alpendre */}
+        {Array.from({ length: 6 }, (_, i) => (
+          <rect key={`fx${i}`} x={x - 8 + i * 3} y={y - 17 + (i === 0 || i === 5 ? 0 : 1)} width={2} height={2} fill={['#ec6a8c', '#f2b705', '#12a3a0', '#b48ae0', '#d64545', '#8cc63f'][i]} />
+        ))}
+        {/* Samambaia pendurada */}
+        <rect x={x - 12} y={y - 15} width={1} height={3} fill="#6b4423" />
+        <rect x={x - 14} y={y - 12} width={5} height={3} fill="#c4553a" />
+        <rect x={x - 15} y={y - 13} width={7} height={1} fill="#3aa655" />
+        <rect x={x - 16} y={y - 12} width={1} height={4} fill="#3aa655" />
+        <rect x={x - 8} y={y - 12} width={1} height={4} fill="#3aa655" />
+        <rect x={x - 13} y={y - 9} width={1} height={3} fill="#1f7a4d" />
+        <rect x={x - 11} y={y - 9} width={1} height={2} fill="#1f7a4d" />
         {/* Porta azul com almofadas */}
         <rect x={x - 2} y={y - 12} width={4} height={4} fill={shade(blue, 0.18)} />
         <rect x={x - 2} y={y - 6} width={4} height={4} fill={shade(blue, 0.18)} />
