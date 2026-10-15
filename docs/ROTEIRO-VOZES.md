@@ -6,7 +6,7 @@ São 51 falas curtas, divididas entre os três mestres e gravadas por crianças.
 
 ## Como gravar
 
-- **Um arquivo por fala**, com o nome exato da coluna "Arquivo" e terminando em `.mp3` (ex.: `entrada.mp3`).
+- **Um arquivo por fala**, com o nome exato da coluna "Arquivo" e terminando em `.mp3` (ex.: `entrada.mp3`). Também vale `.m4a` (gravador do Windows e iPhone), `.ogg` ou `.wav`.
 - Coloque os arquivos na pasta do mestre: `web/public/vozes/<pasta>/` (crie a pasta se ainda não existir). O nome da pasta de cada um aparece no título dele, abaixo.
 - Pode gravar no celular, num lugar silencioso, com o aparelho a um palmo da boca.
 - Fale **devagar e bem claro**: quem escuta também são crianças aprendendo a ler.

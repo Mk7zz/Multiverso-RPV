@@ -2,7 +2,7 @@
  * Vozes gravadas dos Mestres do Saber (gravadas por crianças).
  *
  * Cada fala tem um nome de arquivo fixo. Quando existe a gravação em
- * `web/public/vozes/<mestre>/<nome>.mp3`, o jogo toca ela; quando não existe, lê o texto
+ * `web/public/vozes/<mestre>/<nome>.mp3` (ou .m4a, .ogg, .wav), o jogo toca ela; quando não existe, lê o texto
  * com a voz do navegador. Dá para gravar aos poucos: o que ainda não foi gravado continua
  * funcionando.
  *

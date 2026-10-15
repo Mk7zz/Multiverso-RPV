@@ -606,9 +606,13 @@ export function stopVoice() {
   window.speechSynthesis?.cancel();
 }
 
+/** Formatos aceitos para as gravações, na ordem em que o jogo procura (celular costuma gravar .m4a). */
+const AUDIO_EXT = ['mp3', 'm4a', 'ogg', 'wav'];
+
 /**
  * Fala uma sequência de trechos. Cada trecho com `id` toca a gravação de `who`
- * (web/public/vozes/<who>/<id>.mp3, veja lib/vozes.ts); sem gravação, a voz do navegador lê.
+ * (web/public/vozes/<who>/<id>.mp3, ou .m4a/.ogg/.wav; veja lib/vozes.ts);
+ * sem gravação, a voz do navegador lê.
  */
 export function say(parts: Clip[], who = 'narrador') {
   stopVoice();
@@ -617,23 +621,31 @@ export function say(parts: Clip[], who = 'narrador') {
   const next = (i: number) => {
     if (mine !== turn || i >= parts.length) return;
     const { id, text } = parts[i];
-    const url = id ? `/vozes/${who}/${id}.mp3` : null;
-    if (!url || missing.has(url)) return tts(text, who, () => next(i + 1));
-    const audio = new Audio(url);
-    playing = audio;
-    let failed = false;
-    const fallback = () => {
-      if (failed || mine !== turn) return;
-      failed = true;
-      missing.add(url);
-      tts(text, who, () => next(i + 1));
+    const speakIt = () => tts(text, who, () => next(i + 1));
+    if (!id) return speakIt();
+    const base = `/vozes/${who}/${id}`;
+    const tryExt = (k: number) => {
+      if (mine !== turn) return;
+      const url = `${base}.${AUDIO_EXT[k]}`;
+      if (k >= AUDIO_EXT.length) return speakIt();
+      if (missing.has(url)) return tryExt(k + 1);
+      const audio = new Audio(url);
+      playing = audio;
+      let failed = false;
+      const fail = () => {
+        if (failed) return;
+        failed = true;
+        missing.add(url);
+        tryExt(k + 1);
+      };
+      audio.onended = () => next(i + 1);
+      audio.onerror = fail;
+      audio.play().catch((e: unknown) => {
+        // Navegador bloqueou o som antes do primeiro toque: não insiste.
+        if (!(e instanceof DOMException && e.name === 'NotAllowedError')) fail();
+      });
     };
-    audio.onended = () => next(i + 1);
-    audio.onerror = fallback;
-    audio.play().catch((e: unknown) => {
-      // Navegador bloqueou o som antes do primeiro toque: não insiste.
-      if (!(e instanceof DOMException && e.name === 'NotAllowedError')) fallback();
-    });
+    tryExt(0);
   };
   next(0);
 }
