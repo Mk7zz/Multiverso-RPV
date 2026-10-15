@@ -104,7 +104,7 @@ const SEKTOR: Place = {
     room: 'Estúdio do Sektor',
     color: '#6b4fa0',
     soft: '#ece4fb',
-    enter: 'Salve! Você entrou no estúdio do Sektor. Bora pro desafio? 🎧',
+    enter: 'Oi! Você entrou no estúdio do Sektor. Bora pro desafio? 🎧',
     right: ['Acertou na batida, resposta garantida! 🎤', 'É nóis! Cê manja muito!'],
     wrong: ['Errar faz parte do rolê. Bora aprender!', 'Sem estresse! Se liga que eu te explico.'],
     win: ['É nóis!', 'Mandou bem!', 'Acertou na batida!'],

@@ -64,7 +64,7 @@ São 47 falas curtas, divididas entre os três mestres e gravadas por crianças.
 
 | Arquivo | Fala |
 | --- | --- |
-| `entrada.mp3` | Salve! Você entrou no estúdio do Sektor. Bora pro desafio? |
+| `entrada.mp3` | Oi! Você entrou no estúdio do Sektor. Bora pro desafio? |
 
 ### Quando acerta
 
