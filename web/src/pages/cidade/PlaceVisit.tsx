@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { PixelIcon } from '../../components/PixelIcon';
 import { GuideSprite, useDayTime } from '../../components/Scene';
-import { addPoints, CITY_INFO, getPoints, markSeen, nextQuestion, sfx, shuffle, speak, stopVoice, type CityPlace, type Option } from '../../lib/cidade';
+import { addPoints, CITY_INFO, getPoints, markSeen, nextQuestion, say, sfx, shuffle, stopVoice, type CityPlace, type Option } from '../../lib/cidade';
+import { placeClips, POMBA, POMBA_CLIPS } from '../../lib/vozes';
 import { ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
 import { MuseuScene } from './MuseuScene';
 import { PlaceScene } from './PlaceScene';
@@ -61,10 +62,11 @@ function Visit({ place }: { place: CityPlace }) {
   }, []);
 
   useEffect(() => {
-    if (ready && question) speak(question.text);
+    if (ready && question) say([placeClips(place.id, question).ask], POMBA);
   }, [ready, question]);
 
   if (!question) return <Navigate to="/mapa" replace />;
+  const clips = placeClips(place.id, question);
 
   const pick = (c: Choice) => {
     if (popup || wrong.includes(c.text)) return;
@@ -74,12 +76,12 @@ function Visit({ place }: { place: CityPlace }) {
       setPoints(addPoints(n));
       setPopup('win');
       sfx('ok');
-      speak(`Parabéns! Você acertou e ganhou ${n} estrelas! Você sabia? ${question.fact}`);
+      say([POMBA_CLIPS.right, clips.fact], POMBA);
     } else {
       setWrong((w) => [...w, c.text]);
       setPopup('oops');
       sfx('oops');
-      speak('Quase! Tente de novo.');
+      say([POMBA_CLIPS.wrong], POMBA);
     }
   };
 
@@ -116,7 +118,7 @@ function Visit({ place }: { place: CityPlace }) {
               <GuideSprite size={44} />
             </span>
             <p className="quiz-q">{question.text}</p>
-            <button className="quiz-listen" onClick={() => speak(question.text)} aria-label="Ouvir a pergunta" title="Ouvir a pergunta">
+            <button className="quiz-listen" onClick={() => say([clips.ask], POMBA)} aria-label="Ouvir a pergunta" title="Ouvir a pergunta">
               🔊
             </button>
           </div>

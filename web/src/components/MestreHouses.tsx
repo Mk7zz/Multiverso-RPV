@@ -7,7 +7,7 @@ import { Pixels } from './Scene';
  * Casas dos Mestres do Saber no mapa (porta em p.x, p.y). Cada uma conta quem mora nela:
  * - roça (Seu Zico): casinha mineira com telhado de barro, chaminé, lenha e floreiras;
  * - hip hop (Sektor): sobrado de tijolinho com grafite, porta de enrolar, caixa d'água e varal de luzes;
- * - bordado (Dona Cida): casinha com alpendre, bastidor pendurado e varal de panos bordados.
+ * - bordado (Dona Rosa): casinha com alpendre, bastidor pendurado e varal de panos bordados.
  * `body` e `details` ganham contorno; `under` é pintado na parede, antes das janelas e portas.
  */
 
@@ -283,7 +283,7 @@ function hiphop(p: Place, glass: string): HouseParts {
   };
 }
 
-/* ---- Casa do bordado: Dona Cida ---- */
+/* ---- Casa do bordado: Dona Rosa ---- */
 
 function bordado(p: Place, glass: string): HouseParts {
   const { x, y } = p;

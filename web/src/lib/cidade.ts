@@ -79,18 +79,18 @@ const LANDMARKS = [SANTA_RITA, PONTE, MUSEU];
 /*
  * Mestres do Saber: pessoas da cultura popular que guardam histórias, músicas e costumes.
  * Cada um mora numa casinha da "Rua dos Mestres" (embaixo, no mapa) e recebe a criança
- * dentro de casa, com perguntas. Visuais e o nome da bordadeira são provisórios:
- * trocar quando a equipe definir as características de cada mestre.
+ * dentro de casa, com perguntas. Os visuais são provisórios: trocar quando a equipe definir
+ * as características de cada mestre.
  *
  * Falas: escritas para quem ainda está aprendendo a ler. Frases curtas, palavras do dia a dia
  * e o jeitinho mineiro de cada um (o "uai", o "sô", o "trem bão"), sem exagerar no sotaque.
- * São poucas de propósito: crianças gravam as vozes (veja lib/vozes.ts). Ao entrar, o mestre
- * diz uma frase só, dizendo de quem é a casa e chamando para o jogo. Toda curiosidade
- * diz a resposta certa, porque ela é a única coisa falada depois de um erro.
+ * São poucas de propósito: crianças gravam as vozes (veja lib/vozes.ts). Cada mestre tem uma
+ * entrada, um acerto, um erro e três perguntas (o Sektor tem mais porque já foi gravado).
+ * Toda curiosidade diz a resposta certa, porque ela é a única coisa falada depois de um erro.
  * - Seu Zico: roceiro contador de causo, calmo e brincalhão.
  *   Recebe com "Ô de fora!", a resposta mineira ao "Ô de casa!".
  * - Sektor: MC e b-boy de Cataguases. Fala no ritmo, solta umas rimas e usa gíria leve.
- * - Dona Cida: avó bordadeira, carinhosa ("minha flor", "meu anjo"). Tem o gato Novelo.
+ * - Dona Rosa: avó bordadeira, carinhosa ("minha flor", "meu anjo"). Tem o gato Novelo.
  * Os emojis aparecem na tela como apoio visual; a voz pula eles.
  */
 const SEU_ZICO: Place = {
@@ -111,9 +111,9 @@ const SEU_ZICO: Place = {
     room: 'Cozinha do Seu Zico',
     color: '#d6538a',
     soft: '#ffe1ec',
-    enter: 'Ô de fora! Você entrou na casa do Seu Zico. Bora jogar? 🏡',
-    right: ['Ô trem bão! Acertou em cheio! 🎉', 'Nó, cê sabe das coisas, hein!'],
-    wrong: ['Ih, quase! Mas não esquenta, não.', 'Uai, errar faz parte! Escuta só...'],
+    enter: 'Ô de fora! Essa é a casa do Seu Zico. Bora jogar? 🏡',
+    right: ['Ô trem bão! Acertou! 🎉'],
+    wrong: ['Uai, quase! Escuta só.'],
     win: ['Ô trem bão!', 'Acertou, sô!', 'Nó, que beleza!'],
     oops: ['Quase, sô! 💪', 'Não foi dessa vez! 💪'],
     tell: 'Escuta o Seu Zico:',
@@ -147,11 +147,11 @@ const SEKTOR: Place = {
   },
 };
 
-const DONA_CIDA: Place = {
-  id: 'dona-cida',
-  label: 'Casa da Dona Cida',
+const DONA_ROSA: Place = {
+  id: 'dona-rosa',
+  label: 'Casa da Dona Rosa',
   hint: 'Conheça a Mestre do Saber do bordado',
-  to: '/mestre/dona-cida',
+  to: '/mestre/dona-rosa',
   icon: 'heart',
   kind: 'mestre',
   variant: 'bordado',
@@ -160,22 +160,22 @@ const DONA_CIDA: Place = {
   wall: '#f6dc8a',
   roof: '#b5523b',
   master: {
-    name: 'Dona Cida',
+    name: 'Dona Rosa',
     craft: 'Mestre do Saber · Bordado',
-    room: 'Ateliê da Dona Cida',
+    room: 'Ateliê da Dona Rosa',
     color: '#12a3a0',
     soft: '#e2f6f5',
-    enter: 'Oi, minha flor! Você entrou na casa da Dona Cida. Vamos brincar? 🌸',
-    right: ['Muito bem, minha flor! Que orgulho! 💛', 'Nossa, que capricho! Acertou!'],
-    wrong: ['Quase! Devagarinho a gente aprende.', 'Não tem problema, meu anjo. Eu te explico.'],
+    enter: 'Oi, minha flor! Essa é a casa da Dona Rosa. Vamos brincar? 🌸',
+    right: ['Muito bem, minha flor! 💛'],
+    wrong: ['Quase, meu anjo! Escuta só.'],
     win: ['Que capricho!', 'Muito bem!', 'Que orgulho!'],
     oops: ['Quase, meu anjo! 💪', 'Devagarinho se aprende! 💪'],
-    tell: 'A Dona Cida ensina:',
+    tell: 'A Dona Rosa ensina:',
     greetings: ['Entra, minha flor! 🌸', 'Vem bordar comigo! 🧵', 'Aceita um biscoitinho? 🍪', 'Um ponto de cada vez 💛', 'Cadê o Novelo? 🐱', 'Que dia bonito, uai! ☀️'],
   },
 };
 
-const MASTERS = [SEU_ZICO, SEKTOR, DONA_CIDA];
+const MASTERS = [SEU_ZICO, SEKTOR, DONA_ROSA];
 
 /** Os demais lugares do mapa ficam com cadeado até ganharem desenho e perguntas. */
 export const CITY_PLACES: Place[] = [
@@ -190,6 +190,7 @@ export const CITY_INFO: Record<string, CityPlace> = Object.fromEntries(LANDMARKS
 export const MASTER_PLACES: Record<string, Place> = Object.fromEntries(MASTERS.map((m) => [m.id, m]));
 
 // Textos provisórios: revisar com a equipe pedagógica antes de publicar.
+// Curtos de propósito: tudo que é falado é gravado por crianças (veja lib/vozes.ts).
 export const QUESTIONS: Record<string, Question[]> = {
   sektor: [
     {
@@ -237,152 +238,86 @@ export const QUESTIONS: Record<string, Question[]> = {
       fact: 'É o freeze: congelar numa pose! O breaking já foi até esporte nas Olimpíadas.',
     },
   ],
-  'dona-cida': [
+  'dona-rosa': [
     {
       id: 'agulha',
-      hook: 'Pra bordar, a gente precisa de duas coisinhas. Sabe quais são?',
+      hook: 'Pra bordar, a gente usa o quê?',
       text: 'Com o que a gente borda?',
       options: [
         { text: 'Agulha e linha', emoji: '🪡' },
         { text: 'Martelo e prego', emoji: '🔨' },
         { text: 'Garfo e faca', emoji: '🍴' },
       ],
-      fact: 'Agulha e linha! A agulha leva a linha pra lá e pra cá, e cada furinho vira um pontinho.',
-    },
-    {
-      id: 'bastidor',
-      hook: 'Tá vendo esse aro de madeira na minha mão? É o bastidor. Sabe pra que ele serve?',
-      text: 'Para que serve o bastidor?',
-      options: [
-        { text: 'Deixar o pano esticadinho', emoji: '⭕' },
-        { text: 'Guardar comida', emoji: '🍲' },
-        { text: 'Jogar bola', emoji: '⚽' },
-      ],
-      fact: 'O bastidor deixa o pano esticadinho, igual um tamborzinho. Aí o bordado fica retinho!',
+      fact: 'Agulha e linha! Cada furinho vira um pontinho.',
     },
     {
       id: 'ponto-cruz',
-      hook: 'Tem um ponto feito de xizinhos, um do ladinho do outro. Adivinha o nome!',
+      hook: 'Tem um ponto feito de xizinhos. Qual é?',
       text: 'Qual é o nome de um ponto de bordado?',
       options: [
         { text: 'Ponto cruz', emoji: '❌' },
         { text: 'Ponto de ônibus', emoji: '🚌' },
         { text: 'Ponto de exclamação', emoji: '❗' },
       ],
-      fact: 'É o ponto cruz! Cada xizinho é um quadradinho colorido, igual à pixel arte deste jogo.',
-    },
-    {
-      id: 'pano-de-prato',
-      hook: 'Na casa da vó sempre tem bordado escondido em algum lugar. Sabe onde?',
-      text: 'Onde a gente costuma ver bordado?',
-      options: [
-        { text: 'Em pano de prato e toalha', emoji: '🧺' },
-        { text: 'No asfalto da rua', emoji: '🛣️' },
-        { text: 'Nas nuvens', emoji: '☁️' },
-      ],
-      fact: 'Em pano de prato e toalha! Aqui em Minas, a gente borda flor, bichinho e até nome.',
+      fact: 'Ponto cruz! Feito de xizinhos.',
     },
     {
       id: 'aprender',
-      hook: 'Eu aprendi a bordar quando era pequenininha. Sabe como?',
+      hook: 'Como será que eu aprendi a bordar?',
       text: 'Como se aprende a bordar?',
       options: [
         { text: 'Com alguém que já sabe', emoji: '👵' },
         { text: 'Dormindo', emoji: '😴' },
         { text: 'Correndo', emoji: '🏃' },
       ],
-      fact: 'Com alguém que já sabe! Eu aprendi com a minha avó, e ela aprendeu com a mãe dela.',
-    },
-    {
-      id: 'novelo',
-      hook: 'Meu gato tem o nome de uma coisa desta cesta. Sabe o que é um novelo?',
-      text: 'O que é um novelo?',
-      options: [
-        { text: 'Uma bolinha de linha enrolada', emoji: '🧶' },
-        { text: 'Um passarinho', emoji: '🐦' },
-        { text: 'Uma fruta', emoji: '🍎' },
-      ],
-      fact: 'Novelo é a linha enroladinha numa bola. Por isso meu gato se chama Novelo!',
+      fact: 'Com quem já sabe! Eu aprendi com a minha avó.',
     },
   ],
   'seu-zico': [
     {
       id: 'causo',
-      hook: 'Aqui em casa todo mundo gosta de causo. Mas cê sabe o que é um causo?',
+      hook: 'Cê sabe o que é um causo?',
       text: 'O que é um causo?',
       options: [
         { text: 'Uma história contada de boca em boca', emoji: '🗣️' },
         { text: 'Um tipo de doce', emoji: '🍬' },
         { text: 'Uma pipa', emoji: '🪁' },
       ],
-      fact: 'Causo é uma história contada de boca em boca. E cada um que conta aumenta um pouquinho!',
+      fact: 'É uma história contada de boca em boca!',
     },
     {
       id: 'rio-pomba',
-      hook: 'Lá do quintal dá pra ouvir o barulhinho da água. Sabe qual rio é?',
+      hook: 'Que rio passa aqui em Cataguases?',
       text: 'Qual rio passa por Cataguases?',
       options: [
         { text: 'Rio Pomba', emoji: '🏞️' },
         { text: 'Rio Amazonas', emoji: '🐊' },
         { text: 'Rio Nilo', emoji: '🐫' },
       ],
-      fact: 'É o Rio Pomba! Ele atravessa a cidade. Quando eu era menino, pescava lambari nele.',
+      fact: 'O Rio Pomba! Eu pescava lambari nele.',
     },
     {
       id: 'pao-de-queijo',
-      hook: 'Hum, que cheirinho bom saindo do forno! Adivinha o que é?',
+      hook: 'Que cheirinho bom! Adivinha o que é?',
       text: 'Qual é a quitanda mais famosa de Minas Gerais?',
       options: [
         { text: 'Pão de queijo', emoji: '🧀' },
         { text: 'Sushi', emoji: '🍣' },
         { text: 'Taco', emoji: '🌮' },
       ],
-      fact: 'Pão de queijo! Em Minas, bolo, biscoito e pão de queijo têm um nome só: quitanda!',
-    },
-    {
-      id: 'folia',
-      hook: 'Todo começo de ano, a Folia de Reis bate aqui na porta. Sabe o que é a Folia de Reis?',
-      text: 'O que é a Folia de Reis?',
-      options: [
-        { text: 'Um grupo que canta visitando as casas', emoji: '🎶' },
-        { text: 'Um jogo de futebol', emoji: '⚽' },
-        { text: 'Uma corrida de carro', emoji: '🏎️' },
-      ],
-      fact: 'É a Folia de Reis! Eles cantam de casa em casa, com viola e sanfona, até 6 de janeiro.',
-    },
-    {
-      id: 'piao',
-      hook: 'No meu tempo de menino não tinha videogame, não. Sabe do que a gente brincava?',
-      text: 'Qual destas é uma brincadeira de antigamente?',
-      options: [
-        { text: 'Pião', emoji: '🪀' },
-        { text: 'Videogame', emoji: '🎮' },
-        { text: 'Celular', emoji: '📱' },
-      ],
-      fact: 'Pião, peteca, bola de gude e pipa! E a gente mesmo fazia os brinquedos.',
-    },
-    {
-      id: 'fogao-lenha',
-      hook: 'A comida aqui de casa tem um gostinho especial. Sabe onde ela é feita?',
-      text: 'Onde se cozinha na roça de Minas?',
-      options: [
-        { text: 'No fogão a lenha', emoji: '🔥' },
-        { text: 'Na geladeira', emoji: '🧊' },
-        { text: 'Na máquina de lavar', emoji: '🧺' },
-      ],
-      fact: 'No fogão a lenha! A comida fica com gostinho de fumaça. Por isso sai fumaça da chaminé!',
+      fact: 'Pão de queijo, uai! O orgulho de Minas.',
     },
   ],
   ponte: [
     {
       id: 'apelido',
-      text: 'Como o povo chama a Ponte Metálica?',
+      text: 'Como o povo chama esta ponte?',
       options: [
         { text: 'Ponte Velha', emoji: '🌉' },
         { text: 'Ponte do Arco-Íris', emoji: '🌈' },
         { text: 'Ponte de Chocolate', emoji: '🍫' },
       ],
-      fact: 'O povo chama de Ponte Velha! Ela é o cartão-postal de Cataguases.',
+      fact: 'Ponte Velha! Ela tem mais de cem anos.',
     },
     {
       id: 'rio',
@@ -392,152 +327,52 @@ export const QUESTIONS: Record<string, Question[]> = {
         { text: 'Rio Amazonas', emoji: '🐊' },
         { text: 'Rio Nilo', emoji: '🐫' },
       ],
-      fact: 'É o Rio Pomba! A ponte atravessa o rio e liga um lado da cidade ao outro.',
+      fact: 'O Rio Pomba!',
     },
     {
       id: 'ferro',
-      text: 'Do que é feita a Ponte Metálica?',
+      text: 'Do que a ponte é feita?',
       options: [
         { text: 'De ferro', emoji: '🔩' },
         { text: 'De madeira', emoji: '🪵' },
         { text: 'De papel', emoji: '📄' },
       ],
-      fact: 'De ferro! As peças são presas com rebites, uns pinos de metal. Parece um quebra-cabeça gigante!',
-    },
-    {
-      id: 'idade',
-      text: 'A ponte foi inaugurada em 1915. Quantos anos ela tem?',
-      options: [
-        { text: 'Mais de 100 anos', emoji: '🎂' },
-        { text: 'Só 1 ano', emoji: '🍼' },
-        { text: '10 anos', emoji: '🔟' },
-      ],
-      fact: 'Mais de 100 anos! Ela foi inaugurada no dia 14 de julho de 1915.',
-    },
-    {
-      id: 'cor',
-      text: 'Qual é a cor da ponte hoje?',
-      options: [
-        { text: 'Vermelha', emoji: '🔴' },
-        { text: 'Roxa', emoji: '🟣' },
-        { text: 'Verde', emoji: '🟢' },
-      ],
-      fact: 'Hoje ela é vermelha! Mas já foi pintada de branco e de prateado.',
-    },
-    {
-      id: 'servir',
-      text: 'Para que serve uma ponte?',
-      options: [
-        { text: 'Atravessar o rio', emoji: '🚶' },
-        { text: 'Guardar brinquedos', emoji: '🧸' },
-        { text: 'Fazer bolo', emoji: '🎂' },
-      ],
-      fact: 'Atravessar o rio! Com a ponte, a cidade cresceu para o outro lado do Rio Pomba.',
-    },
-    {
-      id: 'noite',
-      text: 'O que acontece com a ponte quando fica de noite?',
-      options: [
-        { text: 'Ela fica toda iluminada', emoji: '💡' },
-        { text: 'Ela vira um barco', emoji: '⛵' },
-        { text: 'Ela vai dormir', emoji: '😴' },
-      ],
-      fact: 'Ela fica toda iluminada! E as luzes aparecem de novo no rio, que nem um espelho.',
+      fact: 'De ferro! E ela é bem forte.',
     },
   ],
   museu: [
     {
       id: 'historia',
-      text: 'O Museu Energisa conta a história de quê?',
+      text: 'O museu conta a história de quê?',
       options: [
         { text: 'Da energia elétrica', emoji: '⚡' },
         { text: 'Dos dinossauros', emoji: '🦕' },
         { text: 'Dos piratas', emoji: '🦜' },
       ],
-      fact: 'Da energia elétrica! O museu conta como a luz chegou em Cataguases e na região.',
+      fact: 'Da energia elétrica!',
     },
     {
       id: 'turbina',
-      text: 'Como a água do rio vira energia elétrica?',
+      text: 'Como a água vira energia?',
       options: [
         { text: 'Girando uma turbina', emoji: '🌀' },
         { text: 'Esquentando no fogão', emoji: '🔥' },
         { text: 'Virando gelo', emoji: '🧊' },
       ],
-      fact: 'Girando uma turbina! A água empurra a turbina, ela gira e o gerador faz a energia.',
-    },
-    {
-      id: 'lampada',
-      text: 'Qual destas coisas precisa de energia elétrica?',
-      options: [
-        { text: 'A lâmpada', emoji: '💡' },
-        { text: 'A pedra', emoji: '🪨' },
-        { text: 'A árvore', emoji: '🌳' },
-      ],
-      fact: 'A lâmpada! A energia vem pelos fios dos postes até a nossa casa.',
-    },
-    {
-      id: 'cor',
-      text: 'Qual é a cor do prédio do museu?',
-      options: [
-        { text: 'Amarelo', emoji: '🟡' },
-        { text: 'Preto', emoji: '⚫' },
-        { text: 'Roxo', emoji: '🟣' },
-      ],
-      fact: 'Amarelinho, com enfeites brancos! É um casarão bem antigo, no estilo art nouveau.',
-    },
-    {
-      id: 'enfeites',
-      text: 'O que os enfeites de ferro do portão imitam?',
-      options: [
-        { text: 'Flores e folhas', emoji: '🌸' },
-        { text: 'Carros', emoji: '🚗' },
-        { text: 'Foguetes', emoji: '🚀' },
-      ],
-      fact: 'Flores e folhas! O estilo art nouveau gosta de curvas, como as plantas da natureza.',
-    },
-    {
-      id: 'forca-e-luz',
-      text: 'Como se chamava a empresa que trouxe a luz para Cataguases?',
-      options: [
-        { text: 'Força e Luz', emoji: '⚡' },
-        { text: 'Sorvete e Companhia', emoji: '🍦' },
-        { text: 'Circo da Alegria', emoji: '🎪' },
-      ],
-      fact: 'Companhia Força e Luz Cataguazes-Leopoldina! Ela nasceu em 1905 e hoje se chama Energisa.',
+      fact: 'Girando a turbina!',
     },
     {
       id: 'economizar',
-      text: 'Como a gente pode economizar energia?',
+      text: 'Como a gente economiza energia?',
       options: [
         { text: 'Apagar a luz ao sair', emoji: '💡' },
         { text: 'Deixar a TV ligada', emoji: '📺' },
         { text: 'Abrir a geladeira toda hora', emoji: '🧊' },
       ],
-      fact: 'Apagando a luz quando sai do quarto! Cada luz apagada é energia guardada.',
+      fact: 'Apagando a luz ao sair!',
     },
   ],
   'santa-rita': [
-    {
-      id: 'azulejo-cor',
-      text: 'Qual é a cor dos azulejos na frente da igreja?',
-      options: [
-        { text: 'Azul e branco', emoji: '🔵' },
-        { text: 'Vermelho', emoji: '🔴' },
-        { text: 'Verde', emoji: '🟢' },
-      ],
-      fact: 'Azulejos são plaquinhas de cerâmica pintadas. Juntinhas, elas formam um desenho bem grande!',
-    },
-    {
-      id: 'torre-cruz',
-      text: 'O que tem lá no alto da torre da igreja?',
-      options: [
-        { text: 'Uma cruz', emoji: '✝️' },
-        { text: 'Uma estrela', emoji: '⭐' },
-        { text: 'Um balão', emoji: '🎈' },
-      ],
-      fact: 'Dentro da torre mora o sino. Ele toca para avisar a hora da missa: blém, blém!',
-    },
     {
       id: 'nome-praca',
       text: 'Qual é o nome desta praça?',
@@ -546,37 +381,27 @@ export const QUESTIONS: Record<string, Question[]> = {
         { text: 'São João', emoji: '🔥' },
         { text: 'Santa Luzia', emoji: '🕯️' },
       ],
-      fact: 'Santa Rita é conhecida como a santa das rosas. Por isso, a rosa é o símbolo dela!',
+      fact: 'Santa Rita! A santa das rosas.',
+    },
+    {
+      id: 'torre-cruz',
+      text: 'O que tem no alto da torre?',
+      options: [
+        { text: 'Uma cruz', emoji: '✝️' },
+        { text: 'Uma estrela', emoji: '⭐' },
+        { text: 'Um balão', emoji: '🎈' },
+      ],
+      fact: 'Uma cruz! E lá dentro mora o sino.',
     },
     {
       id: 'espelho-agua',
-      text: 'O que fica na frente da igreja e parece um espelho?',
+      text: 'O que parece um espelho na frente da igreja?',
       options: [
         { text: 'Um laguinho', emoji: '💧' },
         { text: 'Uma praia', emoji: '🏖️' },
         { text: 'Uma montanha', emoji: '⛰️' },
       ],
-      fact: 'Quando a água fica paradinha, a igreja aparece de cabeça para baixo nela. Isso se chama reflexo!',
-    },
-    {
-      id: 'torre-forma',
-      text: 'Como é a torre da igreja?',
-      options: [
-        { text: 'Pontuda', emoji: '🔺' },
-        { text: 'Redonda', emoji: '⚪' },
-        { text: 'Quadrada', emoji: '🟦' },
-      ],
-      fact: 'A torre é pontuda e branquinha. Tem gente que acha que ela parece um foguete!',
-    },
-    {
-      id: 'brincar-praca',
-      text: 'O que as crianças podem fazer na praça?',
-      options: [
-        { text: 'Andar de bicicleta', emoji: '🚲' },
-        { text: 'Nadar no laguinho', emoji: '🏊' },
-        { text: 'Dirigir um carro', emoji: '🚗' },
-      ],
-      fact: 'A praça é lugar de brincar, passear e encontrar os amigos. Mas no laguinho não se nada, tá?',
+      fact: 'O laguinho! A igreja aparece nele.',
     },
   ],
 };
@@ -702,9 +527,10 @@ export function setMuted(v: boolean) {
 type Voice = { gender: 'm' | 'f'; rate: number; pitch: number };
 const VOICES: Record<string, Voice> = {
   narrador: { gender: 'f', rate: 0.95, pitch: 1.1 },
+  pomba: { gender: 'f', rate: 0.95, pitch: 1.1 },
   'seu-zico': { gender: 'm', rate: 0.86, pitch: 0.85 },
   sektor: { gender: 'm', rate: 1.02, pitch: 1 },
-  'dona-cida': { gender: 'f', rate: 0.88, pitch: 1.05 },
+  'dona-rosa': { gender: 'f', rate: 0.88, pitch: 1.05 },
 };
 const MALE = /antonio|daniel|donato|fabio|humberto|julio|nicolau|valerio|ricardo|male|masculin/i;
 const FEMALE = /francisca|thalita|maria|leila|leticia|manuela|yara|giovanna|brenda|elza|luciana|female|feminin/i;

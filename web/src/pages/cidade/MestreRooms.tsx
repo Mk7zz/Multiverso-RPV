@@ -10,7 +10,7 @@ import type { Place } from '../../lib/world';
  *   mesa com toalha xadrez e pão de queijo, gato dormindo.
  * - Estúdio do Sektor: muro de tijolo com grafite "HIP HOP", toca-discos girando, caixas de som
  *   pulsando no ritmo, luzes de palco, discos na parede e o tapete de breaking.
- * - Ateliê da Dona Cida: papel de parede florido, quadro em ponto cruz, bastidores pendurados,
+ * - Ateliê da Dona Rosa: papel de parede florido, quadro em ponto cruz, bastidores pendurados,
  *   máquina de costura, carretéis coloridos, cesta de novelos e gatinho brincando.
  * Em todos: luz do sol entrando pela janela e sombra onde a parede encontra o chão e o teto.
  * O Mestre aparece por cima, à esquerda; `fx` é o centro do enquadramento no celular em pé.
@@ -426,7 +426,7 @@ const Studio = memo(function Studio({ time }: { time: DayTime }) {
   );
 });
 
-/* ---- Ateliê da Dona Cida ---- */
+/* ---- Ateliê da Dona Rosa ---- */
 
 const STITCH = toRuns(
   outline(

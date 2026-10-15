@@ -7,7 +7,7 @@ import { Pixels } from './Scene';
  * equipe definir as características de cada mestre.
  * - Seu Zico: chapéu de palha, cabelo e bigode brancos, camisa xadrez e bengala.
  * - Sektor: boné de aba reta, moletom, corrente, fone no pescoço e tênis (Hip Hop).
- * - Dona Cida: coque grisalho, óculos, vestido florido, avental e bastidor de bordado.
+ * - Dona Rosa: coque grisalho, óculos, vestido florido, avental e bastidor de bordado.
  */
 
 const INK = '#1b2b33';
@@ -125,10 +125,10 @@ const SEKTOR: Look = {
   shut: '...sSssssSs...',
 };
 
-const CIDA_HEAD = ['......gg......', '.....gGGg.....', '....gggggg....', '...gggggggg...', '...gssssssg...', '...lklsslkl...', '...smssssms...'];
-const CIDA_SKIRT = ['..dDddDddDdd..', '..ddDddDddDd..', '...dddddddd...', '....ss..ss....', '...ooo..ooo...'];
+const ROSA_HEAD = ['......gg......', '.....gGGg.....', '....gggggg....', '...gggggggg...', '...gssssssg...', '...lklsslkl...', '...smssssms...'];
+const ROSA_SKIRT = ['..dDddDddDdd..', '..ddDddDddDd..', '...dddddddd...', '....ss..ss....', '...ooo..ooo...'];
 
-const CIDA: Look = {
+const ROSA: Look = {
   pal: {
     g: '#d4d2cb', // cabelo grisalho
     G: '#a3a39c',
@@ -147,7 +147,7 @@ const CIDA: Look = {
     o: '#6b4423', // sapatos
   },
   stand: [
-    ...CIDA_HEAD,
+    ...ROSA_HEAD,
     '....ssSSss....',
     '......ss......',
     '...ddyddydd...',
@@ -157,10 +157,10 @@ const CIDA: Look = {
     '..dsHrwwHsdd..',
     '..dsHwywHsdd..',
     '..ddHHHHHddd..',
-    ...CIDA_SKIRT,
+    ...ROSA_SKIRT,
   ],
   wave: [
-    ...CIDA_HEAD,
+    ...ROSA_HEAD,
     '.s..ssSSss....',
     '.d....ss......',
     '.ddddyddydd...',
@@ -170,7 +170,7 @@ const CIDA: Look = {
     '...dHrwwHsdd..',
     '...dHwywHsdd..',
     '...dHHHHHddd..',
-    ...CIDA_SKIRT,
+    ...ROSA_SKIRT,
   ],
   eyes: 5,
   shut: '...lSlsslSl...',
@@ -190,7 +190,7 @@ export type MasterFrame = 'stand' | 'blink' | 'wave';
 const ART: Record<string, Record<MasterFrame, Run[]> & { w: number; h: number }> = {
   'seu-zico': build(ZICO),
   sektor: build(SEKTOR),
-  'dona-cida': build(CIDA),
+  'dona-rosa': build(ROSA),
 };
 
 const art = (id: string) => ART[id] ?? ART['seu-zico'];

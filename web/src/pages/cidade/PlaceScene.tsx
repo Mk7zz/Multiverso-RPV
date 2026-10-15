@@ -2,7 +2,8 @@ import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState, ty
 import { randomLook, ridgePath } from '../../components/CityWorld';
 import { GuideSprite, Pixels, treeRuns, type DayTime } from '../../components/Scene';
 import { Character, PlaceArt } from '../../components/World';
-import { addPoints, getFound, saveFound, sfx, speak, type CityPlace } from '../../lib/cidade';
+import { addPoints, getFound, saveFound, say as sayVoice, sfx, type CityPlace } from '../../lib/cidade';
+import { POMBA, POMBA_CLIPS } from '../../lib/vozes';
 import { fromAscii, outline, seeded, shade, toRuns } from '../../lib/pixel';
 import type { AvatarConfig } from '../../lib/types';
 
@@ -1245,7 +1246,7 @@ export const PlaceScene = memo(function PlaceScene({ place, time, onPoints }: { 
     const missing = DISCOVERIES.filter((d) => !foundRef.current.includes(d.key));
     const tip = missing.length ? (missing[0].key === 'bicho' && night ? 'Toque nos vagalumes! ✨' : pick(missing).tip) : 'Você é um ótimo explorador! ⭐';
     dove.current = { text: tip, until: t + 4 };
-    speak(tip.replace(/[^\p{L}\p{N}\s!?.,]/gu, ''));
+    sayVoice([POMBA_CLIPS.tip], POMBA);
   };
 
   // Arrastar para os lados (quando a praça não cabe inteira na tela).

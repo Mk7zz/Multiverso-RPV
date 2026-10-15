@@ -1,135 +1,166 @@
-# Roteiro de vozes dos Mestres do Saber
+# Roteiro de vozes
 
 > Gerado a partir do jogo (`npm run roteiro -w web`). Não edite à mão: mude a fala no código e gere de novo.
 
-São 47 falas curtas, divididas entre os três mestres e gravadas por crianças. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
+São 52 falas curtas, gravadas por crianças: 30 com menina e 22 com menino. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
 
 ## Como gravar
 
-- **Um arquivo por fala**, com o nome exato da coluna "Arquivo" e terminando em `.mp3` (ex.: `entrada.mp3`). Também vale `.m4a` (gravador do Windows e iPhone), `.opus` (áudio do WhatsApp), `.ogg` ou `.wav`.
-- Coloque os arquivos na pasta do mestre: `web/public/vozes/<pasta>/` (crie a pasta se ainda não existir). O nome da pasta de cada um aparece no título dele, abaixo.
+- **Um arquivo por fala**, com o nome exato da coluna "Arquivo" (ex.: `entrada.mp3`). Vale `.mp3`, `.m4a` (gravador do Windows e iPhone), `.opus` (áudio do WhatsApp), `.ogg` ou `.wav`.
+- Coloque os arquivos na pasta de quem fala: `web/public/vozes/<pasta>/`. O nome da pasta aparece no título de cada personagem, abaixo.
 - Pode gravar no celular, num lugar silencioso, com o aparelho a um palmo da boca.
 - Fale **devagar e bem claro**: quem escuta também são crianças aprendendo a ler.
 - Deixe só um respiro de silêncio no começo e no fim. Se errar, grave a fala inteira de novo.
-- Leia o texto como está escrito, com o jeitinho de cada personagem. Os emojis foram tirados do roteiro.
-- Vale fazer voz de personagem (vovô, vovó, rapaz do Hip Hop), mas o mais importante é dar para entender cada palavra.
-- Se alguma palavra soar estranha na boca do personagem, anote. A gente ajusta o texto e gera o roteiro de novo.
+- Os emojis foram tirados do roteiro. A coluna "Gravada" mostra o que já está na pasta.
 
-## Seu Zico (pasta `seu-zico`)
+## Falas para gravar com menina
 
-**Como fala:** Um vovô da roça, calmo e brincalhão. Pode engrossar um pouquinho a voz e falar devagar, sem pressa.
-
-### Quando a criança entra
-
-| Arquivo | Fala |
-| --- | --- |
-| `entrada.mp3` | Ô de fora! Você entrou na casa do Seu Zico. Bora jogar? |
-
-### Quando acerta
-
-| Arquivo | Fala |
-| --- | --- |
-| `acerto-1.mp3` | Ô trem bão! Acertou em cheio! |
-| `acerto-2.mp3` | Nó, cê sabe das coisas, hein! |
-
-### Quando erra
-
-| Arquivo | Fala |
-| --- | --- |
-| `erro-1.mp3` | Ih, quase! Mas não esquenta, não. |
-| `erro-2.mp3` | Uai, errar faz parte! Escuta só... |
-
-### Perguntas e curiosidades
-
-| Arquivo | Fala |
-| --- | --- |
-| `causo-pergunta.mp3` | Aqui em casa todo mundo gosta de causo. Mas cê sabe o que é um causo? |
-| `causo-curiosidade.mp3` | Causo é uma história contada de boca em boca. E cada um que conta aumenta um pouquinho! |
-| `rio-pomba-pergunta.mp3` | Lá do quintal dá pra ouvir o barulhinho da água. Sabe qual rio é? |
-| `rio-pomba-curiosidade.mp3` | É o Rio Pomba! Ele atravessa a cidade. Quando eu era menino, pescava lambari nele. |
-| `pao-de-queijo-pergunta.mp3` | Hum, que cheirinho bom saindo do forno! Adivinha o que é? |
-| `pao-de-queijo-curiosidade.mp3` | Pão de queijo! Em Minas, bolo, biscoito e pão de queijo têm um nome só: quitanda! |
-| `folia-pergunta.mp3` | Todo começo de ano, a Folia de Reis bate aqui na porta. Sabe o que é a Folia de Reis? |
-| `folia-curiosidade.mp3` | É a Folia de Reis! Eles cantam de casa em casa, com viola e sanfona, até 6 de janeiro. |
-| `piao-pergunta.mp3` | No meu tempo de menino não tinha videogame, não. Sabe do que a gente brincava? |
-| `piao-curiosidade.mp3` | Pião, peteca, bola de gude e pipa! E a gente mesmo fazia os brinquedos. |
-| `fogao-lenha-pergunta.mp3` | A comida aqui de casa tem um gostinho especial. Sabe onde ela é feita? |
-| `fogao-lenha-curiosidade.mp3` | No fogão a lenha! A comida fica com gostinho de fumaça. Por isso sai fumaça da chaminé! |
-
-## Sektor (pasta `sektor`)
-
-**Como fala:** Um rapaz animado do Hip Hop. Fala com ritmo e alegria, como quem está numa roda de dança.
-
-### Quando a criança entra
-
-| Arquivo | Fala |
-| --- | --- |
-| `entrada.mp3` | Oi! Você entrou no estúdio do Sektor. Bora pro desafio? |
-
-### Quando acerta
-
-| Arquivo | Fala |
-| --- | --- |
-| `acerto-1.mp3` | Acertou na batida, resposta garantida! |
-| `acerto-2.mp3` | É nóis! Cê manja muito! |
-
-### Quando erra
-
-| Arquivo | Fala |
-| --- | --- |
-| `erro-1.mp3` | Errar faz parte do rolê. Bora aprender! |
-| `erro-2.mp3` | Sem estresse! Se liga que eu te explico. |
-
-### Perguntas e curiosidades
-
-| Arquivo | Fala |
-| --- | --- |
-| `elementos-pergunta.mp3` | O Hip Hop tem uns elementos que andam sempre juntos. Sabe um deles? |
-| `elementos-curiosidade.mp3` | O Hip Hop tem DJ, MC, breaking e grafite. E o quinto elemento: o conhecimento! |
-| `grafite-pergunta.mp3` | Olha esse muro colorido atrás de mim! Sabe o que é o grafite? |
-| `grafite-curiosidade.mp3` | Grafite é arte pintada no muro! Mas antes tem que pedir licença pro dono do muro. |
-| `origem-pergunta.mp3` | O Hip Hop rodou o mundo até chegar aqui. Sabe onde ele nasceu? |
-| `origem-curiosidade.mp3` | Nasceu em Nova York, nas festas de rua, lá nos anos 1970. Depois chegou no Brasil! |
-| `freeze-pergunta.mp3` | No breaking tem um passo em que a gente fica paradinho, igual estátua. Qual é? |
-| `freeze-curiosidade.mp3` | É o freeze: congelar numa pose! O breaking já foi até esporte nas Olimpíadas. |
-
-## Dona Cida (pasta `dona-cida`)
+### Dona Rosa (pasta `dona-rosa`)
 
 **Como fala:** Uma vovó carinhosa. Fala devagar e com doçura, como quem conversa com um netinho.
 
-### Quando a criança entra
+#### Quando a criança entra
 
-| Arquivo | Fala |
-| --- | --- |
-| `entrada.mp3` | Oi, minha flor! Você entrou na casa da Dona Cida. Vamos brincar? |
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `entrada.mp3` | Oi, minha flor! Essa é a casa da Dona Rosa. Vamos brincar? |  |
 
-### Quando acerta
+#### Quando acerta
 
-| Arquivo | Fala |
-| --- | --- |
-| `acerto-1.mp3` | Muito bem, minha flor! Que orgulho! |
-| `acerto-2.mp3` | Nossa, que capricho! Acertou! |
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `acerto-1.mp3` | Muito bem, minha flor! |  |
 
-### Quando erra
+#### Quando erra
 
-| Arquivo | Fala |
-| --- | --- |
-| `erro-1.mp3` | Quase! Devagarinho a gente aprende. |
-| `erro-2.mp3` | Não tem problema, meu anjo. Eu te explico. |
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `erro-1.mp3` | Quase, meu anjo! Escuta só. |  |
 
-### Perguntas e curiosidades
+#### Perguntas e curiosidades
 
-| Arquivo | Fala |
-| --- | --- |
-| `agulha-pergunta.mp3` | Pra bordar, a gente precisa de duas coisinhas. Sabe quais são? |
-| `agulha-curiosidade.mp3` | Agulha e linha! A agulha leva a linha pra lá e pra cá, e cada furinho vira um pontinho. |
-| `bastidor-pergunta.mp3` | Tá vendo esse aro de madeira na minha mão? É o bastidor. Sabe pra que ele serve? |
-| `bastidor-curiosidade.mp3` | O bastidor deixa o pano esticadinho, igual um tamborzinho. Aí o bordado fica retinho! |
-| `ponto-cruz-pergunta.mp3` | Tem um ponto feito de xizinhos, um do ladinho do outro. Adivinha o nome! |
-| `ponto-cruz-curiosidade.mp3` | É o ponto cruz! Cada xizinho é um quadradinho colorido, igual à pixel arte deste jogo. |
-| `pano-de-prato-pergunta.mp3` | Na casa da vó sempre tem bordado escondido em algum lugar. Sabe onde? |
-| `pano-de-prato-curiosidade.mp3` | Em pano de prato e toalha! Aqui em Minas, a gente borda flor, bichinho e até nome. |
-| `aprender-pergunta.mp3` | Eu aprendi a bordar quando era pequenininha. Sabe como? |
-| `aprender-curiosidade.mp3` | Com alguém que já sabe! Eu aprendi com a minha avó, e ela aprendeu com a mãe dela. |
-| `novelo-pergunta.mp3` | Meu gato tem o nome de uma coisa desta cesta. Sabe o que é um novelo? |
-| `novelo-curiosidade.mp3` | Novelo é a linha enroladinha numa bola. Por isso meu gato se chama Novelo! |
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `agulha-pergunta.mp3` | Pra bordar, a gente usa o quê? |  |
+| `agulha-curiosidade.mp3` | Agulha e linha! Cada furinho vira um pontinho. |  |
+| `ponto-cruz-pergunta.mp3` | Tem um ponto feito de xizinhos. Qual é? |  |
+| `ponto-cruz-curiosidade.mp3` | Ponto cruz! Feito de xizinhos. |  |
+| `aprender-pergunta.mp3` | Como será que eu aprendi a bordar? |  |
+| `aprender-curiosidade.mp3` | Com quem já sabe! Eu aprendi com a minha avó. |  |
+
+### Pomba (narradora dos lugares) (pasta `pomba`)
+
+**Como fala:** A pombinha guia, alegre e animada, que passeia com a criança pela cidade.
+
+#### Em todos os lugares
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `acerto.mp3` | Parabéns! Você acertou! |  |
+| `erro.mp3` | Quase! Tente de novo. |  |
+| `dica.mp3` | Toque nas coisas para descobrir! |  |
+
+#### Praça Santa Rita
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `santa-rita-nome-praca-pergunta.mp3` | Qual é o nome desta praça? |  |
+| `santa-rita-nome-praca-curiosidade.mp3` | Santa Rita! A santa das rosas. |  |
+| `santa-rita-torre-cruz-pergunta.mp3` | O que tem no alto da torre? |  |
+| `santa-rita-torre-cruz-curiosidade.mp3` | Uma cruz! E lá dentro mora o sino. |  |
+| `santa-rita-espelho-agua-pergunta.mp3` | O que parece um espelho na frente da igreja? |  |
+| `santa-rita-espelho-agua-curiosidade.mp3` | O laguinho! A igreja aparece nele. |  |
+
+#### Ponte Metálica
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `ponte-apelido-pergunta.mp3` | Como o povo chama esta ponte? |  |
+| `ponte-apelido-curiosidade.mp3` | Ponte Velha! Ela tem mais de cem anos. |  |
+| `ponte-rio-pergunta.mp3` | Qual rio passa embaixo da ponte? |  |
+| `ponte-rio-curiosidade.mp3` | O Rio Pomba! |  |
+| `ponte-ferro-pergunta.mp3` | Do que a ponte é feita? |  |
+| `ponte-ferro-curiosidade.mp3` | De ferro! E ela é bem forte. |  |
+
+#### Museu Energisa
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `museu-historia-pergunta.mp3` | O museu conta a história de quê? |  |
+| `museu-historia-curiosidade.mp3` | Da energia elétrica! |  |
+| `museu-turbina-pergunta.mp3` | Como a água vira energia? |  |
+| `museu-turbina-curiosidade.mp3` | Girando a turbina! |  |
+| `museu-economizar-pergunta.mp3` | Como a gente economiza energia? |  |
+| `museu-economizar-curiosidade.mp3` | Apagando a luz ao sair! |  |
+
+## Falas para gravar com menino
+
+### Seu Zico (pasta `seu-zico`)
+
+**Como fala:** Um vovô da roça, calmo e brincalhão. Pode engrossar um pouquinho a voz e falar devagar, sem pressa.
+
+#### Quando a criança entra
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `entrada.mp3` | Ô de fora! Essa é a casa do Seu Zico. Bora jogar? |  |
+
+#### Quando acerta
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `acerto-1.mp3` | Ô trem bão! Acertou! |  |
+
+#### Quando erra
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `erro-1.mp3` | Uai, quase! Escuta só. |  |
+
+#### Perguntas e curiosidades
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `causo-pergunta.mp3` | Cê sabe o que é um causo? |  |
+| `causo-curiosidade.mp3` | É uma história contada de boca em boca! |  |
+| `rio-pomba-pergunta.mp3` | Que rio passa aqui em Cataguases? |  |
+| `rio-pomba-curiosidade.mp3` | O Rio Pomba! Eu pescava lambari nele. |  |
+| `pao-de-queijo-pergunta.mp3` | Que cheirinho bom! Adivinha o que é? |  |
+| `pao-de-queijo-curiosidade.mp3` | Pão de queijo, uai! O orgulho de Minas. |  |
+
+### Sektor (pasta `sektor`)
+
+**Como fala:** Um rapaz animado do Hip Hop. Fala com ritmo e alegria, como quem está numa roda de dança.
+
+#### Quando a criança entra
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `entrada.mp3` | Oi! Você entrou no estúdio do Sektor. Bora pro desafio? | sim |
+
+#### Quando acerta
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `acerto-1.mp3` | Acertou na batida, resposta garantida! | sim |
+| `acerto-2.mp3` | É nóis! Cê manja muito! | sim |
+
+#### Quando erra
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `erro-1.mp3` | Errar faz parte do rolê. Bora aprender! | sim |
+| `erro-2.mp3` | Sem estresse! Se liga que eu te explico. | sim |
+
+#### Perguntas e curiosidades
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `elementos-pergunta.mp3` | O Hip Hop tem uns elementos que andam sempre juntos. Sabe um deles? | sim |
+| `elementos-curiosidade.mp3` | O Hip Hop tem DJ, MC, breaking e grafite. E o quinto elemento: o conhecimento! | sim |
+| `grafite-pergunta.mp3` | Olha esse muro colorido atrás de mim! Sabe o que é o grafite? | sim |
+| `grafite-curiosidade.mp3` | Grafite é arte pintada no muro! Mas antes tem que pedir licença pro dono do muro. | sim |
+| `origem-pergunta.mp3` | O Hip Hop rodou o mundo até chegar aqui. Sabe onde ele nasceu? | sim |
+| `origem-curiosidade.mp3` | Nasceu em Nova York, nas festas de rua, lá nos anos 1970. Depois chegou no Brasil! | sim |
+| `freeze-pergunta.mp3` | No breaking tem um passo em que a gente fica paradinho, igual estátua. Qual é? | sim |
+| `freeze-curiosidade.mp3` | É o freeze: congelar numa pose! O breaking já foi até esporte nas Olimpíadas. | sim |

@@ -1,7 +1,8 @@
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
 import { ridgePath } from '../../components/CityWorld';
 import { GuideSprite, Pixels, treeRuns, type DayTime } from '../../components/Scene';
-import { addPoints, getFound, saveFound, sfx, speak } from '../../lib/cidade';
+import { addPoints, getFound, saveFound, say, sfx } from '../../lib/cidade';
+import { POMBA, POMBA_CLIPS } from '../../lib/vozes';
 import { fromAscii, outline, seeded, shade, toRuns, type Run } from '../../lib/pixel';
 
 /*
@@ -861,7 +862,7 @@ export function SceneHud({
     const d = missing.length ? pick(missing) : null;
     const tip = d ? (night && d.nightTip) || d.tip : 'Você é um ótimo explorador! ⭐';
     dove.current = { text: tip, from: t, until: t + 4 };
-    speak(tip);
+    say([POMBA_CLIPS.tip], POMBA);
   };
   const done = found.length >= list.length;
   const showDove = dove.current.from <= t && dove.current.until > t;
