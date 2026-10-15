@@ -3,7 +3,16 @@
  * x/y é a porta de cada lugar: onde o personagem para para entrar. Para outra instância
  * (white label), basta renomear, mover ou trocar as rotas aqui.
  */
-export type PlaceKind = 'house' | 'tower' | 'board' | 'fountain' | 'post' | 'hall' | 'arena' | 'stage' | 'church';
+export type PlaceKind = 'house' | 'tower' | 'board' | 'fountain' | 'post' | 'hall' | 'arena' | 'stage' | 'church' | 'mestre';
+
+/** Mestre do Saber: personagem da cultura popular que mora numa casinha do mapa e conversa com a criança. */
+export interface Master {
+  name: string;
+  /** Falas da conversa, uma por caixa de diálogo. */
+  lines: string[];
+  /** Frases curtas que aparecem no balão quando ele está parado na porta. */
+  greetings: string[];
+}
 
 export interface Place {
   id: string;
@@ -20,6 +29,8 @@ export interface Place {
   wall?: string;
   /** Lugar ainda não liberado (mostra um cadeado e não abre). */
   soon?: boolean;
+  /** Casa de um Mestre do Saber: entrar abre a conversa com ele em vez de trocar de tela. */
+  master?: Master;
 }
 
 export const WORLD_W = 320;

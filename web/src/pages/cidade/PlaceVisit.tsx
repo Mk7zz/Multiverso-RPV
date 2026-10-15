@@ -3,8 +3,7 @@ import { Link, Navigate, useParams } from 'react-router';
 import { PixelIcon } from '../../components/PixelIcon';
 import { GuideSprite, useDayTime } from '../../components/Scene';
 import { addPoints, CITY_INFO, getPoints, markSeen, nextQuestion, sfx, shuffle, speak, type CityPlace, type Option } from '../../lib/cidade';
-import { useDocumentTitle } from '../../lib/hooks';
-import { ScoreBadge, SoundToggle } from './CityHud';
+import { ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
 import { PlaceScene } from './PlaceScene';
 
 const CONFETTI = ['#f2b705', '#12a3a0', '#d64545', '#8cc63f', '#2f5fb3', '#ec6a8c'];
@@ -33,7 +32,7 @@ export function PlaceVisit() {
 }
 
 function Visit({ place }: { place: CityPlace }) {
-  useDocumentTitle(place.title);
+  useCityTitle(place.title);
   const time = useDayTime();
   const [question, setQuestion] = useState(() => nextQuestion(place.id));
   const choices = useMemo<Choice[]>(() => (question ? shuffle(question.options.map((o, i) => ({ ...o, right: i === 0 }))) : []), [question]);

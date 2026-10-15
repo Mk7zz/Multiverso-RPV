@@ -16,13 +16,13 @@ export function useTypewriter(text: string, speed = 22) {
   return { shown: text.slice(0, n), done: n >= text.length, finish: () => setN(text.length) };
 }
 
-/** Caixa de diálogo com a guia do mundo falando. */
-export function Dialogue({ text, children, speaker = BRAND.guide.name, compact }: { text: string; children?: ReactNode; speaker?: string; compact?: boolean }) {
+/** Caixa de diálogo com a guia do mundo falando (ou outro personagem, com `speaker` e `portrait`). */
+export function Dialogue({ text, children, speaker = BRAND.guide.name, portrait, compact }: { text: string; children?: ReactNode; speaker?: string; portrait?: ReactNode; compact?: boolean }) {
   const { shown, done, finish } = useTypewriter(text);
   return (
     <div className={`dialogue ${compact ? 'compact' : ''}`} onClick={finish}>
       <div className="dialogue-portrait">
-        <GuideSprite size={compact ? 48 : 64} />
+        {portrait ?? <GuideSprite size={compact ? 48 : 64} />}
       </div>
       <div className="dialogue-main">
         <span className="dialogue-name">{speaker}</span>

@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router';
 import { CityWorld } from '../../components/CityWorld';
 import { useDayTime } from '../../components/Scene';
 import { CITY_PLACES, sfx } from '../../lib/cidade';
-import { useDocumentTitle } from '../../lib/hooks';
-import { APP_NAME, enterFullscreenOnTouch } from './CityHud';
+import { APP_NAME, enterFullscreenOnTouch, TAGLINE, useCityTitle } from './CityHud';
 
 /** Tela de abertura: a cidade viva ao fundo, o título em pixel (como o do Multiverso) e o botão Começar. */
 export function StartScreen() {
-  useDocumentTitle('');
+  useCityTitle();
   const navigate = useNavigate();
   const time = useDayTime();
   const [leaving, setLeaving] = useState(false);
@@ -21,7 +20,6 @@ export function StartScreen() {
   };
 
   useEffect(() => {
-    document.title = APP_NAME;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !(e.target instanceof HTMLButtonElement)) play();
     };
@@ -35,7 +33,7 @@ export function StartScreen() {
       <CityWorld places={CITY_PLACES} time={time} demo paused={leaving} />
       <div className="start-shade" aria-hidden />
       <main className="start-center">
-        <p className="title-welcome">Seja bem-vindo(a) à</p>
+        <p className="title-welcome">Sejam bem-vindos ao</p>
         <h1 className="title-logo start-title" aria-label={APP_NAME}>
           {/* Palavra por palavra: em telas estreitas o título quebra entre elas, nunca no meio. */}
           {APP_NAME.split(' ').map((word, w, words) => {
@@ -51,6 +49,7 @@ export function StartScreen() {
             );
           })}
         </h1>
+        <p className="start-tagline">{TAGLINE}</p>
         <button className="start-play" onClick={play} autoFocus>
           Começar
         </button>

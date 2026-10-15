@@ -40,10 +40,55 @@ const SANTA_RITA: CityPlace = {
   y: 86,
 };
 
+/*
+ * Mestres do Saber: pessoas da cultura popular que guardam histórias, músicas e costumes.
+ * Cada um mora numa casinha do mapa; entrar abre uma conversa com ele.
+ * Falas provisórias do Seu Zico: trocar quando a equipe definir as características dele.
+ */
+const SEU_ZICO: Place = {
+  id: 'seu-zico',
+  label: 'Casa do Seu Zico',
+  hint: 'Converse com o Mestre do Saber',
+  to: '/mapa',
+  icon: 'scroll',
+  kind: 'mestre',
+  x: 36,
+  y: 142,
+  wall: '#f4a3c4',
+  roof: '#c4553a',
+  master: {
+    name: 'Seu Zico',
+    lines: [
+      'Ô de casa! Quem chegou? Eu sou o Seu Zico, Mestre do Saber aqui de Cataguases!',
+      'Mestre do Saber é quem guarda as histórias, as músicas e os costumes do nosso povo.',
+      'Tudo o que eu sei, aprendi escutando os mais velhos. Agora é a sua vez de aprender!',
+      'Logo, logo vou te contar os meus causos. Volte sempre para prosear comigo!',
+    ],
+    greetings: ['Ô de casa! 👋', 'Vem prosear! ☕', 'Eu sou o Seu Zico!', 'Quer ouvir um causo? 📜', 'Bom dia, criançada! 🌞'],
+  },
+};
+
+/** Segunda casa de Mestre do Saber, reservada para o próximo personagem. */
+const MESTRE_2: Place = {
+  id: 'mestre-2',
+  label: 'Mestre do Saber',
+  hint: 'Um novo Mestre do Saber vai chegar!',
+  to: '/mapa',
+  icon: 'scroll',
+  kind: 'mestre',
+  x: 96,
+  y: 164,
+  wall: '#f6dc8a',
+  roof: '#b5523b',
+  soon: true,
+};
+
 /** Os demais lugares do mapa ficam com cadeado até ganharem desenho e perguntas. */
 export const CITY_PLACES: Place[] = [
   SANTA_RITA,
-  ...PLACES.filter((p) => p.id !== 'academia').map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
+  SEU_ZICO,
+  MESTRE_2,
+  ...PLACES.filter((p) => !['academia', 'casa', 'correio'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
 ];
 
 export const CITY_INFO: Record<string, CityPlace> = { [SANTA_RITA.id]: SANTA_RITA };

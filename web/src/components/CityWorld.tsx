@@ -1,10 +1,11 @@
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent, type PointerEvent, type ReactNode, type RefObject } from 'react';
-import { sfx } from '../lib/cidade';
+import { sfx, speak } from '../lib/cidade';
 import { seeded } from '../lib/pixel';
 import type { AvatarConfig } from '../lib/types';
 import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, riverX, RIVER_HALF, SPAWN, WORLD_H as H, WORLD_W as W, type Place } from '../lib/world';
 import { AVATAR_PALETTES, DEFAULT_AVATAR } from './Avatar';
 import { Dialogue } from './Dialogue';
+import { ZicoPortrait, ZicoSprite, type ZicoFrame } from './Mestres';
 import { PixelIcon } from './PixelIcon';
 import { birdDown, birdUp, Pixels, treeRuns, TREE_H, TREE_W, type DayTime } from './Scene';
 import { Building, Character, makeTrees } from './World';
@@ -53,9 +54,9 @@ export function randomLook(): AvatarConfig {
   };
 }
 
-const NPC_LINES_DAY = ['Oi! 👋', 'Que dia bonito! ☀️', 'Já foi na Praça Santa Rita? ⛪', 'Bora explorar Cataguases!', '🎵 lá lá lá', 'Olha a pombinha! 🕊️', 'Bom passeio! 😊'];
+const NPC_LINES_DAY = ['Oi! 👋', 'Que dia bonito! ☀️', 'Já foi na Praça Santa Rita? ⛪', 'Bora explorar Cataguases!', '🎵 lá lá lá', 'Olha a pombinha! 🕊️', 'Bom passeio! 😊', 'Já foi prosear com o Seu Zico? 🏡'];
 const NPC_LINES_NIGHT = ['Boa noite! 🌙', 'Olha os vagalumes! ✨', 'Que céu estrelado! ⭐', 'Hora de passear 🚶'];
-const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️'];
+const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️', 'Pruu! O Seu Zico mora na casinha rosa! 🏡'];
 
 /* ---- Cenário fixo (gerado uma vez) ---- */
 
@@ -90,7 +91,9 @@ function makeScenery(places: Place[]) {
   const tufts = scatter(120, (x, y) => ({ x, y, dur: 1.8 + rand() * 2.6, delay: -rand() * 4, c: rand() > 0.5 ? '#4f8f2c' : '#6fae3c' }));
   const flowers = scatter(70, (x, y) => ({ x, y, dur: 2.2 + rand() * 2.4, delay: -rand() * 4, c: ['#f2b705', '#ffffff', '#ec6a8c', '#b48ae0', '#ff8a5c'][Math.floor(rand() * 5)] }));
   const pebbles = Array.from({ length: 90 }, () => ({ x: 10 + Math.round(rand() * (W - 20)), y: MAIN_PATH.y + 1 + Math.round(rand() * (MAIN_PATH.h - 2)) })).filter((p) => !inRiver(p.x, p.y + 20));
-  const lamps = [44, 118, 186, 232, 276].map((x) => ({ x, y: MAIN_PATH.y - 1, dur: 2 + rand() * 3 }));
+  const lamps = [44, 118, 186, 232, 276]
+    .filter((x) => !places.some((p) => p.kind === 'mestre' && Math.abs(x - p.x) < 24))
+    .map((x) => ({ x, y: MAIN_PATH.y - 1, dur: 2 + rand() * 3 }));
   const benches = [
     { x: 122, y: 147 },
     { x: 166, y: 147 },
@@ -387,7 +390,7 @@ export interface CityWorldProps {
   children?: ReactNode;
 }
 
-export function CityWorld({ places, time, onArrive, demo, introLines, introKey = 'cidade:intro', paused, children }: CityWorldProps) {
+export function CityWorld({ places, time, onArrive, demo, introLines, introKey = 'cidade:intro:v2', paused, children }: CityWorldProps) {
   const night = time === 'night';
   const scenery = useMemo(() => makeScenery(places), [places]);
   const targets = useMemo<Vec[]>(
@@ -426,6 +429,9 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
   const [, render] = useReducer((n: number) => n + 1, 0);
   const [shaking, setShaking] = useState<string | null>(null);
   const [soon, setSoon] = useState<{ p: Place; until: number } | null>(null);
+  const [talk, setTalk] = useState<{ p: Place; i: number } | null>(null);
+  /** Mestres do Saber parados na porta de casa: balão de saudação e piscadas, cada um no seu tempo. */
+  const masters = useRef(new Map<string, { say: string | null; until: number; next: number; blink: number }>());
   const [intro, setIntro] = useState<number | null>(() => {
     if (demo || !introLines?.length) return null;
     try {
@@ -442,8 +448,27 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
       setSoon({ p, until: clock.current + 2.6 });
       return;
     }
+    if (p.master) {
+      sfx('pop');
+      setTalk({ p, i: 0 });
+      speak(p.master.lines[0]);
+      return;
+    }
     const { s } = size.current;
     onArrive?.(p, { x: (p.x - cam.current.x) * s, y: (p.y - 14 - cam.current.y) * s });
+  };
+
+  const talkTo = (i: number) => {
+    if (!talk?.p.master) return;
+    if (i >= talk.p.master.lines.length) return closeTalk();
+    sfx('pop');
+    setTalk({ p: talk.p, i });
+    speak(talk.p.master.lines[i]);
+  };
+  const closeTalk = () => {
+    setTalk(null);
+    window.speechSynthesis?.cancel();
+    viewport.current?.focus({ preventScroll: true });
   };
 
   const spawn = (kind: PKind, x: number, y: number, o: Partial<Particle> = {}) => {
@@ -678,6 +703,20 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
         }
       }
 
+      // Mestres do Saber cumprimentam quem passa
+      for (const pl of places) {
+        if (!pl.master || pl.soon) continue;
+        let m = masters.current.get(pl.id);
+        if (!m) masters.current.set(pl.id, (m = { say: null, until: 0, next: t + rnd(2, 5), blink: t + rnd(1, 4) }));
+        if (t > m.next) {
+          const close = !demo && Math.hypot(p.x - pl.x, p.y - pl.y) < 40;
+          m.say = pick(pl.master.greetings);
+          m.until = t + 2.8;
+          m.next = t + (close ? rnd(4, 7) : rnd(9, 16));
+        }
+        if (t > m.blink + 0.16) m.blink = t + rnd(2, 5);
+      }
+
       // Borboletas (dia) e vagalumes (noite)
       if (!night) {
         for (const f of L.flyers) {
@@ -820,6 +859,13 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
   const onKeyDown = (e: KeyboardEvent) => {
     if (demo) return;
     const key = e.key.toLowerCase();
+    if (talk) {
+      if (key === 'enter' || key === ' ') {
+        e.preventDefault();
+        talkTo(talk.i + 1);
+      } else if (key === 'escape') closeTalk();
+      return;
+    }
     if (intro !== null && introLines) {
       if (key === 'enter' || key === ' ') {
         e.preventDefault();
@@ -864,7 +910,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
   };
 
   const onGroundClick = (e: MouseEvent<SVGSVGElement>) => {
-    if (suppress.current || demo || intro !== null) return;
+    if (suppress.current || demo || intro !== null || talk) return;
     const { x, y } = toWorld(e);
     if (Math.abs(x - riverX(y)) < RIVER_HALF + 1 && (y < BRIDGE.y0 || y > BRIDGE.y1)) {
       sfx('splash');
@@ -897,6 +943,17 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
     for (let i = 0; i < 5; i++) spawn('spark', d.x + rnd(-4, 4), d.y + rnd(-4, 2), { life: rnd(0.4, 0.8), vy: rnd(-6, -2), vx: rnd(-4, 4), c: '#ffffff' });
   };
 
+  const tapMaster = (pl: Place) => {
+    if (suppress.current || demo || !pl.master) return;
+    const m = masters.current.get(pl.id);
+    if (m) {
+      m.say = pick(pl.master.greetings);
+      m.until = t + 2.8;
+      m.next = t + rnd(6, 10);
+    }
+    enterPlace(pl);
+  };
+
   const tapFlyer = (f: Flyer) => {
     if (suppress.current || demo) return;
     sfx('chirp');
@@ -916,6 +973,30 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
       node: <CityTree x={tr.x} y={tr.y} dur={tr.dur} delay={tr.delay} shaking={shaking === `${tr.x}:${tr.y}`} onTap={tapTree} />,
     })),
     ...scenery.lamps.map((l) => ({ key: `l${l.x}`, y: l.y, node: <Lamp x={l.x} y={l.y} night={night} /> })),
+    ...places
+      .filter((pl) => pl.master && !pl.soon)
+      .map((pl) => {
+        const m = masters.current.get(pl.id);
+        const waving = !!m?.say && m.until > t;
+        const frame: ZicoFrame = waving && Math.sin(t * 12) > 0 ? 'wave' : m && t > m.blink && t < m.blink + 0.16 ? 'blink' : 'stand';
+        return {
+          key: `m${pl.id}`,
+          y: pl.y + 4,
+          node: (
+            <g
+              className="cw-tap"
+              onClick={(e) => {
+                e.stopPropagation();
+                tapMaster(pl);
+              }}
+              role="button"
+              aria-label={`Conversar com ${pl.master!.name}`}
+            >
+              <ZicoSprite x={pl.x - 13} y={pl.y + 4} frame={frame} />
+            </g>
+          ),
+        };
+      }),
     ...L.npcs.map((n) => ({
       key: `n${n.id}`,
       y: n.y,
@@ -1096,7 +1177,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
 
         {/* Placas fixas (não se mexem) e balões de fala */}
         {places.map((pl) => (
-          <div key={pl.id} className={`cw-label ${pl.soon ? 'soon' : ''} ${near?.id === pl.id ? 'show' : ''}`} style={pct(pl.x, pl.y + (pl.kind === 'church' ? 11 : 4))}>
+          <div key={pl.id} className={`cw-label ${pl.soon ? 'soon' : ''} ${near?.id === pl.id ? 'show' : ''}`} style={pct(pl.x, pl.y + (pl.kind === 'church' ? 11 : pl.kind === 'mestre' ? 7 : 4))}>
             {pl.label}
           </div>
         ))}
@@ -1107,6 +1188,15 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
               {n.say}
             </div>
           ))}
+        {places.map((pl) => {
+          const m = masters.current.get(pl.id);
+          if (!pl.master || !m?.say || m.until <= t || talk) return null;
+          return (
+            <div key={`m${pl.id}`} className="cw-bubble mestre" style={pct(pl.x - 13, pl.y - 14)}>
+              {m.say}
+            </div>
+          );
+        })}
         {d.say && d.sayUntil > t && (
           <div className="cw-bubble dove" style={pct(d.x, d.y - 12)}>
             {d.say}
@@ -1153,14 +1243,35 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
 
       {children}
 
-      {!demo && near && !near.soon && intro === null && (
+      {!demo && near && !near.soon && intro === null && !talk && (
         <button className="cw-prompt" onClick={() => arriveRef.current(near)}>
           <PixelIcon name={near.icon} size={22} />
           <span>{near.label}</span>
-          <strong>Entrar ▶</strong>
+          <strong>{near.master ? 'Conversar ▶' : 'Entrar ▶'}</strong>
         </button>
       )}
-      {!demo && !near && intro === null && <div className="cw-hint">Toque no chão para andar · toque nos lugares para explorar</div>}
+      {talk?.p.master && (
+        <div className="cw-dialogue">
+          <Dialogue key={talk.i} text={talk.p.master.lines[talk.i]} speaker={`${talk.p.master.name} · Mestre do Saber`} portrait={<ZicoPortrait />}>
+            {talk.i < talk.p.master.lines.length - 1 ? (
+              <button className="btn accent sm" onClick={() => talkTo(talk.i + 1)}>
+                Próximo ›
+              </button>
+            ) : (
+              <button className="btn accent sm" onClick={closeTalk}>
+                Até logo! ›
+              </button>
+            )}
+            <button className="btn ghost sm" onClick={() => speak(talk.p.master!.lines[talk.i])} aria-label="Ouvir de novo">
+              🔊
+            </button>
+            <button className="btn ghost sm" onClick={closeTalk}>
+              Sair
+            </button>
+          </Dialogue>
+        </div>
+      )}
+      {!demo && !near && intro === null && !talk && <div className="cw-hint">Toque no chão para andar · toque nos lugares para explorar</div>}
       {intro !== null && introLines && (
         <div className="cw-dialogue">
           <Dialogue key={intro} text={introLines[intro]}>

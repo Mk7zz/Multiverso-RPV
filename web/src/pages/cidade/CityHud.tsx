@@ -2,8 +2,16 @@ import { useEffect, useState } from 'react';
 import { PixelIcon } from '../../components/PixelIcon';
 import { isMuted, setMuted } from '../../lib/cidade';
 
-/** Nome da plataforma. Para trocar, mude só aqui. */
-export const APP_NAME = 'Trilha Cataguases';
+/** Nome do jogo e o lema da tela de abertura. Para trocar, mude só aqui. */
+export const APP_NAME = 'Territórios';
+export const TAGLINE = 'onde a cultura cresce com você!';
+
+/** Título da aba: "Lugar · Territórios" (ou só o nome do jogo). */
+export function useCityTitle(title?: string) {
+  useEffect(() => {
+    document.title = title ? `${title} · ${APP_NAME}` : APP_NAME;
+  }, [title]);
+}
 
 /** Logo fixo nas cores dos azulejos da Igreja de Santa Rita (azul e branco). */
 export function Logo({ big }: { big?: boolean }) {

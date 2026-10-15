@@ -3,19 +3,19 @@ import { useNavigate } from 'react-router';
 import { CityWorld } from '../../components/CityWorld';
 import { useDayTime } from '../../components/Scene';
 import { CITY_PLACES, getPoints, sfx } from '../../lib/cidade';
-import { useDocumentTitle } from '../../lib/hooks';
 import type { Place } from '../../lib/world';
-import { APP_NAME, FullscreenToggle, Logo, ScoreBadge, SoundToggle } from './CityHud';
+import { FullscreenToggle, Logo, ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
 
 const INTRO = [
   'Oi! Eu sou a Pomba e vou passear com você por Cataguases!',
   'Toque no chão para andar. Toque nos lugares, nas árvores, no rio e nas pessoas para explorar!',
+  'Na casinha rosa mora o Seu Zico, um Mestre do Saber. Ele adora contar histórias!',
   'Cada resposta certa vale estrelas. Vamos iniciar pela Praça Santa Rita?',
 ];
 
 /** O mapa de Cataguases com os pontos turísticos, em tela cheia. */
 export function CityMap() {
-  useDocumentTitle(APP_NAME);
+  useCityTitle();
   const navigate = useNavigate();
   const time = useDayTime();
   const [entering, setEntering] = useState<{ x: number; y: number } | null>(null);
