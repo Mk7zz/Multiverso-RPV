@@ -45,8 +45,16 @@ const SANTA_RITA: CityPlace = {
 /*
  * Mestres do Saber: pessoas da cultura popular que guardam histórias, músicas e costumes.
  * Cada um mora numa casinha da "Rua dos Mestres" (embaixo, no mapa) e recebe a criança
- * dentro de casa, com perguntas. Falas, visuais e o nome da bordadeira são provisórios:
+ * dentro de casa, com perguntas. Visuais e o nome da bordadeira são provisórios:
  * trocar quando a equipe definir as características de cada mestre.
+ *
+ * Falas: escritas para quem ainda está aprendendo a ler. Frases curtas, palavras do dia a dia
+ * e o jeitinho mineiro de cada um (o "uai", o "sô", o "trem bão"), sem exagerar no sotaque.
+ * - Seu Zico: roceiro contador de causo, calmo e brincalhão. Fala da Pipoca (cachorrinha),
+ *   da galinha Filó e do Galo Juca. Recebe com "Ô de fora!", a resposta mineira ao "Ô de casa!".
+ * - Sektor: MC e b-boy de Cataguases. Fala no ritmo, solta umas rimas e usa gíria leve.
+ * - Dona Cida: avó bordadeira, carinhosa ("minha flor", "meu anjo"). Tem o gato Novelo.
+ * Os emojis aparecem na tela como apoio visual; a voz pula eles.
  */
 const SEU_ZICO: Place = {
   id: 'seu-zico',
@@ -67,11 +75,22 @@ const SEU_ZICO: Place = {
     color: '#d6538a',
     soft: '#ffe1ec',
     intro: [
-      'Ô de casa! Entra, entra! Repara não, que o café tá passando no fogão a lenha.',
-      'Eu sou o Seu Zico, Mestre do Saber aqui de Cataguases. Guardo as histórias e os costumes do nosso povo.',
-      'E eu sei umas coisas que pouca gente sabe... Quer descobrir comigo?',
+      '{oi}! Ô de fora! Pode chegar, que a porta tá aberta. 🏡',
+      'Repara não a bagunça, viu? O café tá passando no fogão a lenha. ☕',
+      'Eu sou o Seu Zico. Nasci na roça e conheço tudo quanto é causo de Cataguases.',
+      'Vou te fazer uma pergunta. Se não souber, não tem problema: eu te ensino. Bora?',
     ],
-    greetings: ['Ô de casa! 👋', 'Vem prosear! ☕', 'Eu sou o Seu Zico!', 'Quer ouvir um causo? 📜', 'Tem café quentinho! ☕'],
+    back: [
+      ['Uai, olha quem voltou! Que alegria, sô! 😄', 'Senta aí, que eu lembrei de mais uma pergunta.'],
+      ['{oi}! A Pipoca até abanou o rabo quando te viu! 🐶', 'Bora prosear mais um tiquinho?'],
+      ['Ô de fora! Chegou na hora do café! ☕', 'Pega um pão de queijo e presta atenção na pergunta.'],
+    ],
+    right: ['Ô trem bão! Acertou em cheio! 🎉', 'Nó, cê sabe das coisas, hein!', 'Isso mesmo! Tá esperto que só!', 'Uai, acertou! Vou contar pra Pipoca! 🐶'],
+    wrong: ['Ih, quase! Mas não esquenta, não.', 'Não foi dessa vez. Deixa eu te contar...', 'Uai, errar faz parte! Escuta só...'],
+    win: ['Ô trem bão!', 'Acertou, sô!', 'Nó, que beleza!'],
+    oops: ['Quase, sô! 💪', 'Não foi dessa vez! 💪'],
+    tell: 'Escuta o Seu Zico:',
+    greetings: ['Ô de fora! Pode chegar! 👋', 'Vem prosear! ☕', 'Tem pão de queijo! 🧀', 'Quer ouvir um causo? 📜', 'Cadê a Pipoca? 🐶', 'Uai, sô! 😄'],
   },
 };
 
@@ -92,11 +111,22 @@ const SEKTOR: Place = {
     color: '#6b4fa0',
     soft: '#ece4fb',
     intro: [
-      'E aí, chega mais! Bem-vindo ao estúdio! Eu sou o Sektor, Mestre do Saber da cultura Hip Hop.',
-      'O Hip Hop é música, dança, arte nos muros e muito conhecimento. Tudo junto e misturado!',
-      'Aqui a gente aprende no ritmo. Bora ver se você manja?',
+      'Salve, salve! Chega mais, o estúdio é seu! 🎧',
+      'Eu sou o Sektor. Sou MC, danço breaking e sou cria de Cataguases.',
+      'Hip Hop é rima, é dança, é arte no muro. E é conhecimento também!',
+      'Vou mandar uma pergunta no ritmo. Se liga no som e responde, firmeza?',
     ],
-    greetings: ['E aí! ✌️', 'Bora dançar? 🕺', 'Chega mais! 🎧', 'Tá no ritmo? 🎵', 'Solta o som! 🔊'],
+    back: [
+      ['Olha quem voltou pro estúdio! Salve! ✌️', 'A batida já tá pronta. Bora pra mais uma?'],
+      ['E aí, parceria! Sentiu saudade do som? 🎵', 'Então se liga, que lá vem pergunta!'],
+      ['Uai, voltou! Isso é que é atitude! 🔥', 'Prepara o ouvido, que eu vou rimar uma pergunta.'],
+    ],
+    right: ['Acertou na batida, resposta garantida! 🎤', 'É nóis! Cê manja muito!', 'Mandou bem demais! Toca aqui! ✋', 'Na moral, que resposta firmeza! 🔥'],
+    wrong: ['Errar faz parte do rolê. Bora aprender!', 'Quase, quase! Se liga que eu te explico.', 'Sem estresse! Todo mundo começa assim.'],
+    win: ['É nóis!', 'Mandou bem!', 'Acertou na batida!'],
+    oops: ['Quase! Bora de novo 💪', 'Faz parte do rolê! 💪'],
+    tell: 'Papo reto do Sektor:',
+    greetings: ['Salve! ✌️', 'Chega mais! 🎧', 'Bora dançar? 🕺', 'Tá no ritmo? 🎵', 'Solta o som! 🔊', 'É nóis! 🤙'],
   },
 };
 
@@ -119,11 +149,22 @@ const DONA_CIDA: Place = {
     color: '#12a3a0',
     soft: '#e2f6f5',
     intro: [
-      'Entra, minha flor! Eu sou a Dona Cida, a Mestre do Saber do bordado.',
-      'Com agulha, linha e paciência, a gente transforma um pano simples numa obra de arte.',
-      'Senta aqui do meu ladinho que eu vou te ensinar umas coisinhas!',
+      '{oi}, minha flor! Entra, que a casa é sua. 🌸',
+      'Eu sou a Dona Cida. Bordo desde pequenininha, do tamanho de ocê!',
+      'Aquele gatinho ali é o Novelo. Ele adora brincar com as minhas linhas! 🐱',
+      'Senta aqui do meu ladinho. Vou te fazer uma pergunta, tá bom?',
     ],
-    greetings: ['Entra, minha flor! 🌸', 'Vem bordar comigo! 🧵', 'Olha que bonito! 🪡', 'Um ponto de cada vez 💛'],
+    back: [
+      ['Ô, meu anjo, voltou! Que alegria! 💛', 'Vem cá, que eu separei mais uma pergunta pra você.'],
+      ['Nossa Senhora, que visita boa! 🌸', 'Aceita um biscoitinho? Enquanto isso, lá vai pergunta!'],
+      ['{oi}, minha flor! O Novelo tava te esperando! 🐱', 'Bora aprender mais um pontinho?'],
+    ],
+    right: ['Muito bem, minha flor! Que orgulho! 💛', 'Nossa, que capricho! Acertou!', 'Isso mesmo! Cê tem capricho demais!', 'Acertou! Vou bordar uma estrelinha pra você! ⭐'],
+    wrong: ['Não tem problema, meu anjo. Bordado também a gente desmancha e faz de novo.', 'Quase! Devagarinho a gente aprende.', 'Ih, não foi essa. Mas eu te explico, tá?'],
+    win: ['Que capricho!', 'Muito bem!', 'Que orgulho!'],
+    oops: ['Quase, meu anjo! 💪', 'Devagarinho se aprende! 💪'],
+    tell: 'A Dona Cida ensina:',
+    greetings: ['Entra, minha flor! 🌸', 'Vem bordar comigo! 🧵', 'Aceita um biscoitinho? 🍪', 'Um ponto de cada vez 💛', 'Cadê o Novelo? 🐱', 'Que dia bonito, uai! ☀️'],
   },
 };
 
@@ -146,40 +187,40 @@ export const QUESTIONS: Record<string, Question[]> = {
   sektor: [
     {
       id: 'elementos',
-      hook: 'O Hip Hop tem uns elementos que andam sempre juntos. Duvido você acertar um!',
+      hook: 'O Hip Hop é tipo uma família: tem uns irmãos que andam sempre juntos. Sabe um deles?',
       text: 'Qual destes é um elemento do Hip Hop?',
       options: [
         { text: 'Breaking, a dança', emoji: '🕺' },
         { text: 'Balé', emoji: '🩰' },
         { text: 'Futebol', emoji: '⚽' },
       ],
-      fact: 'O Hip Hop tem o DJ, o MC (o rap), o breaking (a dança) e o grafite. E tem o quinto elemento: o conhecimento!',
+      fact: 'O Hip Hop tem o DJ, o MC, o breaking e o grafite. E tem o quinto elemento, o mais importante: o conhecimento!',
     },
     {
       id: 'dj',
-      hook: 'Tá vendo esses dois toca-discos aqui do lado? Quem mexe neles tem um nome especial!',
+      hook: 'Tá vendo esses toca-discos girando aqui do lado? Quem mexe neles tem nome!',
       text: 'Quem solta o som e mexe nos discos?',
       options: [
         { text: 'O DJ', emoji: '🎧' },
         { text: 'O goleiro', emoji: '🧤' },
         { text: 'O padeiro', emoji: '🥖' },
       ],
-      fact: 'O DJ escolhe as músicas e faz o scratch: aquele zigui-zigui de mexer o disco pra frente e pra trás!',
+      fact: 'O DJ escolhe as músicas e faz o scratch: aquele zigue-zigue de mexer o disco pra lá e pra cá!',
     },
     {
       id: 'grafite',
-      hook: 'Olha esse muro colorido atrás de mim. Sabe como se chama essa arte?',
+      hook: 'Olha esse muro colorido atrás de mim! Sabe como chama essa arte?',
       text: 'O que é o grafite do Hip Hop?',
       options: [
         { text: 'Arte pintada nos muros', emoji: '🎨' },
         { text: 'Um bichinho de jardim', emoji: '🐛' },
         { text: 'Um tipo de sorvete', emoji: '🍦' },
       ],
-      fact: 'O grafite leva cor e mensagens para a cidade. E o grafiteiro sempre pede autorização para pintar o muro!',
+      fact: 'Grafite é arte no muro que deixa a cidade mais bonita. E tem regra: sempre pedir licença pro dono do muro!',
     },
     {
       id: 'mc',
-      hook: 'Pega esse microfone aqui! Quem canta rimando no rap é chamado de...',
+      hook: 'Pega esse microfone aqui! Quem rima no rap é chamado de...',
       text: 'Como se chama quem canta rimando no rap?',
       options: [
         { text: 'MC', emoji: '🎤' },
@@ -190,31 +231,31 @@ export const QUESTIONS: Record<string, Question[]> = {
     },
     {
       id: 'origem',
-      hook: 'O Hip Hop veio de longe até chegar aqui em Cataguases. Sabe onde ele nasceu?',
+      hook: 'O Hip Hop rodou o mundo até chegar em Cataguases. Sabe onde ele nasceu?',
       text: 'Onde o Hip Hop nasceu?',
       options: [
         { text: 'Nos bairros de Nova York', emoji: '🗽' },
         { text: 'No fundo do mar', emoji: '🐠' },
         { text: 'Na Lua', emoji: '🌙' },
       ],
-      fact: 'Nasceu nos anos 1970, nas festas de rua do Bronx, em Nova York. No Brasil, cresceu nos anos 1980, em São Paulo!',
+      fact: 'Nasceu nos anos 1970, nas festas de rua do Bronx, em Nova York. No Brasil, cresceu nos anos 1980, em São Paulo.',
     },
     {
       id: 'freeze',
-      hook: 'No breaking tem um passo em que o dançarino fica paradinho numa pose. Qual é?',
+      hook: 'No breaking tem um passo em que a gente fica paradinho, igual estátua. Qual é?',
       text: 'Qual destes é um passo do breaking?',
       options: [
         { text: 'Freeze: congelar numa pose', emoji: '🧊' },
         { text: 'Embaixadinha', emoji: '⚽' },
         { text: 'Nado borboleta', emoji: '🏊' },
       ],
-      fact: 'Quem dança breaking é b-boy ou b-girl. O breaking ficou tão famoso que foi esporte nas Olimpíadas de Paris, em 2024!',
+      fact: 'Quem dança breaking é b-boy ou b-girl. O breaking foi até esporte nas Olimpíadas de Paris, em 2024!',
     },
   ],
   'dona-cida': [
     {
       id: 'agulha',
-      hook: 'Pra bordar a gente precisa de duas coisinhas. Você sabe quais são?',
+      hook: 'Pra bordar, a gente precisa de duas coisinhas. Sabe quais são?',
       text: 'Com o que a gente borda?',
       options: [
         { text: 'Agulha e linha', emoji: '🪡' },
@@ -232,119 +273,119 @@ export const QUESTIONS: Record<string, Question[]> = {
         { text: 'Guardar comida', emoji: '🍲' },
         { text: 'Jogar bola', emoji: '⚽' },
       ],
-      fact: 'O bastidor prende o pano bem esticado, igual a um tamborzinho. Assim o bordado fica retinho!',
+      fact: 'O bastidor deixa o pano bem esticadinho, igual um tamborzinho. Aí o bordado fica retinho!',
     },
     {
       id: 'ponto-cruz',
-      hook: 'Tem um ponto de bordado que é feito de xizinhos, um do lado do outro. Adivinha o nome!',
+      hook: 'Tem um ponto feito de xizinhos, um do ladinho do outro. Adivinha o nome!',
       text: 'Qual é o nome de um ponto de bordado?',
       options: [
         { text: 'Ponto cruz', emoji: '❌' },
         { text: 'Ponto de ônibus', emoji: '🚌' },
         { text: 'Ponto de exclamação', emoji: '❗' },
       ],
-      fact: 'No ponto cruz, cada xizinho é como um quadradinho colorido. É igualzinho a pixel arte, que nem este jogo!',
+      fact: 'No ponto cruz, cada xizinho é um quadradinho colorido. Igualzinho à pixel arte deste jogo!',
     },
     {
       id: 'pano-de-prato',
-      hook: 'Na casa da vovó sempre tem bordado escondido em algum lugar. Sabe onde?',
+      hook: 'Na casa da vó sempre tem bordado escondido em algum lugar. Sabe onde?',
       text: 'Onde a gente costuma ver bordado?',
       options: [
         { text: 'Em pano de prato e toalha', emoji: '🧺' },
         { text: 'No asfalto da rua', emoji: '🛣️' },
         { text: 'Nas nuvens', emoji: '☁️' },
       ],
-      fact: 'Em Minas, pano de prato, toalha e roupinha de bebê ganham flores, bichinhos e nomes bordados à mão.',
+      fact: 'Aqui em Minas, pano de prato, toalha e roupinha de neném ganham flor, bichinho e nome bordado à mão.',
     },
     {
       id: 'aprender',
-      hook: 'Eu aprendi a bordar quando era menina. Sabe como?',
+      hook: 'Eu aprendi a bordar quando era pequenininha. Sabe como?',
       text: 'Como se aprende a bordar?',
       options: [
         { text: 'Com alguém que já sabe', emoji: '👵' },
         { text: 'Dormindo', emoji: '😴' },
         { text: 'Correndo', emoji: '🏃' },
       ],
-      fact: 'Eu aprendi com a minha avó, que aprendeu com a mãe dela. É assim que um saber passa de geração em geração!',
+      fact: 'Eu aprendi com a minha avó, que aprendeu com a mãe dela. É assim que o saber passa de vó pra neto!',
     },
     {
       id: 'novelo',
-      hook: 'Olha essa cesta cheia de bolinhas coloridas. Sabe o nome delas?',
+      hook: 'Meu gato tem o nome de uma coisa desta cesta. Sabe o que é um novelo?',
       text: 'O que é um novelo?',
       options: [
         { text: 'Uma bolinha de linha enrolada', emoji: '🧶' },
         { text: 'Um passarinho', emoji: '🐦' },
         { text: 'Uma fruta', emoji: '🍎' },
       ],
-      fact: 'O novelo guarda a linha enroladinha, sem embolar. Mas cuidado: gato adora brincar com ele!',
+      fact: 'Novelo é a linha enroladinha numa bola, pra não embolar. Por isso meu gato se chama Novelo: vive brincando com ela!',
     },
   ],
   'seu-zico': [
     {
       id: 'causo',
-      hook: 'Lá em casa a gente fala muito em causo. Mas você sabe o que é?',
+      hook: 'Aqui em casa todo mundo gosta de causo. Mas cê sabe o que é um causo?',
       text: 'O que é um causo?',
       options: [
         { text: 'Uma história contada de boca em boca', emoji: '🗣️' },
         { text: 'Um tipo de doce', emoji: '🍬' },
         { text: 'Uma pipa', emoji: '🪁' },
       ],
-      fact: 'Causo é uma história contada na roda de conversa, passando dos avós para os netos. Cada um que conta, aumenta um pouquinho!',
+      fact: 'Causo é história contada na roda de conversa. O avô conta pro neto, o neto conta pro filho... e cada um aumenta um pouquinho!',
     },
     {
       id: 'rio-pomba',
-      hook: 'Da minha janela eu escuto o barulhinho da água. Duvido você saber de onde vem!',
+      hook: 'Lá do quintal dá pra ouvir o barulhinho da água. Sabe qual rio é?',
       text: 'Qual rio passa por Cataguases?',
       options: [
         { text: 'Rio Pomba', emoji: '🏞️' },
         { text: 'Rio Amazonas', emoji: '🐊' },
         { text: 'Rio Nilo', emoji: '🐫' },
       ],
-      fact: 'O Rio Pomba atravessa a cidade. Antigamente era nele que muita gente pescava, lavava roupa e se refrescava no calor!',
+      fact: 'É o Rio Pomba! Ele atravessa a cidade. No meu tempo de menino, a gente pescava lambari nele.',
     },
     {
       id: 'pao-de-queijo',
-      hook: 'Tem um cheirinho saindo do meu forno agora mesmo... Adivinha o que é?',
+      hook: 'Hum, que cheirinho bom saindo do forno! Adivinha o que é?',
       text: 'Qual é a quitanda mais famosa de Minas Gerais?',
       options: [
         { text: 'Pão de queijo', emoji: '🧀' },
         { text: 'Sushi', emoji: '🍣' },
         { text: 'Taco', emoji: '🌮' },
       ],
-      fact: 'Em Minas, bolo, biscoito e pão de queijo se chamam quitanda. E o pão de queijo vai pro forno quentinho, pro café da tarde!',
+      fact: 'Em Minas, bolo, biscoito e pão de queijo têm um nome só: quitanda! E quitanda boa é com café, no meio da tarde.',
     },
     {
       id: 'folia',
-      hook: 'No comecinho do ano, uma festa bate na porta de casa cantando. Você conhece?',
+      hook: 'Todo começo de ano, uns cantadores batem aqui na porta. Sabe quem são?',
       text: 'O que é a Folia de Reis?',
       options: [
         { text: 'Um grupo que canta visitando as casas', emoji: '🎶' },
         { text: 'Um jogo de futebol', emoji: '⚽' },
         { text: 'Uma corrida de carro', emoji: '🏎️' },
       ],
-      fact: 'Os foliões andam com bandeira, viola e sanfona, cantando de casa em casa entre o Natal e o Dia de Reis, 6 de janeiro.',
+      fact: 'É a Folia de Reis! Eles cantam com bandeira, viola e sanfona, de casa em casa, até o Dia de Reis, 6 de janeiro.',
     },
     {
       id: 'piao',
-      hook: 'Quando eu era menino não tinha videogame, não. Mas a gente brincava muito! Sabe de quê?',
+      hook: 'No meu tempo de menino não tinha videogame, não. Sabe do que a gente brincava?',
       text: 'Qual destas é uma brincadeira de antigamente?',
       options: [
         { text: 'Pião', emoji: '🪀' },
         { text: 'Videogame', emoji: '🎮' },
         { text: 'Celular', emoji: '📱' },
       ],
-      fact: 'Pião, peteca, bola de gude e pipa! A gente mesmo fazia os brinquedos, com madeira, palha e papel.',
+      fact: 'Pião, peteca, bola de gude e pipa! E a gente mesmo fazia os brinquedos, com madeira, palha e papel.',
     },
     {
       id: 'fogao-lenha',
-      hook: 'A comida da minha casa é feita de um jeitinho especial. Será que você descobre?',
+      hook: 'A comida aqui de casa tem um gostinho especial. Sabe por quê?',
       text: 'Onde se cozinha na roça de Minas?',
       options: [
         { text: 'No fogão a lenha', emoji: '🔥' },
         { text: 'Na geladeira', emoji: '🧊' },
         { text: 'Na máquina de lavar', emoji: '🧺' },
       ],
-      fact: 'O fogão a lenha esquenta a casa toda e deixa a comida com um gostinho de fumaça. É por isso que sai fumaça da minha chaminé!',
+      fact: 'No fogão a lenha! Ele esquenta a casa toda e deixa a comida com gostinho de fumaça. Por isso sai fumaça da minha chaminé!',
     },
   ],
   'santa-rita': [
@@ -471,6 +512,35 @@ export function markSeen(placeId: string, questionId: string) {
   save(p);
 }
 
+/* ---- Visitas às casas dos mestres (para receber de outro jeito quem volta) ---- */
+
+const VISIT_KEY = 'cidade:visitas';
+
+export function hasVisited(placeId: string): boolean {
+  try {
+    const raw = JSON.parse(localStorage.getItem(VISIT_KEY) ?? '[]');
+    return Array.isArray(raw) && raw.includes(placeId);
+  } catch {
+    return false;
+  }
+}
+
+export function markVisited(placeId: string) {
+  if (hasVisited(placeId)) return;
+  try {
+    const raw = JSON.parse(localStorage.getItem(VISIT_KEY) ?? '[]');
+    localStorage.setItem(VISIT_KEY, JSON.stringify([...(Array.isArray(raw) ? raw : []), placeId]));
+  } catch {
+    /* ignorado */
+  }
+}
+
+/** "Bom dia", "Boa tarde" ou "Boa noite", pelo relógio de quem joga. */
+export function hello(date = new Date()) {
+  const h = date.getHours();
+  return h >= 5 && h < 12 ? 'Bom dia' : h >= 12 && h < 18 ? 'Boa tarde' : 'Boa noite';
+}
+
 /* ---- Descobertas: coisas da cena do lugar que a criança já tocou ---- */
 
 const FOUND_KEY = 'cidade:descobertas';
@@ -529,7 +599,8 @@ export function speak(text: string) {
   const synth = window.speechSynthesis;
   if (!synth || isMuted()) return;
   synth.cancel();
-  const u = new SpeechSynthesisUtterance(text);
+  // Emojis são apoio visual: a voz não lê o nome deles.
+  const u = new SpeechSynthesisUtterance(text.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, '').replace(/\s+/g, ' ').trim());
   u.lang = 'pt-BR';
   u.rate = 0.9;
   u.pitch = 1.15;

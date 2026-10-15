@@ -4,7 +4,7 @@ import { useTypewriter } from '../../components/Dialogue';
 import { MasterPixels, MasterPortrait, masterHeight, type MasterFrame } from '../../components/Mestres';
 import { PixelIcon } from '../../components/PixelIcon';
 import { useDayTime, type DayTime } from '../../components/Scene';
-import { addPoints, getPoints, markSeen, MASTER_PLACES, nextQuestion, sfx, shuffle, speak, type Option } from '../../lib/cidade';
+import { addPoints, getPoints, hasVisited, hello, markSeen, markVisited, MASTER_PLACES, nextQuestion, sfx, shuffle, speak, type Option } from '../../lib/cidade';
 import type { Place } from '../../lib/world';
 import { ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
 import { ROOMS, VH, VW } from './MestreRooms';
@@ -13,10 +13,14 @@ import { Confetti } from './PlaceVisit';
 /*
  * Casa de um Mestre do Saber: ele aparece grande dentro de casa, conversa com a criança,
  * faz uma pergunta curiosa e, acertando ou errando, completa a resposta com o que ele sabe.
+ * Na primeira visita ele se apresenta; quem volta é recebido de um jeito mais curto (sorteado).
+ * As reações ao acerto e ao erro também são sorteadas, no jeito de falar de cada mestre.
  */
 
 type Stage = 'intro' | 'ask' | 'right' | 'wrong';
 type Choice = Option & { right: boolean };
+
+const one = <T,>(xs: readonly T[]): T => xs[Math.floor(Math.random() * xs.length)];
 
 export function MestreVisit() {
   const { id = '' } = useParams();
@@ -31,6 +35,12 @@ function Visit({ place }: { place: Place }) {
   const time = useDayTime();
   const [stage, setStage] = useState<Stage>('intro');
   const [line, setLine] = useState(0);
+  const [lines] = useState(() => {
+    const oi = hello();
+    return (hasVisited(place.id) ? one(master.back) : master.intro).map((l) => l.replaceAll('{oi}', oi));
+  });
+  /** Fala do mestre logo depois da resposta e o título da janelinha. */
+  const [react, setReact] = useState({ say: '', title: '' });
   const [question, setQuestion] = useState(() => nextQuestion(place.id));
   const choices = useMemo<Choice[]>(() => (question ? shuffle(question.options.map((o, i) => ({ ...o, right: i === 0 }))) : []), [question]);
   const [earned, setEarned] = useState(0);
@@ -38,8 +48,7 @@ function Visit({ place }: { place: Place }) {
   const [ready, setReady] = useState(false);
 
   const right = question?.options[0];
-  const say =
-    stage === 'intro' ? master.intro[line] : stage === 'ask' ? (question?.hook ?? question?.text ?? '') : stage === 'right' ? 'Isso mesmo! Você sabe das coisas!' : 'Quase! Mas eu te conto...';
+  const say = stage === 'intro' ? lines[line] : stage === 'ask' ? (question?.hook ?? question?.text ?? '') : react.say;
   const { shown, done, finish } = useTypewriter(ready ? say : '', 28);
 
   useEffect(() => {
@@ -53,13 +62,15 @@ function Visit({ place }: { place: Place }) {
   useEffect(() => {
     if (!ready || !question) return;
     if (stage === 'intro' || stage === 'ask') speak(stage === 'ask' ? `${say} ${question.text}` : say);
-    else if (stage === 'right') speak(`Isso mesmo! Você ganhou ${earned} estrelas! ${question.fact}`);
-    else speak(`Quase! A resposta certa é: ${right?.text}. ${question.fact}`);
+    else if (stage === 'right') speak(`${react.say} Você ganhou ${earned} estrelas! ${question.fact}`);
+    else speak(`${react.say} A resposta certa é: ${right?.text}. ${question.fact}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, stage, line, question]);
 
   useEffect(() => {
-    if (stage === 'ask' && question) markSeen(place.id, question.id);
+    if (stage !== 'ask' || !question) return;
+    markSeen(place.id, question.id);
+    markVisited(place.id);
   }, [stage, question, place.id]);
 
   // Animação do mestre: acena enquanto fala e pisca de vez em quando.
@@ -77,7 +88,7 @@ function Visit({ place }: { place: Place }) {
   const nextLine = () => {
     if (!done) return finish();
     sfx('pop');
-    if (line < master.intro.length - 1) setLine(line + 1);
+    if (line < lines.length - 1) setLine(line + 1);
     else setStage('ask');
   };
 
@@ -86,10 +97,12 @@ function Visit({ place }: { place: Place }) {
     if (c.right) {
       setEarned(10);
       setPoints(addPoints(10));
+      setReact({ say: one(master.right), title: one(master.win) });
       setStage('right');
       sfx('ok');
     } else {
       setEarned(0);
+      setReact({ say: one(master.wrong), title: one(master.oops) });
       setStage('wrong');
       sfx('oops');
     }
@@ -149,8 +162,8 @@ function Visit({ place }: { place: Place }) {
             {!done && <span className="caret" aria-hidden />}
           </p>
           <div className="mz-talk-actions">
-            <button className={`kid-btn ${line === master.intro.length - 1 ? 'mz-go' : ''}`} onClick={(e) => (e.stopPropagation(), nextLine())} autoFocus>
-              {line < master.intro.length - 1 ? 'Próximo ▶' : 'Quero descobrir! 🔍'}
+            <button className={`kid-btn ${line === lines.length - 1 ? 'mz-go' : ''}`} onClick={(e) => (e.stopPropagation(), nextLine())} autoFocus>
+              {line < lines.length - 1 ? 'Próximo ▶' : 'Quero descobrir! 🔍'}
             </button>
           </div>
         </section>
@@ -191,7 +204,7 @@ function Visit({ place }: { place: Place }) {
             </div>
             {stage === 'right' ? (
               <>
-                <h2>Acertou!</h2>
+                <h2>{react.title}</h2>
                 <p className="win-earned">
                   +{earned} <PixelIcon name="star" size={26} />
                 </p>
@@ -199,7 +212,7 @@ function Visit({ place }: { place: Place }) {
               </>
             ) : (
               <>
-                <h2>Quase! 💪</h2>
+                <h2>{react.title}</h2>
                 <p>A resposta certa é:</p>
                 <p className="mz-answer">
                   <span aria-hidden>{right.emoji}</span> {right.text}
@@ -207,7 +220,7 @@ function Visit({ place }: { place: Place }) {
               </>
             )}
             <div className="win-fact mz-fact">
-              <strong>{master.name} conta:</strong>
+              <strong>{master.tell}</strong>
               <p>{question.fact}</p>
             </div>
             <div className="kid-modal-actions">

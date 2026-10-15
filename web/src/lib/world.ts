@@ -15,8 +15,21 @@ export interface Master {
   /** Cor do mestre (plaquinha, balões e caixa de curiosidade) e a versão clarinha dela. */
   color: string;
   soft: string;
-  /** Falas de boas-vindas na casa dele, uma por vez, antes das perguntas. */
+  /**
+   * Falas de boas-vindas na primeira visita, uma por vez, antes das perguntas.
+   * `{oi}` vira "Bom dia", "Boa tarde" ou "Boa noite", conforme o relógio.
+   */
   intro: string[];
+  /** Quando a criança volta: um destes jeitos de receber (sorteado), mais curto que o `intro`. */
+  back: string[][];
+  /** Reações no balão logo depois da resposta (sorteadas). */
+  right: string[];
+  wrong: string[];
+  /** Títulos da janelinha de resultado (sorteados). */
+  win: string[];
+  oops: string[];
+  /** Como ele apresenta a curiosidade na janelinha (ex.: "Escuta o Seu Zico:"). */
+  tell: string;
   /** Frases curtas que aparecem no balão quando ele está parado na porta. */
   greetings: string[];
 }
