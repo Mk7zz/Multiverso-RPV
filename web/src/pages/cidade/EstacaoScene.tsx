@@ -13,6 +13,7 @@ import {
   DEPTH,
   FarHills,
   FULL,
+  GROUND_END,
   H,
   Haze,
   INK,
@@ -165,7 +166,7 @@ const Ground = memo(function Ground({ night }: { night: boolean }) {
   const sleepers = useMemo(() => Array.from({ length: 96 }, (_, k) => ZMIN + k * 5).map((z) => floorQuad(157, 175, RAIL_Y, z, z + 2)), []);
   return (
     <g>
-      <rect x={FULL.x} y={VP.y} width={FULL.w} height={H - VP.y + 10} fill={night ? '#6b6556' : '#b9ab8e'} />
+      <rect x={FULL.x} y={VP.y} width={FULL.w} height={GROUND_END - VP.y} fill={night ? '#6b6556' : '#b9ab8e'} />
       {dots.map((d, i) => (
         <rect key={i} x={d.a} y={d.b} width={Math.max(1, d.s * 2)} height={Math.max(1, d.s)} fill={d.c} opacity={0.8} />
       ))}

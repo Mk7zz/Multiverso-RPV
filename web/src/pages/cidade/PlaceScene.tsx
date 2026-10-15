@@ -4,6 +4,7 @@ import { GuideSprite, Pixels, treeRuns, type DayTime } from '../../components/Sc
 import { Character, PlaceArt } from '../../components/World';
 import { addPoints, getFound, saveFound, say as sayVoice, sfx, type CityPlace } from '../../lib/cidade';
 import { POMBA, POMBA_CLIPS } from '../../lib/vozes';
+import { boxSize, GROUND_END } from './sceneKit';
 import { fromAscii, outline, seeded, shade, toRuns } from '../../lib/pixel';
 import type { AvatarConfig } from '../../lib/types';
 
@@ -129,7 +130,7 @@ function makeScenery() {
   // Calçada portuguesa: faixas em ondas (como as das praças mineiras).
   const pave: { x: number; y: number; w: number }[] = [];
   // Perspectiva: as faixas ficam mais juntinhas lá no fundo e mais largas perto de quem olha.
-  for (let y = GROUND + 3; y < H + 6; y++) {
+  for (let y = GROUND + 3; y < GROUND_END; y++) {
     const f = Math.pow(y - GROUND, 0.72) * 1.35;
     let start: number | null = null;
     for (let x = -EDGE; x <= W + EDGE; x++) {
@@ -352,7 +353,7 @@ const Canopy = memo(function Canopy({ px, onTap, shaking }: { px: { x: number; y
 const Pavement = memo(function Pavement({ sc }: { sc: Scenery }) {
   return (
     <g>
-      <rect x={-EDGE - 10} y={GROUND} width={W + 2 * EDGE + 20} height={H - GROUND + 6} fill="#e6dcc2" />
+      <rect x={-EDGE - 10} y={GROUND} width={W + 2 * EDGE + 20} height={GROUND_END - GROUND} fill="#e6dcc2" />
       {sc.pave.map((r, i) => (
         <rect key={i} x={r.x} y={r.y} width={r.w} height={1} fill="#c9bb95" />
       ))}
@@ -698,7 +699,7 @@ export const PlaceScene = memo(function PlaceScene({ place, time, onPoints }: { 
   const art = useMemo(() => ({ ...place, x: CX, y: GROUND }), [place]);
   const box = useRef<HTMLDivElement>(null);
   const svg = useRef<SVGSVGElement>(null);
-  const size = useRef({ w: 1280, h: 480 });
+  const size = useRef({ w: 1280, h: 480, pad: 0 });
   const camX = useRef<number | null>(null);
   const drag = useRef<{ x: number; cam: number; moved: boolean } | null>(null);
   const dragged = useRef(false);
@@ -844,9 +845,9 @@ export const PlaceScene = memo(function PlaceScene({ place, time, onPoints }: { 
   useEffect(() => {
     const el = box.current!;
     const ro = new ResizeObserver(() => {
-      size.current = { w: el.clientWidth, h: el.clientHeight };
+      size.current = boxSize(el);
     });
-    size.current = { w: el.clientWidth, h: el.clientHeight };
+    size.current = boxSize(el);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -1141,6 +1142,8 @@ export const PlaceScene = memo(function PlaceScene({ place, time, onPoints }: { 
   const defX = clamp(FOCUS - vw / 2, lo, hi);
   const vx = clamp(camX.current ?? defX, lo, hi);
   const vy = H - vh;
+  // A tela continua por baixo do quadro de perguntas: o enquadramento vai até lá embaixo.
+  vh += (size.current.pad * vw) / Math.max(1, bw);
   const canDrag = vw < W - 1;
   // Balanço leve e automático + o "olhar" do mouse: as camadas se deslocam em velocidades diferentes (profundidade).
   const lookX = look.current.x + Math.sin(t * 0.13) * 2;
@@ -1561,8 +1564,8 @@ export const PlaceScene = memo(function PlaceScene({ place, time, onPoints }: { 
           <Canopy px={sc.canopies[1]} shaking={shaking === 'c1'} onTap={tapCanopy1} />
         </g>
 
-        {time === 'dusk' && <rect x={-EDGE - 300} y={-400} width={W + 2 * EDGE + 600} height={H + 420} fill="#ff8a4a" opacity={0.08} pointerEvents="none" />}
-        {night && <rect x={-EDGE - 300} y={-400} width={W + 2 * EDGE + 600} height={H + 420} fill="#0d1b2e" opacity={0.28} pointerEvents="none" />}
+        {time === 'dusk' && <rect x={-EDGE - 300} y={-400} width={W + 2 * EDGE + 600} height={GROUND_END + 420} fill="#ff8a4a" opacity={0.08} pointerEvents="none" />}
+        {night && <rect x={-EDGE - 300} y={-400} width={W + 2 * EDGE + 600} height={GROUND_END + 420} fill="#0d1b2e" opacity={0.28} pointerEvents="none" />}
         {/* Luzes dos bairros nos morros, acesas por cima da noite */}
         {night && (
           <g transform={layer(DEPTH.near)} pointerEvents="none">

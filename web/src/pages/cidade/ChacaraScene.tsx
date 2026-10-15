@@ -14,6 +14,7 @@ import {
   DEPTH,
   FarHills,
   FULL,
+  GROUND_END,
   H,
   Haze,
   INK,
@@ -51,6 +52,8 @@ import {
  */
 
 const CX = 150;
+/** Meia largura do caminho de pedra lá embaixo (ele abre em perspectiva desde a porta). */
+const PATH_END = 7 + ((90 + 112 - 80) * 41) / 36;
 const GROUND = 80;
 const WALL = '#f08a24';
 const WALL_SH = '#d27418';
@@ -263,10 +266,9 @@ const Garden = memo(function Garden({ night }: { night: boolean }) {
   const stones = useMemo(() => {
     const rand = seeded(23);
     const out: { x: number; y: number; c: string }[] = [];
-    for (let i = 0; i < 260; i++) {
-      const y = GROUND + rand() * (H - GROUND + 4);
-      const k = (y - GROUND) / (H - GROUND);
-      const half = 7 + k * 40;
+    for (let i = 0; i < 520; i++) {
+      const y = GROUND + rand() * (GROUND_END - GROUND);
+      const half = 5 + ((y - GROUND) * 41) / 36;
       out.push({ x: CX - half + rand() * half * 2, y, c: rand() > 0.5 ? '#b9b29c' : '#f1ece0' });
     }
     return out;
@@ -278,12 +280,12 @@ const Garden = memo(function Garden({ night }: { night: boolean }) {
   const lawn = night ? '#2c5a32' : '#7dbb45';
   return (
     <g>
-      <rect x={FULL.x} y={GROUND} width={FULL.w} height={H - GROUND + 10} fill={lawn} />
+      <rect x={FULL.x} y={GROUND} width={FULL.w} height={GROUND_END - GROUND} fill={lawn} />
       {grass.map((g, i) => (
         <rect key={i} x={g.x} y={g.y} width={2} height={1} fill={night ? '#22482a' : g.c} />
       ))}
-      <path d={`M${CX - 7} ${GROUND}L${CX + 7} ${GROUND}L${CX + 48} ${H + 4}L${CX - 48} ${H + 4}Z`} fill="#b9b29c" />
-      <path d={`M${CX - 6} ${GROUND}L${CX + 6} ${GROUND}L${CX + 46} ${H + 4}L${CX - 46} ${H + 4}Z`} fill={night ? '#9d9888' : '#e3ddcc'} />
+      <path d={`M${CX - 7} ${GROUND}L${CX + 7} ${GROUND}L${CX + PATH_END} ${GROUND_END}L${CX - PATH_END} ${GROUND_END}Z`} fill="#b9b29c" />
+      <path d={`M${CX - 6} ${GROUND}L${CX + 6} ${GROUND}L${CX + PATH_END - 2} ${GROUND_END}L${CX - PATH_END + 2} ${GROUND_END}Z`} fill={night ? '#9d9888' : '#e3ddcc'} />
       {stones.map((s, i) => (
         <rect key={i} x={s.x} y={s.y} width={1.4} height={1} fill={s.c} />
       ))}
@@ -323,9 +325,9 @@ function Railing({ x0, x1 }: { x0: number; x1: number }) {
     <g>
       {[x0, x1].map((x) => (
         <g key={x}>
-          <rect x={x - 2.5} y={93} width={5} height={H - 93 + 4} fill={INK} />
-          <rect x={x - 1.5} y={94} width={3} height={H - 94 + 4} fill={wood} />
-          <rect x={x - 1.5} y={94} width={1} height={H - 94 + 4} fill={light} />
+          <rect x={x - 2.5} y={93} width={5} height={GROUND_END - 93} fill={INK} />
+          <rect x={x - 1.5} y={94} width={3} height={GROUND_END - 94} fill={wood} />
+          <rect x={x - 1.5} y={94} width={1} height={GROUND_END - 94} fill={light} />
         </g>
       ))}
       <rect x={x0 - 4} y={92} width={x1 - x0 + 8} height={4} fill={INK} />

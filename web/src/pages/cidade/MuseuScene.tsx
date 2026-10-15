@@ -14,6 +14,7 @@ import {
   EDGE,
   FarHills,
   FULL,
+  GROUND_END,
   H,
   Haze,
   INK,
@@ -179,7 +180,7 @@ const Street = memo(function Street() {
       ))}
       <rect x={FULL.x} y={GROUND} width={FULL.w} height={1} fill="#b9ad8c" />
       <rect x={FULL.x} y={CURB} width={FULL.w} height={2} fill="#b5ad9c" />
-      <rect x={FULL.x} y={CURB + 2} width={FULL.w} height={H - CURB + 6} fill="#5d646a" />
+      <rect x={FULL.x} y={CURB + 2} width={FULL.w} height={GROUND_END - CURB} fill="#5d646a" />
       <rect x={FULL.x} y={CURB + 2} width={FULL.w} height={1} fill="#4a5056" />
       {Array.from({ length: 34 }, (_, i) => (
         <rect key={`f${i}`} x={-EDGE + i * 20} y={H - 3} width={10} height={1} fill="#e9e2d0" />

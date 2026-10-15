@@ -183,6 +183,8 @@ html, body { overscroll-behavior: none; }
 .visit { position: relative; min-height: 100vh; min-height: 100dvh; overflow: hidden; background: #ddd2b6; color: var(--text); --quiz-h: 220px; }
 /* A cena ocupa a área acima do quiz; abaixo dela continua a calçada da praça. */
 .visit-scene { position: absolute; top: 0; left: 0; right: 0; bottom: var(--quiz-h); animation: visit-open 1s steps(10) both; }
+/* Nos lugares, a cena vai até o fim da tela: o chão continua por baixo do quadro de perguntas. */
+.visit:not(.mz) .visit-scene { bottom: 0; }
 .visit-art { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
 @keyframes visit-open {
   from { clip-path: circle(0% at 50% 60%); transform: scale(1.35); }

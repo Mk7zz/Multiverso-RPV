@@ -17,6 +17,7 @@ import {
   EDGE,
   FarHills,
   FULL,
+  GROUND_END,
   H,
   Haze,
   INK,
@@ -299,7 +300,7 @@ const NearBanks = memo(function NearBanks({ night }: { night: boolean }) {
     <g>
       {cols.map((c) => (
         <g key={c.x}>
-          <rect x={c.x} y={c.y} width={1} height={H + 8 - c.y} fill={night ? '#4a3f30' : '#8a6f4a'} />
+          <rect x={c.x} y={c.y} width={1} height={GROUND_END - c.y} fill={night ? '#4a3f30' : '#8a6f4a'} />
           <rect x={c.x} y={c.y} width={1} height={2} fill={night ? '#2c5a32' : '#5fae3c'} />
           <rect x={c.x} y={c.y + 2} width={1} height={1} fill={night ? '#22482a' : '#3f8a2c'} />
         </g>
@@ -747,7 +748,7 @@ export const PonteScene = memo(function PonteScene({ place, time, onPoints }: { 
       <svg ref={cam.svg} className="visit-art" viewBox={`${view.fx.toFixed(2)} ${view.fy.toFixed(2)} ${view.vw.toFixed(2)} ${view.vh.toFixed(2)}`} preserveAspectRatio="xMidYMax slice" shapeRendering="crispEdges" onClick={tapGround}>
         <defs>
           <clipPath id="pn-water">
-            <rect x={FULL.x} y={BANK} width={FULL.w} height={H - BANK + 10} />
+            <rect x={FULL.x} y={BANK} width={FULL.w} height={GROUND_END - BANK} />
           </clipPath>
           <linearGradient id="pn-water-c" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stopColor={wTop} />
@@ -779,7 +780,7 @@ export const PonteScene = memo(function PonteScene({ place, time, onPoints }: { 
         </g>
 
         {/* Rio Pomba: água, reflexo da ponte, lambaris e brilhos */}
-        <rect x={FULL.x} y={BANK} width={FULL.w} height={H - BANK + 10} fill="url(#pn-water-c)" />
+        <rect x={FULL.x} y={BANK} width={FULL.w} height={GROUND_END - BANK} fill="url(#pn-water-c)" />
         <rect x={FULL.x} y={BANK} width={FULL.w} height={1} fill="#000" opacity={0.15} />
         <g clipPath="url(#pn-water)" pointerEvents="none">
           {reflection}

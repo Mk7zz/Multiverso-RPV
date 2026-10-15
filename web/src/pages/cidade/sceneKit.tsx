@@ -33,6 +33,18 @@ export const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b
 let next = 1;
 export const uid = () => next++;
 
+/**
+ * Tamanho da área da cena. A cena ocupa a tela toda, mas a parte de baixo fica atrás do quadro de
+ * perguntas (altura em --quiz-h): a câmera enquadra o que fica acima dele, e o chão do lugar
+ * continua por baixo do quadro (por isso os chãos são desenhados até GROUND_END).
+ */
+export function boxSize(el: HTMLElement) {
+  const pad = parseFloat(getComputedStyle(el).getPropertyValue('--quiz-h')) || 0;
+  return { w: el.clientWidth, h: Math.max(1, el.clientHeight - pad), pad };
+}
+/** Até onde os chãos são desenhados, para continuarem por baixo do quadro de perguntas. */
+export const GROUND_END = H + 90;
+
 /** Faixa larga que cobre a cena inteira (fundos e filtros de cor). */
 export const FULL = { x: -EDGE - 300, w: W + 2 * EDGE + 600 };
 
@@ -134,7 +146,7 @@ export interface View {
 export function useCamera(focus: number | ((vw: number) => number)) {
   const box = useRef<HTMLDivElement>(null);
   const svg = useRef<SVGSVGElement>(null);
-  const size = useRef({ w: 1280, h: 480 });
+  const size = useRef({ w: 1280, h: 480, pad: 0 });
   const camX = useRef<number | null>(null);
   const drag = useRef<{ x: number; cam: number; moved: boolean } | null>(null);
   const dragged = useRef(false);
@@ -144,8 +156,8 @@ export function useCamera(focus: number | ((vw: number) => number)) {
 
   useEffect(() => {
     const el = box.current!;
-    const ro = new ResizeObserver(() => (size.current = { w: el.clientWidth, h: el.clientHeight }));
-    size.current = { w: el.clientWidth, h: el.clientHeight };
+    const ro = new ResizeObserver(() => (size.current = boxSize(el)));
+    size.current = boxSize(el);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
@@ -171,6 +183,7 @@ export function useCamera(focus: number | ((vw: number) => number)) {
     const defX = clamp((typeof focus === 'number' ? focus : focus(vw)) - vw / 2, lo, hi);
     const vx = clamp(camX.current ?? defX, lo, hi);
     const vy = H - vh;
+    vh += (size.current.pad * vw) / Math.max(1, bw);
     const canDrag = vw < W - 1;
     last.current = { vx, vw, lo, hi, canDrag };
     const lookX = look.current.x + Math.sin(t * 0.13) * 2;
@@ -602,8 +615,8 @@ export function Haze({ time, ground }: { time: DayTime; ground: number }) {
 
 /** Filtro de cor do fim de tarde e da noite, por cima de tudo. */
 export function TimeTint({ time }: { time: DayTime }) {
-  if (time === 'dusk') return <rect x={FULL.x} y={-400} width={FULL.w} height={H + 420} fill="#ff8a4a" opacity={0.08} pointerEvents="none" />;
-  if (time === 'night') return <rect x={FULL.x} y={-400} width={FULL.w} height={H + 420} fill="#0d1b2e" opacity={0.28} pointerEvents="none" />;
+  if (time === 'dusk') return <rect x={FULL.x} y={-400} width={FULL.w} height={GROUND_END + 420} fill="#ff8a4a" opacity={0.08} pointerEvents="none" />;
+  if (time === 'night') return <rect x={FULL.x} y={-400} width={FULL.w} height={GROUND_END + 420} fill="#0d1b2e" opacity={0.28} pointerEvents="none" />;
   return null;
 }
 
