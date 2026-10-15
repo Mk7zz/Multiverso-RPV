@@ -5,7 +5,7 @@ import { MasterPixels, MasterPortrait, masterHeight, type MasterFrame } from '..
 import { PixelIcon } from '../../components/PixelIcon';
 import { useDayTime, type DayTime } from '../../components/Scene';
 import { addPoints, getPoints, hasVisited, markSeen, markVisited, MASTER_PLACES, nextQuestion, say, sfx, shuffle, stopVoice, type Option } from '../../lib/cidade';
-import { questionClips, rightClip, STARS, welcomeClips, wrongClip, type Clip } from '../../lib/vozes';
+import { questionClips, rightClip, welcomeClips, wrongClip, type Clip } from '../../lib/vozes';
 import type { Place } from '../../lib/world';
 import { ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
 import { ROOMS, VH, VW } from './MestreRooms';
@@ -14,7 +14,7 @@ import { Confetti } from './PlaceVisit';
 /*
  * Casa de um Mestre do Saber: ele aparece grande dentro de casa, conversa com a criança,
  * faz uma pergunta curiosa e, acertando ou errando, completa a resposta com o que ele sabe.
- * Na primeira visita ele se apresenta; quem volta é recebido de um jeito mais curto (sorteado).
+ * Na primeira visita ele se apresenta; quem volta é recebido de um jeito mais curto.
  * As reações ao acerto e ao erro também são sorteadas, no jeito de falar de cada mestre.
  * Cada fala toca a gravação do mestre quando ela existe (veja lib/vozes.ts).
  */
@@ -37,7 +37,7 @@ function Visit({ place }: { place: Place }) {
   const time = useDayTime();
   const [stage, setStage] = useState<Stage>('intro');
   const [line, setLine] = useState(0);
-  const [lines] = useState(() => welcomeClips(master, hasVisited(place.id) ? roll(master.back.length) : null));
+  const [lines] = useState(() => welcomeClips(master, hasVisited(place.id)));
   /** Fala do mestre logo depois da resposta e o título da janelinha. */
   const [react, setReact] = useState<{ say: Clip; title: string }>({ say: { text: '' }, title: '' });
   const [question, setQuestion] = useState(() => nextQuestion(place.id));
@@ -55,10 +55,8 @@ function Visit({ place }: { place: Place }) {
     : stage === 'intro'
       ? [lines[line]]
       : stage === 'ask'
-        ? [qc.hook, qc.text].filter((c): c is Clip => !!c)
-        : stage === 'right'
-          ? [react.say, STARS, qc.fact]
-          : [react.say, qc.answer, qc.fact];
+        ? [qc.ask]
+        : [react.say, qc.fact];
   const { shown, done, finish } = useTypewriter(ready ? shownText : '', 28);
 
   useEffect(() => {
@@ -140,7 +138,7 @@ function Visit({ place }: { place: Place }) {
         </div>
       </header>
 
-      <button className={`mz-zico ${mood}`} onClick={() => (sfx('pop'), say(stage === 'ask' && qc ? [qc.text] : voice, place.id))} aria-label={`${master.name}: ouvir de novo`}>
+      <button className={`mz-zico ${mood}`} onClick={() => (sfx('pop'), say(voice, place.id))} aria-label={`${master.name}: ouvir de novo`}>
         <span className="mz-glow" aria-hidden />
         <svg viewBox={`0 0 16 ${masterHeight(place.id)}`} shapeRendering="crispEdges" aria-hidden>
           <MasterPixels id={place.id} frame={frame} />
@@ -183,7 +181,7 @@ function Visit({ place }: { place: Place }) {
               <MasterPortrait id={place.id} size={48} />
             </span>
             <p className="quiz-q">{question.text}</p>
-            <button className="quiz-listen" onClick={() => qc && say([qc.text], place.id)} aria-label="Ouvir a pergunta" title="Ouvir a pergunta">
+            <button className="quiz-listen" onClick={() => qc && say([qc.ask], place.id)} aria-label="Ouvir a pergunta" title="Ouvir a pergunta">
               🔊
             </button>
           </div>

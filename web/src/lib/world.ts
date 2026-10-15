@@ -15,13 +15,10 @@ export interface Master {
   /** Cor do mestre (plaquinha, balões e caixa de curiosidade) e a versão clarinha dela. */
   color: string;
   soft: string;
-  /**
-   * Falas de boas-vindas na primeira visita, uma por vez, antes das perguntas.
-   * `{oi}` vira "Bom dia", "Boa tarde" ou "Boa noite", conforme o relógio.
-   */
+  /** Falas de boas-vindas na primeira visita, uma por vez, antes das perguntas. */
   intro: string[];
-  /** Quando a criança volta: um destes jeitos de receber (sorteado), mais curto que o `intro`. */
-  back: string[][];
+  /** Quando a criança volta: recepção mais curta que o `intro`. */
+  back: string[];
   /** Reações no balão logo depois da resposta (sorteadas). */
   right: string[];
   wrong: string[];
