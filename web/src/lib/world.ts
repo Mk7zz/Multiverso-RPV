@@ -8,6 +8,13 @@ export type PlaceKind = 'house' | 'tower' | 'board' | 'fountain' | 'post' | 'hal
 /** Mestre do Saber: personagem da cultura popular que mora numa casinha do mapa e conversa com a criança. */
 export interface Master {
   name: string;
+  /** Do que ele é mestre (aparece na plaquinha do nome). */
+  craft: string;
+  /** Nome do cômodo onde ele recebe a criança (título da tela da casa). */
+  room: string;
+  /** Cor do mestre (plaquinha, balões e caixa de curiosidade) e a versão clarinha dela. */
+  color: string;
+  soft: string;
   /** Falas de boas-vindas na casa dele, uma por vez, antes das perguntas. */
   intro: string[];
   /** Frases curtas que aparecem no balão quando ele está parado na porta. */
@@ -29,8 +36,10 @@ export interface Place {
   wall?: string;
   /** Lugar ainda não liberado (mostra um cadeado e não abre). */
   soon?: boolean;
-  /** Casa de um Mestre do Saber: entrar abre a conversa com ele em vez de trocar de tela. */
+  /** Casa de um Mestre do Saber (com o personagem na porta). */
   master?: Master;
+  /** Estilo da construção quando há mais de um desenho para o mesmo tipo (casas dos mestres). */
+  variant?: 'roca' | 'hiphop' | 'bordado';
 }
 
 export const WORLD_W = 320;

@@ -10,6 +10,7 @@ import type { AvatarConfig, PublicUser } from '../lib/types';
 import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, PLACES, riverX, RIVER_HALF, SPAWN, WORLD_H, WORLD_W, type Place } from '../lib/world';
 import { Avatar, AvatarSprite, SPRITE_H, SPRITE_W } from './Avatar';
 import { Dialogue } from './Dialogue';
+import { mestreParts } from './MestreHouses';
 import { LevelBadge, XpBar } from './Game';
 import { iconRuns, PixelIcon } from './PixelIcon';
 import { birdDown, birdUp, Pixels, treeRuns, TREE_H, TREE_W, useDayTime, type DayTime } from './Scene';
@@ -22,7 +23,7 @@ const SPEED = 72;
 type Part = [x: number, y: number, w: number, h: number, fill: string];
 
 /** Corpo com contorno único em volta da silhueta, depois detalhes com contorno próprio. */
-function Block({ body, details = [] }: { body: Part[]; details?: Part[] }) {
+function Block({ body, details = [], under }: { body: Part[]; details?: Part[]; under?: ReactNode }) {
   return (
     <>
       {body.map(([x, y, w, h], i) => (
@@ -31,6 +32,7 @@ function Block({ body, details = [] }: { body: Part[]; details?: Part[] }) {
       {body.map(([x, y, w, h, f], i) => (
         <rect key={`b${i}`} x={x} y={y} width={w} height={h} fill={f} />
       ))}
+      {under}
       {details.map(([x, y, w, h, f], i) => (
         <g key={`d${i}`}>
           <rect x={x - 1} y={y - 1} width={w + 2} height={h + 2} fill={INK} />
@@ -146,91 +148,8 @@ function churchParts(x: number, y: number, night: boolean, yard: boolean): { bod
   };
 }
 
-/** Casinha mineira de Mestre do Saber: paredes coloridas, cunhais brancos, janelas de madeira abertas com floreira, telhado de barro e chaminé. */
-function mestreParts(p: Place, glass: string): { body: Part[]; details: Part[]; sign: [number, number]; extra: ReactNode } {
-  const { x, y } = p;
-  const w = 40;
-  const x0 = x - 20;
-  const top = y - 20;
-  const wall = p.wall ?? '#f4a3c4';
-  const roof = p.roof ?? '#c4553a';
-  const trim = '#fbf7ee';
-  const wood = '#2f7f8a';
-  const lime = '#efe6d6';
-  const windows = [x0 + 5, x0 + w - 12];
-  return {
-    body: [
-      [x0 + 28, top - 13, 5, 8, lime],
-      [x0, top, w, 20, wall],
-      [x0, y - 3, w, 3, shade(wall, -0.18)],
-      ...roofSteps(x0, top, w, roof, 9),
-    ],
-    details: [[x - 3, y - 13, 6, 13, wood], ...windows.map((wx) => [wx, top + 5, 7, 7, trim] as Part)],
-    sign: [x - 5, top - 12],
-    extra: (
-      <g>
-        {/* Chaminé: tijolinhos e fumaça saindo quando tem gente em casa */}
-        <rect x={x0 + 27} y={top - 14} width={7} height={1} fill="#8a8f88" />
-        <rect x={x0 + 28} y={top - 10} width={5} height={1} fill="#d9cdb8" />
-        <rect x={x0 + 31} y={top - 8} width={1} height={2} fill="#d9cdb8" />
-        {!p.soon && (
-          <g className="w-smoke" fill="#e9eef2">
-            {[0, 1, 2].map((i) => (
-              <rect key={i} x={x0 + 29 + (i % 2)} y={top - 17} width={3 - (i % 2)} height={2} style={{ animationDelay: `${-i * 1.2}s` }} />
-            ))}
-          </g>
-        )}
-        {/* Telhado: beiral claro e telhas de barro com sombra */}
-        <rect x={x0 - 3} y={top - 1} width={w + 6} height={1} fill={shade(roof, -0.32)} />
-        {Array.from({ length: 6 }, (_, k) => (
-          <rect key={`t${k}`} x={x0 + 2 + k * 7} y={top - 5 + (k % 2) * 2} width={2} height={1} fill={shade(roof, 0.18)} />
-        ))}
-        <rect x={x0} y={top} width={w} height={1} fill={trim} />
-        {/* Cunhais brancos nos cantos */}
-        <rect x={x0} y={top} width={2} height={17} fill={trim} />
-        <rect x={x0 + w - 2} y={top} width={2} height={17} fill={trim} />
-        <rect x={x0 + 2} y={top + 1} width={w - 4} height={1} fill={shade(wall, -0.1)} />
-        {/* Janelas: vidro, cruzeta, folhas de madeira abertas e floreira */}
-        {windows.map((wx) => (
-          <g key={wx}>
-            <rect x={wx + 1} y={top + 6} width={5} height={5} fill={glass} />
-            <rect x={wx + 3} y={top + 6} width={1} height={5} fill={trim} />
-            <rect x={wx + 1} y={top + 8} width={5} height={1} fill={trim} />
-            <rect x={wx + 1} y={top + 6} width={2} height={1} fill="#ffffff" opacity={0.6} />
-            <rect x={wx - 3} y={top + 5} width={2} height={7} fill={wood} />
-            <rect x={wx + 8} y={top + 5} width={2} height={7} fill={wood} />
-            <rect x={wx - 3} y={top + 8} width={2} height={1} fill={shade(wood, -0.3)} />
-            <rect x={wx + 8} y={top + 8} width={2} height={1} fill={shade(wood, -0.3)} />
-            <rect x={wx - 1} y={top + 13} width={9} height={2} fill="#8a5a2b" />
-            <rect x={wx - 1} y={top + 14} width={9} height={1} fill="#6b4423" />
-            {[0, 2, 4, 6].map((k) => (
-              <rect key={k} x={wx + k} y={top + 12} width={1} height={1} fill={k % 4 ? '#f2b705' : '#d64545'} />
-            ))}
-            {[1, 3, 5].map((k) => (
-              <rect key={k} x={wx + k} y={top + 12} width={1} height={1} fill="#3aa655" />
-            ))}
-          </g>
-        ))}
-        {/* Porta: almofadas, maçaneta, verga branca e soleira de pedra */}
-        <rect x={x - 4} y={y - 15} width={8} height={1} fill={trim} />
-        <rect x={x - 2} y={y - 12} width={4} height={4} fill={shade(wood, 0.15)} />
-        <rect x={x - 2} y={y - 6} width={4} height={4} fill={shade(wood, 0.15)} />
-        <rect x={x + 1} y={y - 7} width={1} height={1} fill="#f2b705" />
-        <rect x={x - 5} y={y} width={10} height={1} fill="#bdb49a" />
-        {/* Vaso de samambaia ao lado da porta */}
-        <rect x={x + 9} y={y - 3} width={5} height={3} fill="#c4553a" />
-        <rect x={x + 9} y={y - 3} width={5} height={1} fill="#9a3e28" />
-        <rect x={x + 8} y={y - 5} width={7} height={2} fill="#3aa655" />
-        <rect x={x + 7} y={y - 4} width={1} height={1} fill="#3aa655" />
-        <rect x={x + 15} y={y - 4} width={1} height={1} fill="#3aa655" />
-        <rect x={x + 10} y={y - 5} width={3} height={1} fill="#8cc63f" />
-      </g>
-    ),
-  };
-}
-
 /** Desenho de cada tipo de construção (porta em p.x, p.y). Retorna também as janelas para a iluminação noturna. */
-export function buildingParts(p: Place, glass: string, yard = true): { body: Part[]; details: Part[]; sign: [number, number]; extra?: ReactNode } {
+export function buildingParts(p: Place, glass: string, yard = true): { body: Part[]; details: Part[]; sign: [number, number]; under?: ReactNode; extra?: ReactNode } {
   const { x, y } = p;
   const wood = '#7a4a25';
   switch (p.kind) {
@@ -365,7 +284,7 @@ export function PlaceArt({ p, night = false }: { p: Place; night?: boolean }) {
   const parts = buildingParts(p, night ? '#ffd76a' : '#bfe9f2', false);
   return (
     <g>
-      <Block body={parts.body} details={parts.details} />
+      <Block body={parts.body} details={parts.details} under={parts.under} />
       {parts.extra}
     </g>
   );
@@ -383,7 +302,7 @@ export const Building = memo(function Building({ p, night, onEnter, highlight, n
       role="link"
       aria-label={`${p.label}: ${p.hint}`}
     >
-      <Block body={parts.body} details={parts.details} />
+      <Block body={parts.body} details={parts.details} under={parts.under} />
       {parts.extra}
       {!noSign && <Sign x={parts.sign[0]} y={parts.sign[1]} icon={p.soon ? 'lock' : p.icon} />}
     </g>

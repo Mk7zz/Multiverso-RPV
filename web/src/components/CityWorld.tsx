@@ -5,7 +5,7 @@ import type { AvatarConfig } from '../lib/types';
 import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, riverX, RIVER_HALF, SPAWN, WORLD_H as H, WORLD_W as W, type Place } from '../lib/world';
 import { AVATAR_PALETTES, DEFAULT_AVATAR } from './Avatar';
 import { Dialogue } from './Dialogue';
-import { ZicoSprite, type ZicoFrame } from './Mestres';
+import { MasterSprite, type MasterFrame } from './Mestres';
 import { PixelIcon } from './PixelIcon';
 import { birdDown, birdUp, Pixels, treeRuns, TREE_H, TREE_W, type DayTime } from './Scene';
 import { Building, Character, makeTrees } from './World';
@@ -55,9 +55,12 @@ export function randomLook(): AvatarConfig {
   };
 }
 
-const NPC_LINES_DAY = ['Oi! 👋', 'Que dia bonito! ☀️', 'Já foi na Praça Santa Rita? ⛪', 'Bora explorar Cataguases!', '🎵 lá lá lá', 'Olha a pombinha! 🕊️', 'Bom passeio! 😊', 'Já foi prosear com o Seu Zico? 🏡'];
+const NPC_LINES_DAY = ['Oi! 👋', 'Que dia bonito! ☀️', 'Já foi na Praça Santa Rita? ⛪', 'Bora explorar Cataguases!', '🎵 lá lá lá', 'Olha a pombinha! 🕊️', 'Bom passeio! 😊', 'Já foi prosear com o Seu Zico? 🏡', 'O Sektor tá no estúdio! 🎧', 'A Dona Cida tá bordando! 🧵'];
 const NPC_LINES_NIGHT = ['Boa noite! 🌙', 'Olha os vagalumes! ✨', 'Que céu estrelado! ⭐', 'Hora de passear 🚶'];
-const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️', 'Pruu! O Seu Zico mora na casinha rosa! 🏡'];
+const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️', 'Pruu! Na Rua dos Mestres moram os Mestres do Saber! 🏡'];
+
+/** Onde o Mestre do Saber fica parado, à esquerda da porta de casa. */
+const masterSpot = (p: Place) => (p.variant === 'hiphop' ? -15 : -13);
 
 /* ---- Cenário fixo (gerado uma vez) ---- */
 
@@ -391,7 +394,7 @@ export interface CityWorldProps {
   children?: ReactNode;
 }
 
-export function CityWorld({ places, time, onArrive, demo, introLines, introKey = 'cidade:intro:v2', paused, children }: CityWorldProps) {
+export function CityWorld({ places, time, onArrive, demo, introLines, introKey = 'cidade:intro:v3', paused, children }: CityWorldProps) {
   const night = time === 'night';
   const scenery = useMemo(() => makeScenery(places), [places]);
   const targets = useMemo<Vec[]>(
@@ -983,7 +986,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
       .map((pl) => {
         const m = masters.current.get(pl.id);
         const waving = !!m?.say && m.until > t;
-        const frame: ZicoFrame = waving && Math.sin(t * 12) > 0 ? 'wave' : m && t > m.blink && t < m.blink + 0.16 ? 'blink' : 'stand';
+        const frame: MasterFrame = waving && Math.sin(t * 12) > 0 ? 'wave' : m && t > m.blink && t < m.blink + 0.16 ? 'blink' : 'stand';
         return {
           key: `m${pl.id}`,
           y: pl.y + 4,
@@ -997,7 +1000,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
               role="button"
               aria-label={`Conversar com ${pl.master!.name}`}
             >
-              <ZicoSprite x={pl.x - 13} y={pl.y + 4} frame={frame} />
+              <MasterSprite id={pl.id} x={pl.x + masterSpot(pl)} y={pl.y + 4} frame={frame} />
             </g>
           ),
         };
@@ -1197,7 +1200,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
           const m = masters.current.get(pl.id);
           if (!pl.master || !m?.say || m.until <= t) return null;
           return (
-            <div key={`m${pl.id}`} className="cw-bubble mestre" style={pct(pl.x - 13, pl.y - 14)}>
+            <div key={`m${pl.id}`} className="cw-bubble mestre" style={{ ...pct(pl.x + masterSpot(pl), pl.y - 14), background: pl.master.soft }}>
               {m.say}
             </div>
           );

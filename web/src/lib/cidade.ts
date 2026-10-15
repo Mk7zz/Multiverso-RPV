@@ -44,8 +44,9 @@ const SANTA_RITA: CityPlace = {
 
 /*
  * Mestres do Saber: pessoas da cultura popular que guardam histórias, músicas e costumes.
- * Cada um mora numa casinha do mapa; entrar abre uma conversa com ele.
- * Falas provisórias do Seu Zico: trocar quando a equipe definir as características dele.
+ * Cada um mora numa casinha da "Rua dos Mestres" (embaixo, no mapa) e recebe a criança
+ * dentro de casa, com perguntas. Falas, visuais e o nome da bordadeira são provisórios:
+ * trocar quando a equipe definir as características de cada mestre.
  */
 const SEU_ZICO: Place = {
   id: 'seu-zico',
@@ -54,51 +55,230 @@ const SEU_ZICO: Place = {
   to: '/mestre/seu-zico',
   icon: 'scroll',
   kind: 'mestre',
+  variant: 'roca',
   x: 36,
   y: 142,
   wall: '#f4a3c4',
   roof: '#c4553a',
   master: {
     name: 'Seu Zico',
+    craft: 'Mestre do Saber · Causos e costumes',
+    room: 'Cozinha do Seu Zico',
+    color: '#d6538a',
+    soft: '#ffe1ec',
     intro: [
-      'Ô de casa! Que alegria, uma visita! Eu sou o Seu Zico, Mestre do Saber aqui de Cataguases.',
-      'Mestre do Saber é quem guarda as histórias, as músicas e os costumes do nosso povo.',
+      'Ô de casa! Entra, entra! Repara não, que o café tá passando no fogão a lenha.',
+      'Eu sou o Seu Zico, Mestre do Saber aqui de Cataguases. Guardo as histórias e os costumes do nosso povo.',
       'E eu sei umas coisas que pouca gente sabe... Quer descobrir comigo?',
     ],
-    greetings: ['Ô de casa! 👋', 'Vem prosear! ☕', 'Eu sou o Seu Zico!', 'Quer ouvir um causo? 📜', 'Bom dia, criançada! 🌞'],
+    greetings: ['Ô de casa! 👋', 'Vem prosear! ☕', 'Eu sou o Seu Zico!', 'Quer ouvir um causo? 📜', 'Tem café quentinho! ☕'],
   },
 };
 
-/** Segunda casa de Mestre do Saber, reservada para o próximo personagem. */
-const MESTRE_2: Place = {
-  id: 'mestre-2',
-  label: 'Mestre do Saber',
-  hint: 'Um novo Mestre do Saber vai chegar!',
-  to: '/mapa',
-  icon: 'scroll',
+const SEKTOR: Place = {
+  id: 'sektor',
+  label: 'Casa do Sektor',
+  hint: 'Conheça o Mestre do Saber do Hip Hop',
+  to: '/mestre/sektor',
+  icon: 'play',
   kind: 'mestre',
+  variant: 'hiphop',
   x: 96,
+  y: 164,
+  master: {
+    name: 'Sektor',
+    craft: 'Mestre do Saber · Hip Hop',
+    room: 'Estúdio do Sektor',
+    color: '#6b4fa0',
+    soft: '#ece4fb',
+    intro: [
+      'E aí, chega mais! Bem-vindo ao estúdio! Eu sou o Sektor, Mestre do Saber da cultura Hip Hop.',
+      'O Hip Hop é música, dança, arte nos muros e muito conhecimento. Tudo junto e misturado!',
+      'Aqui a gente aprende no ritmo. Bora ver se você manja?',
+    ],
+    greetings: ['E aí! ✌️', 'Bora dançar? 🕺', 'Chega mais! 🎧', 'Tá no ritmo? 🎵', 'Solta o som! 🔊'],
+  },
+};
+
+const DONA_CIDA: Place = {
+  id: 'dona-cida',
+  label: 'Casa da Dona Cida',
+  hint: 'Conheça a Mestre do Saber do bordado',
+  to: '/mestre/dona-cida',
+  icon: 'heart',
+  kind: 'mestre',
+  variant: 'bordado',
+  x: 206,
   y: 164,
   wall: '#f6dc8a',
   roof: '#b5523b',
-  soon: true,
+  master: {
+    name: 'Dona Cida',
+    craft: 'Mestre do Saber · Bordado',
+    room: 'Ateliê da Dona Cida',
+    color: '#12a3a0',
+    soft: '#e2f6f5',
+    intro: [
+      'Entra, minha flor! Eu sou a Dona Cida, a Mestre do Saber do bordado.',
+      'Com agulha, linha e paciência, a gente transforma um pano simples numa obra de arte.',
+      'Senta aqui do meu ladinho que eu vou te ensinar umas coisinhas!',
+    ],
+    greetings: ['Entra, minha flor! 🌸', 'Vem bordar comigo! 🧵', 'Olha que bonito! 🪡', 'Um ponto de cada vez 💛'],
+  },
 };
+
+const MASTERS = [SEU_ZICO, SEKTOR, DONA_CIDA];
 
 /** Os demais lugares do mapa ficam com cadeado até ganharem desenho e perguntas. */
 export const CITY_PLACES: Place[] = [
   SANTA_RITA,
-  SEU_ZICO,
-  MESTRE_2,
-  ...PLACES.filter((p) => !['academia', 'casa', 'correio'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
+  ...MASTERS,
+  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
 ];
 
 export const CITY_INFO: Record<string, CityPlace> = { [SANTA_RITA.id]: SANTA_RITA };
 
 /** Casas dos Mestres do Saber que já podem ser visitadas. */
-export const MASTER_PLACES: Record<string, Place> = { [SEU_ZICO.id]: SEU_ZICO };
+export const MASTER_PLACES: Record<string, Place> = Object.fromEntries(MASTERS.map((m) => [m.id, m]));
 
 // Textos provisórios: revisar com a equipe pedagógica antes de publicar.
 export const QUESTIONS: Record<string, Question[]> = {
+  sektor: [
+    {
+      id: 'elementos',
+      hook: 'O Hip Hop tem uns elementos que andam sempre juntos. Duvido você acertar um!',
+      text: 'Qual destes é um elemento do Hip Hop?',
+      options: [
+        { text: 'Breaking, a dança', emoji: '🕺' },
+        { text: 'Balé', emoji: '🩰' },
+        { text: 'Futebol', emoji: '⚽' },
+      ],
+      fact: 'O Hip Hop tem o DJ, o MC (o rap), o breaking (a dança) e o grafite. E tem o quinto elemento: o conhecimento!',
+    },
+    {
+      id: 'dj',
+      hook: 'Tá vendo esses dois toca-discos aqui do lado? Quem mexe neles tem um nome especial!',
+      text: 'Quem solta o som e mexe nos discos?',
+      options: [
+        { text: 'O DJ', emoji: '🎧' },
+        { text: 'O goleiro', emoji: '🧤' },
+        { text: 'O padeiro', emoji: '🥖' },
+      ],
+      fact: 'O DJ escolhe as músicas e faz o scratch: aquele zigui-zigui de mexer o disco pra frente e pra trás!',
+    },
+    {
+      id: 'grafite',
+      hook: 'Olha esse muro colorido atrás de mim. Sabe como se chama essa arte?',
+      text: 'O que é o grafite do Hip Hop?',
+      options: [
+        { text: 'Arte pintada nos muros', emoji: '🎨' },
+        { text: 'Um bichinho de jardim', emoji: '🐛' },
+        { text: 'Um tipo de sorvete', emoji: '🍦' },
+      ],
+      fact: 'O grafite leva cor e mensagens para a cidade. E o grafiteiro sempre pede autorização para pintar o muro!',
+    },
+    {
+      id: 'mc',
+      hook: 'Pega esse microfone aqui! Quem canta rimando no rap é chamado de...',
+      text: 'Como se chama quem canta rimando no rap?',
+      options: [
+        { text: 'MC', emoji: '🎤' },
+        { text: 'Juiz', emoji: '⚖️' },
+        { text: 'Piloto', emoji: '✈️' },
+      ],
+      fact: 'MC quer dizer mestre de cerimônias. É quem rima, conta histórias e anima a galera!',
+    },
+    {
+      id: 'origem',
+      hook: 'O Hip Hop veio de longe até chegar aqui em Cataguases. Sabe onde ele nasceu?',
+      text: 'Onde o Hip Hop nasceu?',
+      options: [
+        { text: 'Nos bairros de Nova York', emoji: '🗽' },
+        { text: 'No fundo do mar', emoji: '🐠' },
+        { text: 'Na Lua', emoji: '🌙' },
+      ],
+      fact: 'Nasceu nos anos 1970, nas festas de rua do Bronx, em Nova York. No Brasil, cresceu nos anos 1980, em São Paulo!',
+    },
+    {
+      id: 'freeze',
+      hook: 'No breaking tem um passo em que o dançarino fica paradinho numa pose. Qual é?',
+      text: 'Qual destes é um passo do breaking?',
+      options: [
+        { text: 'Freeze: congelar numa pose', emoji: '🧊' },
+        { text: 'Embaixadinha', emoji: '⚽' },
+        { text: 'Nado borboleta', emoji: '🏊' },
+      ],
+      fact: 'Quem dança breaking é b-boy ou b-girl. O breaking ficou tão famoso que foi esporte nas Olimpíadas de Paris, em 2024!',
+    },
+  ],
+  'dona-cida': [
+    {
+      id: 'agulha',
+      hook: 'Pra bordar a gente precisa de duas coisinhas. Você sabe quais são?',
+      text: 'Com o que a gente borda?',
+      options: [
+        { text: 'Agulha e linha', emoji: '🪡' },
+        { text: 'Martelo e prego', emoji: '🔨' },
+        { text: 'Garfo e faca', emoji: '🍴' },
+      ],
+      fact: 'A agulha leva a linha pra lá e pra cá no pano. Cada furinho vira um pontinho do desenho!',
+    },
+    {
+      id: 'bastidor',
+      hook: 'Tá vendo esse aro de madeira na minha mão? Ele tem um trabalho importante!',
+      text: 'Para que serve o bastidor?',
+      options: [
+        { text: 'Deixar o pano esticadinho', emoji: '⭕' },
+        { text: 'Guardar comida', emoji: '🍲' },
+        { text: 'Jogar bola', emoji: '⚽' },
+      ],
+      fact: 'O bastidor prende o pano bem esticado, igual a um tamborzinho. Assim o bordado fica retinho!',
+    },
+    {
+      id: 'ponto-cruz',
+      hook: 'Tem um ponto de bordado que é feito de xizinhos, um do lado do outro. Adivinha o nome!',
+      text: 'Qual é o nome de um ponto de bordado?',
+      options: [
+        { text: 'Ponto cruz', emoji: '❌' },
+        { text: 'Ponto de ônibus', emoji: '🚌' },
+        { text: 'Ponto de exclamação', emoji: '❗' },
+      ],
+      fact: 'No ponto cruz, cada xizinho é como um quadradinho colorido. É igualzinho a pixel arte, que nem este jogo!',
+    },
+    {
+      id: 'pano-de-prato',
+      hook: 'Na casa da vovó sempre tem bordado escondido em algum lugar. Sabe onde?',
+      text: 'Onde a gente costuma ver bordado?',
+      options: [
+        { text: 'Em pano de prato e toalha', emoji: '🧺' },
+        { text: 'No asfalto da rua', emoji: '🛣️' },
+        { text: 'Nas nuvens', emoji: '☁️' },
+      ],
+      fact: 'Em Minas, pano de prato, toalha e roupinha de bebê ganham flores, bichinhos e nomes bordados à mão.',
+    },
+    {
+      id: 'aprender',
+      hook: 'Eu aprendi a bordar quando era menina. Sabe como?',
+      text: 'Como se aprende a bordar?',
+      options: [
+        { text: 'Com alguém que já sabe', emoji: '👵' },
+        { text: 'Dormindo', emoji: '😴' },
+        { text: 'Correndo', emoji: '🏃' },
+      ],
+      fact: 'Eu aprendi com a minha avó, que aprendeu com a mãe dela. É assim que um saber passa de geração em geração!',
+    },
+    {
+      id: 'novelo',
+      hook: 'Olha essa cesta cheia de bolinhas coloridas. Sabe o nome delas?',
+      text: 'O que é um novelo?',
+      options: [
+        { text: 'Uma bolinha de linha enrolada', emoji: '🧶' },
+        { text: 'Um passarinho', emoji: '🐦' },
+        { text: 'Uma fruta', emoji: '🍎' },
+      ],
+      fact: 'O novelo guarda a linha enroladinha, sem embolar. Mas cuidado: gato adora brincar com ele!',
+    },
+  ],
   'seu-zico': [
     {
       id: 'causo',

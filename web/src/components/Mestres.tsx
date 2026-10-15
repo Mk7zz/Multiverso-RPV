@@ -1,111 +1,230 @@
-import { fromAscii, outline, toRuns } from '../lib/pixel';
+import { fromAscii, outline, toRuns, type Run } from '../lib/pixel';
 import { Pixels } from './Scene';
 
 /*
  * Mestres do Saber: personagens da cultura popular desenhados à mão, pixel a pixel.
- * Seu Zico (visual provisório até a equipe definir as características): chapéu de palha,
- * cabelo e bigode brancos, camisa xadrez e bengala.
+ * Cada um tem três quadros: parado, piscando e acenando. Visuais provisórios até a
+ * equipe definir as características de cada mestre.
+ * - Seu Zico: chapéu de palha, cabelo e bigode brancos, camisa xadrez e bengala.
+ * - Sektor: boné de aba reta, moletom, corrente, fone no pescoço e tênis (Hip Hop).
+ * - Dona Cida: coque grisalho, óculos, vestido florido, avental e bastidor de bordado.
  */
 
 const INK = '#1b2b33';
 
-const ZICO_PAL: Record<string, string> = {
-  h: '#ecc96a', // palha do chapéu
-  H: '#c79a3c', // aba do chapéu na sombra
-  b: '#8a3b2a', // fita do chapéu
-  s: '#b97a45', // pele
-  S: '#97602f', // pele na sombra
-  m: '#d98a6a', // bochecha
-  w: '#f3f1ea', // cabelo e bigode brancos
-  k: INK, // olhos
-  r: '#c0392b', // camisa xadrez
-  R: '#f0e2c8', // listras claras do xadrez
-  B: '#3b2412', // cinto
-  p: '#5a6b7a', // calça
-  P: '#45535f',
-  o: '#4a2c17', // sapatos
-  c: '#8a5a2b', // bengala
+interface Look {
+  pal: Record<string, string>;
+  stand: string[];
+  wave: string[];
+  /** Linha dos olhos e como ela fica de olhos fechados. */
+  eyes: number;
+  shut: string;
+}
+
+const ZICO_HEAD = ['......hh......', '.....hhhh.....', '....hhhhhh....', '....bbbbbb....', '..hhhhhhhhhh..', '...HHHHHHHH...', '...wssssssw...', '...skssssks...'];
+const ZICO_LEGS = ['....pppppp..c.', '....pPpppP..c.', '....pp..pp..c.', '....pp..pp..c.', '...ooo..ooo.c.'];
+
+const ZICO: Look = {
+  pal: {
+    h: '#ecc96a', // palha do chapéu
+    H: '#c79a3c', // aba na sombra
+    b: '#8a3b2a', // fita do chapéu
+    s: '#b97a45', // pele
+    S: '#97602f',
+    m: '#d98a6a', // bochecha
+    w: '#f3f1ea', // cabelo e bigode brancos
+    k: INK,
+    r: '#c0392b', // camisa xadrez
+    R: '#f0e2c8',
+    B: '#3b2412', // cinto
+    p: '#5a6b7a', // calça
+    P: '#45535f',
+    o: '#4a2c17', // sapatos
+    c: '#8a5a2b', // bengala
+  },
+  stand: [
+    ...ZICO_HEAD,
+    '...smssssms...',
+    '...swwwwwws...',
+    '....wsSSsw....',
+    '......SS......',
+    '...rRrRRrRr...',
+    '..rrRrRRrRrr..',
+    '..RRRRRRRRRR..',
+    '..rrRrRRrRrrcc',
+    '..ssBBBBBBssc.',
+    ...ZICO_LEGS,
+  ],
+  wave: [
+    ...ZICO_HEAD,
+    '.s.smssssms...',
+    '.r.swwwwwws...',
+    '.r..wsSSsw....',
+    '.r....SS......',
+    '.rrrRrRRrRr...',
+    '...rRrRRrRrr..',
+    '...RRRRRRRRR..',
+    '...rRrRRrRrrcc',
+    '....BBBBBBssc.',
+    ...ZICO_LEGS,
+  ],
+  eyes: 7,
+  shut: '...sSssssSs...',
 };
 
-const HEAD = [
-  '......hh......',
-  '.....hhhh.....',
-  '....hhhhhh....',
-  '....bbbbbb....',
-  '..hhhhhhhhhh..',
-  '...HHHHHHHH...',
-  '...wssssssw...',
-];
-const EYES_OPEN = '...skssssks...';
-const EYES_SHUT = '...sSssssSs...';
+const SEKTOR_HEAD = ['....qqqqq.....', '...qqqqqqq....', '...qqqqqqqQQQ.', '...rssssssr...', '...skssssks...', '...ssssssss...'];
+const SEKTOR_LEGS = ['...jjjjjjjj...', '...jjjJjjjj...', '...jjj..jjj...', '...jjj..jjj...', '..ooOo..oOoo..'];
 
-const STAND = [
-  '...smssssms...',
-  '...swwwwwws...',
-  '....wsSSsw....',
-  '......SS......',
-  '...rRrRRrRr...',
-  '..rrRrRRrRrr..',
-  '..RRRRRRRRRR..',
-  '..rrRrRRrRrrcc',
-  '..ssBBBBBBssc.',
-];
+const SEKTOR: Look = {
+  pal: {
+    q: '#d64545', // boné
+    Q: '#8f2a2a', // aba reta
+    r: '#14110f', // costeleta
+    s: '#8d5524', // pele
+    S: '#6e4019',
+    b: '#2b1b0e', // barba
+    k: INK,
+    h: '#6b4fa0', // moletom
+    H: '#54397f',
+    w: '#f4f4f4', // cordões do capuz
+    g: '#f2b705', // corrente
+    p: '#1b2b33', // fone no pescoço
+    P: '#12a3a0',
+    j: '#2f4f6f', // calça larga
+    J: '#24405a',
+    o: '#f4f4f4', // tênis
+    O: '#d64545',
+  },
+  stand: [
+    ...SEKTOR_HEAD,
+    '...sbssssbs...',
+    '....bbSSbb....',
+    '......ss......',
+    '..hhpPPPPphh..',
+    '..hhhhgghhhh..',
+    '..hhhhghhhhh..',
+    '..hhwhhhhwhh..',
+    '..hhhHHHHhhh..',
+    '..sshHHHHhss..',
+    ...SEKTOR_LEGS,
+  ],
+  wave: [
+    ...SEKTOR_HEAD,
+    '.s.sbssssbs...',
+    '.h..bbSSbb....',
+    '.h....ss......',
+    '.hhhpPPPPphh..',
+    '...hhhgghhhh..',
+    '...hhhghhhhh..',
+    '...hwhhhhwhh..',
+    '...hhHHHHhhh..',
+    '....hHHHHhss..',
+    ...SEKTOR_LEGS,
+  ],
+  eyes: 4,
+  shut: '...sSssssSs...',
+};
 
-/** Acenando: o braço esquerdo sobe até a altura do chapéu. */
-const WAVE = [
-  '.s.smssssms...',
-  '.r.swwwwwws...',
-  '.r..wsSSsw....',
-  '.r....SS......',
-  '.rrrRrRRrRr...',
-  '...rRrRRrRrr..',
-  '...RRRRRRRRR..',
-  '...rRrRRrRrrcc',
-  '....BBBBBBssc.',
-];
+const CIDA_HEAD = ['......gg......', '.....gGGg.....', '....gggggg....', '...gggggggg...', '...gssssssg...', '...lklsslkl...', '...smssssms...'];
+const CIDA_SKIRT = ['..dDddDddDdd..', '..ddDddDddDd..', '...dddddddd...', '....ss..ss....', '...ooo..ooo...'];
 
-const LEGS = ['....pppppp..c.', '....pPpppP..c.', '....pp..pp..c.', '....pp..pp..c.', '...ooo..ooo.c.'];
+const CIDA: Look = {
+  pal: {
+    g: '#d4d2cb', // cabelo grisalho
+    G: '#a3a39c',
+    s: '#e0ac69', // pele
+    S: '#c48f52',
+    m: '#e88f8f', // bochecha
+    k: INK,
+    l: '#7a4a25', // armação dos óculos
+    d: '#2f7fb3', // vestido
+    D: '#f4f4f4', // florzinhas do vestido
+    y: '#f2b705',
+    a: '#fdf6e3', // avental
+    H: '#c58b4a', // bastidor de madeira
+    w: '#ffffff', // pano
+    r: '#d64545', // bordado
+    o: '#6b4423', // sapatos
+  },
+  stand: [
+    ...CIDA_HEAD,
+    '....ssSSss....',
+    '......ss......',
+    '...ddyddydd...',
+    '..ddaaaaaadd..',
+    '..ddaaaaaadd..',
+    '..ddHHHHHddd..',
+    '..dsHrwwHsdd..',
+    '..dsHwywHsdd..',
+    '..ddHHHHHddd..',
+    ...CIDA_SKIRT,
+  ],
+  wave: [
+    ...CIDA_HEAD,
+    '.s..ssSSss....',
+    '.d....ss......',
+    '.ddddyddydd...',
+    '...daaaaaadd..',
+    '...daaaaaadd..',
+    '...dHHHHHddd..',
+    '...dHrwwHsdd..',
+    '...dHwywHsdd..',
+    '...dHHHHHddd..',
+    ...CIDA_SKIRT,
+  ],
+  eyes: 5,
+  shut: '...lSlsslSl...',
+};
 
 const pad = (rows: string[]) => ['.'.repeat(16), ...rows.map((r) => `.${r}.`), '.'.repeat(16)];
-const sprite = (eyes: string, body: string[]) => toRuns(outline(fromAscii(pad([...HEAD, eyes, ...body, ...LEGS]), ZICO_PAL), INK));
+const runs = (look: Look, rows: string[]) => toRuns(outline(fromAscii(pad(rows), look.pal), INK));
 
-const ZICO = {
-  stand: sprite(EYES_OPEN, STAND),
-  blink: sprite(EYES_SHUT, STAND),
-  wave: sprite(EYES_OPEN, WAVE),
+function build(look: Look) {
+  const blink = [...look.stand];
+  blink[look.eyes] = look.shut;
+  return { stand: runs(look, look.stand), blink: runs(look, blink), wave: runs(look, look.wave), w: 16, h: look.stand.length + 2 };
+}
+
+export type MasterFrame = 'stand' | 'blink' | 'wave';
+
+const ART: Record<string, Record<MasterFrame, Run[]> & { w: number; h: number }> = {
+  'seu-zico': build(ZICO),
+  sektor: build(SEKTOR),
+  'dona-cida': build(CIDA),
 };
 
-export const ZICO_W = 16;
-export const ZICO_H = 24;
+const art = (id: string) => ART[id] ?? ART['seu-zico'];
 const SCALE = 0.7;
 
-export type ZicoFrame = keyof typeof ZICO;
+/** Altura do desenho do mestre em pixels (para o svg grande da casa dele). */
+export const masterHeight = (id: string) => art(id).h;
 
-/** Seu Zico no mapa, com os pés em (x, y). */
-export function ZicoSprite({ x, y, frame }: { x: number; y: number; frame: ZicoFrame }) {
-  const w = ZICO_W * SCALE;
-  const h = ZICO_H * SCALE;
+/** Mestre do Saber no mapa, com os pés em (x, y). */
+export function MasterSprite({ id, x, y, frame }: { id: string; x: number; y: number; frame: MasterFrame }) {
+  const a = art(id);
+  const w = a.w * SCALE;
+  const h = a.h * SCALE;
   return (
     <g transform={`translate(${(x - w / 2).toFixed(2)} ${(y - h + 1).toFixed(2)})`}>
       <ellipse cx={w / 2} cy={h - 1.2} rx={5.5} ry={1.6} fill="#000" opacity={0.2} />
       <rect width={w} height={h} fill="transparent" />
       <g transform={`scale(${SCALE})`}>
-        <Pixels runs={ZICO[frame]} />
+        <Pixels runs={a[frame]} />
       </g>
     </g>
   );
 }
 
-/** Seu Zico em tamanho grande (para a casa dele): preenche um <svg viewBox="0 0 16 24">. */
-export function ZicoPixels({ frame }: { frame: ZicoFrame }) {
-  return <Pixels runs={ZICO[frame]} />;
+/** O mestre em tamanho grande: preenche um <svg viewBox={`0 0 16 ${masterHeight(id)}`}>. */
+export function MasterPixels({ id, frame }: { id: string; frame: MasterFrame }) {
+  return <Pixels runs={art(id)[frame]} />;
 }
 
-/** Rosto do Seu Zico para a caixa de diálogo. */
-export function ZicoPortrait({ size = 64 }: { size?: number }) {
+/** Rosto do mestre (para a caixa de diálogo e o quiz). */
+export function MasterPortrait({ id, size = 64 }: { id: string; size?: number }) {
   return (
     <svg className="mestre-portrait" width={size} height={size} viewBox="0 0 16 16" shapeRendering="crispEdges" aria-hidden>
-      <Pixels runs={ZICO.wave} />
+      <Pixels runs={art(id).wave} />
     </svg>
   );
 }

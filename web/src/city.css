@@ -45,7 +45,7 @@ html, body { overscroll-behavior: none; }
   15% { opacity: 0.85; }
   100% { transform: translate(3px, -12px) scale(1.6); opacity: 0; }
 }
-.mestre-portrait { display: block; background: #ffe1ec; border-radius: 4px; }
+.mestre-portrait { display: block; background: var(--mz-soft, #ffe1ec); border-radius: 4px; }
 /* Casa de quem já pode ser visitado: brilho suave pulsando */
 .cw-featured { animation: cw-featured 2.6s ease-in-out infinite; }
 @keyframes cw-featured {
@@ -57,7 +57,7 @@ html, body { overscroll-behavior: none; }
 .visit.mz { --zh: clamp(150px, 44vh, 400px); --zx: max(4%, 14px); background: #7dbb45; }
 .mz-cloud { animation: mz-cloud linear infinite; }
 @keyframes mz-cloud { from { transform: translateX(-60px); } to { transform: translateX(260px); } }
-.mz-zico { position: absolute; z-index: 4; left: var(--zx); bottom: calc(var(--quiz-h) - 6px); height: var(--zh); width: calc(var(--zh) * 2 / 3); padding: 0; background: none; border: 0; cursor: pointer; animation: mz-in 1s steps(8) both; }
+.mz-zico { position: absolute; z-index: 4; left: var(--zx); bottom: calc(var(--quiz-h) - 6px); height: var(--zh); width: calc(var(--zh) * var(--zr, 0.667)); padding: 0; background: none; border: 0; cursor: pointer; animation: mz-in 1s steps(8) both; }
 .mz-zico svg { position: relative; display: block; width: 100%; height: 100%; image-rendering: pixelated; filter: drop-shadow(0 6px 0 rgba(0, 0, 0, 0.18)); }
 .mz-glow { position: absolute; left: -20%; right: -20%; bottom: -4%; height: 26%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255, 226, 122, 0.85), rgba(255, 226, 122, 0)); animation: mz-glow 2.4s ease-in-out infinite; }
 @keyframes mz-glow { 50% { transform: scale(1.15); opacity: 0.6; } }
@@ -68,18 +68,18 @@ html, body { overscroll-behavior: none; }
 @keyframes mz-hop { 50% { transform: translateY(-9%); } }
 .mz-zico.think svg { transform-origin: 50% 100%; animation: mz-think 1.4s ease-in-out infinite; }
 @keyframes mz-think { 25% { transform: rotate(-4deg); } 75% { transform: rotate(3deg); } }
-.mz-bubble { position: absolute; z-index: 5; left: calc(var(--zx) + var(--zh) * 2 / 3 + 6px); bottom: calc(var(--quiz-h) + var(--zh) * 0.6); max-width: min(440px, calc(100% - var(--zx) - var(--zh) * 2 / 3 - 24px)); background: #fffdf5; color: var(--line); border: 4px solid var(--line); border-radius: 10px; box-shadow: 0 5px 0 var(--line); padding: 8px 14px 10px; font-family: 'Nunito Sans', var(--font); animation: mz-bubble 0.3s steps(3) both; cursor: pointer; }
+.mz-bubble { position: absolute; z-index: 5; left: calc(var(--zx) + var(--zh) * var(--zr, 0.667) + 6px); bottom: calc(var(--quiz-h) + var(--zh) * 0.6); max-width: min(440px, calc(100% - var(--zx) - var(--zh) * var(--zr, 0.667) - 24px)); background: #fffdf5; color: var(--line); border: 4px solid var(--line); border-radius: 10px; box-shadow: 0 5px 0 var(--line); padding: 8px 14px 10px; font-family: 'Nunito Sans', var(--font); animation: mz-bubble 0.3s steps(3) both; cursor: pointer; }
 .mz-bubble::after { content: ''; position: absolute; left: -12px; bottom: 14px; width: 14px; height: 14px; background: inherit; border-left: 4px solid var(--line); border-bottom: 4px solid var(--line); transform: rotate(45deg); }
 .mz-bubble p { margin: 2px 0 0; font-weight: 800; font-size: clamp(1rem, 2.3vw, 1.35rem); line-height: 1.3; }
 @keyframes mz-bubble { from { transform: scale(0.6); opacity: 0; } }
-.mz-name, .mz-tag { display: inline-block; font-family: var(--font-pixel); font-size: 0.95rem; text-transform: uppercase; color: #fff; background: #d6538a; border: 2px solid var(--line); border-radius: 4px; padding: 0 8px; }
+.mz-name, .mz-tag { display: inline-block; font-family: var(--font-pixel); font-size: 0.95rem; text-transform: uppercase; color: #fff; background: var(--mz-c, #d6538a); border: 2px solid var(--line); border-radius: 4px; padding: 0 8px; }
 .mz-talk { cursor: pointer; padding-left: calc(14px); }
 .mz-talk-text { margin: 8px 0 0; min-height: 3.2em; font-family: 'Nunito Sans', var(--font); font-weight: 800; font-size: clamp(1.15rem, 2.6vw, 1.55rem); line-height: 1.3; color: var(--line); }
 .mz-talk-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
 .mz-talk .kid-btn { background: #fff8e1; }
-.mz-talk .kid-btn.mz-go { background: #f7a8c8; animation: mz-call 1.2s ease-in-out infinite; }
+.mz-talk .kid-btn.mz-go { background: var(--mz-soft, #f7a8c8); border-color: var(--line); animation: mz-call 1.2s ease-in-out infinite; }
 @keyframes mz-call { 50% { transform: scale(1.06); box-shadow: 0 4px 0 var(--line), 0 0 0 6px rgba(214, 83, 138, 0.3); } }
-.mz .quiz-portrait.mz-portrait { background: #ffe1ec; }
+.mz .quiz-portrait.mz-portrait { background: var(--mz-soft, #ffe1ec); }
 .kid-modal-backdrop:has(.mz-modal) { overflow-y: auto; align-items: safe center; }
 .mz-modal { margin-top: 60px; padding-top: 12px; }
 .mz-modal h2 { margin-top: 0; }
@@ -88,8 +88,31 @@ html, body { overscroll-behavior: none; }
 .mz-modal-zico.happy svg { animation: mz-hop 0.5s steps(3) infinite; }
 .mz-modal-zico.think svg { transform-origin: 50% 100%; animation: mz-think 1.4s ease-in-out infinite; }
 .mz-answer { display: inline-flex !important; align-items: center; gap: 8px; background: #fff6d6; border: 3px solid var(--line); border-radius: 8px; padding: 6px 14px; font-size: 1.3rem !important; }
-.win-fact.mz-fact { background: #ffe9f1; border-color: #d6538a; }
-.win-fact.mz-fact strong { color: #b63a70; }
+.win-fact.mz-fact { background: var(--mz-soft, #ffe9f1); border-color: var(--mz-c, #d6538a); }
+.win-fact.mz-fact strong { color: var(--mz-c, #b63a70); }
+/* Vida dentro das casas dos mestres */
+.mz-steam rect { transform-box: fill-box; animation: w-smoke 2.8s linear infinite; }
+.mz-fire { animation: mz-fire 0.5s steps(2) infinite; }
+@keyframes mz-fire { 50% { opacity: 0.75; transform: translateY(0.6px); } }
+.mz-tail { transform-box: fill-box; transform-origin: 100% 50%; animation: mz-tail 1.8s ease-in-out infinite; }
+@keyframes mz-tail { 50% { transform: rotate(-14deg); } }
+.mz-neon { animation: mz-neon 2.2s steps(2) infinite; }
+@keyframes mz-neon { 40% { opacity: 1; } 45% { opacity: 0.4; } 50% { opacity: 1; } }
+.mz-woofer { transform-box: fill-box; transform-origin: 50% 50%; animation: mz-woofer 0.5s steps(2) infinite; }
+@keyframes mz-woofer { 50% { transform: scale(1.18); } }
+.mz-spin { animation: mz-spin 0.7s steps(4) infinite; }
+@keyframes mz-spin { 50% { transform: scaleX(-1); } }
+.mz-beam { animation: mz-beam 5s ease-in-out infinite alternate; }
+@keyframes mz-beam { from { transform: rotate(-18deg); } to { transform: rotate(18deg); } }
+.mz-notes > g { animation: mz-note 2.7s linear infinite; }
+@keyframes mz-note { from { transform: translate(0, 0); opacity: 0; } 15% { opacity: 1; } to { transform: translate(-6px, -16px); opacity: 0; } }
+.mz-roll { transform-box: fill-box; animation: mz-roll 2.4s ease-in-out infinite; }
+@keyframes mz-roll { 50% { transform: translateX(2px); } }
+.mz-hiphop .mz-zico:not(.happy):not(.think):not(.talk) svg { animation: mz-groove 0.5s steps(2) infinite; }
+@keyframes mz-groove { 50% { transform: translateY(-1.5%) rotate(-1deg); } }
+.w-light { animation: w-light 1.4s steps(2) infinite; }
+@keyframes w-light { 50% { opacity: 0.35; } }
+
 @media (max-width: 560px) {
   .visit.mz { --zh: clamp(120px, 26vh, 200px); }
   .mz-bubble { bottom: calc(var(--quiz-h) + var(--zh) * 0.45); }
@@ -287,7 +310,7 @@ button.visit-dove { left: 6%; top: 34%; background: none; border: 0; padding: 0;
 .win-fact p { margin: 4px 0 0; font-size: 1.05rem; line-height: 1.35; }
 
 @media (prefers-reduced-motion: reduce) {
-  .city-stage.entering, .w-smoke rect, .start-tagline, .cw-featured, .mz-cloud, .mz-zico, .mz-zico svg, .mz-glow, .mz-bubble, .mz-modal-zico svg, .mz-talk .kid-btn.mz-go, .cw-sway, .cw-tree, .start-play, .visit-scene, .visit-dove, .quiz, .ps-drag, .ps-found-list span, .ps-ray, .ps-canopy, .quiz-opt, .kid-modal, .win-stars .px-icon { animation: none !important; }
+  .city-stage.entering, .w-smoke rect, .start-tagline, .cw-featured, .mz-cloud, .mz-steam rect, .mz-fire, .mz-tail, .mz-neon, .mz-woofer, .mz-spin, .mz-beam, .mz-notes > g, .mz-roll, .w-light, .mz-zico, .mz-zico svg, .mz-glow, .mz-bubble, .mz-modal-zico svg, .mz-talk .kid-btn.mz-go, .cw-sway, .cw-tree, .start-play, .visit-scene, .visit-dove, .quiz, .ps-drag, .ps-found-list span, .ps-ray, .ps-canopy, .quiz-opt, .kid-modal, .win-stars .px-icon { animation: none !important; }
   .city-flash { animation-duration: 0.3s; }
 }
 

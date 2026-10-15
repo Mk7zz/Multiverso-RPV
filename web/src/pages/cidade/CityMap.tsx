@@ -9,7 +9,7 @@ import { FullscreenToggle, Logo, ScoreBadge, SoundToggle, useCityTitle } from '.
 const INTRO = [
   'Oi! Eu sou a Pomba e vou passear com você por Cataguases!',
   'Toque no chão para andar. Toque nos lugares, nas árvores, no rio e nas pessoas para explorar!',
-  'Na casinha rosa mora o Seu Zico, um Mestre do Saber. Ele adora contar histórias!',
+  'Lá embaixo fica a Rua dos Mestres: o Seu Zico, o Sektor e a Dona Cida são Mestres do Saber e adoram ensinar!',
   'Cada resposta certa vale estrelas. Vamos iniciar pela Praça Santa Rita?',
 ];
 
