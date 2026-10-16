@@ -2,7 +2,7 @@
 
 > Gerado a partir do jogo (`npm run roteiro -w web`). Não edite à mão: mude a fala no código e gere de novo.
 
-São 70 falas curtas, gravadas por crianças: 48 com menina e 22 com menino. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
+São 76 falas curtas, gravadas por crianças: 54 com menina e 22 com menino. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador.
 
 ## Como gravar
 
@@ -125,6 +125,17 @@ São 70 falas curtas, gravadas por crianças: 48 com menina e 22 com menino. Nã
 | `cultural-cadeiras-curiosidade.mp3` | Vermelhas! E cabe muita gente. |  |
 | `cultural-quadros-pergunta.mp3` | O que tem nas paredes da galeria? |  |
 | `cultural-quadros-curiosidade.mp3` | Quadros! A galeria é lugar de ver arte. |  |
+
+#### Memorial Nanzita
+
+| Arquivo | Fala | Gravada |
+| --- | --- | --- |
+| `nanzita-painel-pergunta.mp3` | O que tem na parede de baixo da casa? |  |
+| `nanzita-painel-curiosidade.mp3` | Um painel enorme, feito de azulejos! |  |
+| `nanzita-burro-pergunta.mp3` | Que bicho aparece no painel? |  |
+| `nanzita-burro-curiosidade.mp3` | Um burrinho, carregando a carga nas costas! |  |
+| `nanzita-janelas-pergunta.mp3` | Como são as janelas lá de cima? |  |
+| `nanzita-janelas-curiosidade.mp3` | Grandes e de vidro, uma do lado da outra! |  |
 
 ## Falas para gravar com menino
 

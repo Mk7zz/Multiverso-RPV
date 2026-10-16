@@ -309,3 +309,44 @@ export function culturalParts(p: Place, glass: string): HouseParts {
     ),
   };
 }
+
+/** Memorial Nanzita no mapa: andar de cima com a fileira de janelas, térreo recuado com o pilar em V e o painel colorido. */
+export function memorialParts(p: Place, glass: string): HouseParts {
+  const { x, y } = p;
+  const beige = '#cfc8ae';
+  const x0 = x - 21;
+  const body: Part[] = [
+    [x0 - 2, y - 28, 46, 3, beige],
+    [x0, y - 25, 42, 12, '#f4f1de'],
+    [x0, y - 13, 42, 2, beige],
+    [x0 + 1, y - 11, 40, 11, '#5a5a52'],
+    [x0 + 42, y - 27, 4, 27, '#c27a4a'],
+  ];
+  const details: Part[] = Array.from({ length: 6 }, (_, i) => [x0 + 1 + i * 7, y - 23, 6, 6, glass] as Part);
+  const mural = ['#e3cf9a', '#c9a052', '#a89277', '#8aa86a', '#d9c48c', '#e3b341', '#b5523b'];
+  return {
+    body,
+    details,
+    sign: [x - 5, y - 41],
+    under: <rect x={x0} y={y - 2} width={42} height={2} fill="#8d969c" />,
+    extra: (
+      <g>
+        {/* Cortinas verdes e rosadas */}
+        {Array.from({ length: 6 }, (_, i) => (
+          <rect key={i} x={x0 + 1 + i * 7} y={y - 23} width={2} height={6} fill={i % 3 === 1 ? '#d9a7a0' : '#6fb5a5'} />
+        ))}
+        {Array.from({ length: 6 }, (_, i) => (
+          <rect key={`p${i}`} x={x0 + 1 + i * 7} y={y - 16} width={6} height={2} fill="#dfe6dc" />
+        ))}
+        {/* Pilar em V */}
+        <path d={`M${x0 + 3} ${y - 11}L${x0 + 5} ${y - 11}L${x0 + 8} ${y}L${x0 + 6} ${y}Z`} fill="#e9e6dc" />
+        <path d={`M${x0 + 11} ${y - 11}L${x0 + 13} ${y - 11}L${x0 + 8} ${y}L${x0 + 6} ${y}Z`} fill="#e9e6dc" />
+        {/* Painel de azulejos */}
+        {mural.map((c, i) => (
+          <rect key={c} x={x0 + 16 + i * 3} y={y - 10} width={3} height={9} fill={c} />
+        ))}
+        <rect x={x0 + 22} y={y - 7} width={6} height={2} fill="#8a7660" />
+      </g>
+    ),
+  };
+}

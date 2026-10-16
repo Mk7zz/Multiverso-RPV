@@ -9,11 +9,12 @@ import { ChacaraScene } from './ChacaraScene';
 import { CulturalScene } from './CulturalScene';
 import { EstacaoScene } from './EstacaoScene';
 import { MuseuScene } from './MuseuScene';
+import { NanzitaScene } from './NanzitaScene';
 import { PlaceScene } from './PlaceScene';
 import { PonteScene } from './PonteScene';
 
 /** Cena de cada ponto focal (a Praça Santa Rita é a cena padrão). */
-const SCENES: Record<string, typeof PlaceScene> = { ponte: PonteScene, museu: MuseuScene, estacao: EstacaoScene, chacara: ChacaraScene, cultural: CulturalScene };
+const SCENES: Record<string, typeof PlaceScene> = { ponte: PonteScene, museu: MuseuScene, estacao: EstacaoScene, chacara: ChacaraScene, cultural: CulturalScene, nanzita: NanzitaScene };
 
 const CONFETTI = ['#f2b705', '#12a3a0', '#d64545', '#8cc63f', '#2f5fb3', '#ec6a8c'];
 

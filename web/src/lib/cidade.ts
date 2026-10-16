@@ -50,6 +50,7 @@ const SANTA_RITA: CityPlace = {
  * - Estação Cataguases: a estação de trem de tijolinho, do outro lado do rio.
  * - Chácara Dona Catarina: a casa laranja com renda branca no telhado e o jardim com laguinho.
  * - Centro Cultural Humberto Mauro: o prédio pequeno da placa vermelha, com galeria, teatro e cinema.
+ * - Memorial Nanzita (hoje Sicoob): casa moderna com a fileira de janelas e o grande painel de azulejos.
  */
 const PONTE: CityPlace = {
   id: 'ponte',
@@ -116,7 +117,20 @@ const CULTURAL: CityPlace = {
   y: 76,
 };
 
-const LANDMARKS = [SANTA_RITA, PONTE, MUSEU, ESTACAO, CHACARA, CULTURAL];
+const NANZITA: CityPlace = {
+  id: 'nanzita',
+  label: 'Memorial Nanzita',
+  title: 'Memorial Nanzita',
+  hint: 'A casa do painel colorido',
+  intro: 'Chegamos no Memorial Nanzita! Olha que painel colorido.',
+  to: '/lugar/nanzita',
+  icon: 'palette',
+  kind: 'memorial',
+  x: 292,
+  y: 164,
+};
+
+const LANDMARKS = [SANTA_RITA, PONTE, MUSEU, ESTACAO, CHACARA, CULTURAL, NANZITA];
 
 /*
  * Mestres do Saber: pessoas da cultura popular que guardam histórias, músicas e costumes.
@@ -223,7 +237,7 @@ const MASTERS = [SEU_ZICO, SEKTOR, DONA_ROSA];
 export const CITY_PLACES: Place[] = [
   ...LANDMARKS,
   ...MASTERS,
-  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao', 'quadro', 'arena', 'feira', 'torre'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
+  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao', 'quadro', 'arena', 'feira', 'torre', 'palco'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
 ];
 
 export const CITY_INFO: Record<string, CityPlace> = Object.fromEntries(LANDMARKS.map((p) => [p.id, p]));
@@ -510,6 +524,38 @@ export const QUESTIONS: Record<string, Question[]> = {
       fact: 'Quadros! A galeria é lugar de ver arte.',
     },
   ],
+  nanzita: [
+    {
+      id: 'painel',
+      text: 'O que tem na parede de baixo da casa?',
+      options: [
+        { text: 'Um painel colorido', emoji: '🎨' },
+        { text: 'Uma piscina', emoji: '🏊' },
+        { text: 'Um foguete', emoji: '🚀' },
+      ],
+      fact: 'Um painel enorme, feito de azulejos!',
+    },
+    {
+      id: 'burro',
+      text: 'Que bicho aparece no painel?',
+      options: [
+        { text: 'Um burrinho', emoji: '🐴' },
+        { text: 'Um tubarão', emoji: '🦈' },
+        { text: 'Um pinguim', emoji: '🐧' },
+      ],
+      fact: 'Um burrinho, carregando a carga nas costas!',
+    },
+    {
+      id: 'janelas',
+      text: 'Como são as janelas lá de cima?',
+      options: [
+        { text: 'Grandes, de vidro', emoji: '🪟' },
+        { text: 'De pedra', emoji: '🪨' },
+        { text: 'Não tem janela', emoji: '🚫' },
+      ],
+      fact: 'Grandes e de vidro, uma do lado da outra!',
+    },
+  ],
   'santa-rita': [
     {
       id: 'nome-praca',
@@ -787,7 +833,7 @@ export function speak(text: string, who = 'narrador') {
 
 let ctx: AudioContext | null = null;
 
-export type Sfx = 'ok' | 'oops' | 'pop' | 'bell' | 'splash' | 'rustle' | 'chirp' | 'honk' | 'clang' | 'zap' | 'whir' | 'creak' | 'apito' | 'tictac' | 'ribbit' | 'plim' | 'palmas' | 'musica';
+export type Sfx = 'ok' | 'oops' | 'pop' | 'bell' | 'splash' | 'rustle' | 'chirp' | 'honk' | 'clang' | 'zap' | 'whir' | 'creak' | 'apito' | 'tictac' | 'ribbit' | 'plim' | 'palmas' | 'musica' | 'zurro';
 
 /** Cada som: notas (Hz), duração de cada nota, forma de onda e volume. Pequenas variações a cada toque. */
 const SOUNDS: Record<Sfx, { notes: number[]; step: number; wave: OscillatorType; vol: number; tail?: number }> = {
@@ -808,6 +854,7 @@ const SOUNDS: Record<Sfx, { notes: number[]; step: number; wave: OscillatorType;
   ribbit: { notes: [180, 240, 160], step: 0.07, wave: 'square', vol: 0.05, tail: 0.8 },
   plim: { notes: [1318, 1046], step: 0.28, wave: 'sine', vol: 0.06, tail: 1.6 },
   palmas: { notes: [320, 290, 340, 300, 330, 280, 310], step: 0.07, wave: 'square', vol: 0.025, tail: 0.25 },
+  zurro: { notes: [620, 330, 620, 330], step: 0.24, wave: 'sawtooth', vol: 0.03, tail: 0.9 },
   musica: { notes: [523, 659, 784, 659, 880, 784, 659, 523, 587, 659, 523], step: 0.2, wave: 'triangle', vol: 0.05, tail: 0.6 },
 };
 
