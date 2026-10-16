@@ -75,6 +75,25 @@ export const riverX = (y: number) => 252 + Math.round(Math.sin(y / 16) * 3);
 export const RIVER_HALF = 6;
 export const BRIDGE = { y0: MAIN_PATH.y - 3, y1: MAIN_PATH.y + MAIN_PATH.h + 2 };
 
+/*
+ * Mapa do Territórios: maior que a base do Multiverso (que continua com as medidas acima), para os
+ * pontos focais terem espaço entre si. Os desenhos têm o mesmo tamanho; o que cresce é o terreno.
+ */
+export const CITY_W = 400;
+export const CITY_H = 225;
+export const CITY_PATH = { y: 142, h: 8 };
+export const CITY_BOUNDS = { x0: 8, x1: CITY_W - 8, y0: 52, y1: CITY_H - 4 };
+/** Praça do chafariz, logo abaixo do caminho principal; a criança começa na frente dela. */
+export const PLAZA = { x: 200, y: 168 };
+export const CITY_SPAWN = { x: PLAZA.x, y: PLAZA.y + 22 };
+export const cityRiverX = (y: number) => 302 + Math.round(Math.sin(y / 16) * 3);
+export const CITY_BRIDGE = { y0: CITY_PATH.y - 3, y1: CITY_PATH.y + CITY_PATH.h + 2 };
+
+export function inCityRiver(x: number, y: number) {
+  if (y >= CITY_BRIDGE.y0 && y <= CITY_BRIDGE.y1) return false;
+  return Math.abs(x - cityRiverX(y)) < RIVER_HALF + 2;
+}
+
 export function inRiver(x: number, y: number) {
   if (y >= BRIDGE.y0 && y <= BRIDGE.y1) return false;
   return Math.abs(x - riverX(y)) < RIVER_HALF + 2;

@@ -6,7 +6,7 @@
  */
 import { heroGender } from './personagem';
 import type { Clip } from './vozes';
-import { BRIDGE, MAIN_PATH, PLACES, riverX, type Place } from './world';
+import { CITY_BRIDGE, CITY_PATH, cityRiverX, PLACES, PLAZA, type Place } from './world';
 
 export interface Option {
   text: string;
@@ -40,8 +40,8 @@ const SANTA_RITA: CityPlace = {
   to: '/lugar/santa-rita',
   icon: 'bell',
   kind: 'church',
-  x: 74,
-  y: 86,
+  x: 104,
+  y: 106,
 };
 
 /*
@@ -53,9 +53,9 @@ const SANTA_RITA: CityPlace = {
  * - Centro Cultural Humberto Mauro: o prédio pequeno da placa vermelha, com galeria, teatro e cinema.
  * - Memorial Nanzita (hoje Sicoob): casa moderna com a fileira de janelas e o grande painel de azulejos.
  * - Painel do Educandário: o muro de azulejos azuis com pombas brancas, na Praça Santa Rita
- *   (no mapa, ao lado da igreja). A cena é a calçada da praça na frente do painel.
+ *   (no mapa, embaixo da praça do chafariz). A cena é a calçada da praça na frente do painel.
  * - Prédio Sicredi: o sobrado verde que foi o Grande Hotel Villas (arcos, base de pedra e ameias).
- *   No mapa fica embaixo, à esquerda, depois da casa do Seu Zico.
+ *   O Sicredi é patrocinador: no mapa ele fica em destaque, maior, no canto de cima à direita.
  */
 const PONTE: CityPlace = {
   id: 'ponte',
@@ -66,8 +66,8 @@ const PONTE: CityPlace = {
   to: '/lugar/ponte',
   icon: 'map',
   kind: 'bridge',
-  x: riverX(MAIN_PATH.y + 4),
-  y: BRIDGE.y0,
+  x: cityRiverX(CITY_PATH.y + 4),
+  y: CITY_BRIDGE.y0,
 };
 
 const MUSEU: CityPlace = {
@@ -79,8 +79,8 @@ const MUSEU: CityPlace = {
   to: '/lugar/museu',
   icon: 'star',
   kind: 'museum',
-  x: 212,
-  y: 98,
+  x: 258,
+  y: 108,
 };
 
 const ESTACAO: CityPlace = {
@@ -92,8 +92,8 @@ const ESTACAO: CityPlace = {
   to: '/lugar/estacao',
   icon: 'flag',
   kind: 'station',
-  x: 294,
-  y: 94,
+  x: 356,
+  y: 206,
 };
 
 const CHACARA: CityPlace = {
@@ -105,8 +105,8 @@ const CHACARA: CityPlace = {
   to: '/lugar/chacara',
   icon: 'heart',
   kind: 'chacara',
-  x: 24,
-  y: 96,
+  x: 34,
+  y: 106,
 };
 
 const CULTURAL: CityPlace = {
@@ -118,8 +118,8 @@ const CULTURAL: CityPlace = {
   to: '/lugar/cultural',
   icon: 'palette',
   kind: 'cultural',
-  x: 150,
-  y: 76,
+  x: 196,
+  y: 104,
 };
 
 const NANZITA: CityPlace = {
@@ -131,8 +131,8 @@ const NANZITA: CityPlace = {
   to: '/lugar/nanzita',
   icon: 'palette',
   kind: 'memorial',
-  x: 292,
-  y: 164,
+  x: 160,
+  y: 136,
 };
 
 const EDUCANDARIO: CityPlace = {
@@ -144,8 +144,8 @@ const EDUCANDARIO: CityPlace = {
   to: '/lugar/educandario',
   icon: 'school',
   kind: 'painel',
-  x: 97,
-  y: 117,
+  x: 200,
+  y: 216,
 };
 
 const SICREDI: CityPlace = {
@@ -157,8 +157,8 @@ const SICREDI: CityPlace = {
   to: '/lugar/sicredi',
   icon: 'building',
   kind: 'hotel',
-  x: 36,
-  y: 175,
+  x: 356,
+  y: 112,
 };
 
 const LANDMARKS = [SANTA_RITA, PONTE, MUSEU, ESTACAO, CHACARA, CULTURAL, NANZITA, EDUCANDARIO, SICREDI];
@@ -188,8 +188,8 @@ const SEU_ZICO: Place = {
   icon: 'scroll',
   kind: 'mestre',
   variant: 'roca',
-  x: 36,
-  y: 142,
+  x: 40,
+  y: 206,
   wall: '#f4a3c4',
   roof: '#c4553a',
   master: {
@@ -216,8 +216,8 @@ const SEKTOR: Place = {
   icon: 'play',
   kind: 'mestre',
   variant: 'hiphop',
-  x: 96,
-  y: 164,
+  x: 112,
+  y: 212,
   master: {
     name: 'Sektor',
     craft: 'Mestre do Saber · Hip Hop',
@@ -242,8 +242,8 @@ const DONA_ROSA: Place = {
   icon: 'heart',
   kind: 'mestre',
   variant: 'bordado',
-  x: 206,
-  y: 164,
+  x: 270,
+  y: 212,
   wall: '#f6dc8a',
   roof: '#b5523b',
   master: {
@@ -268,7 +268,7 @@ const MASTERS = [SEU_ZICO, SEKTOR, DONA_ROSA];
 export const CITY_PLACES: Place[] = [
   ...LANDMARKS,
   ...MASTERS,
-  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao', 'quadro', 'arena', 'feira', 'torre', 'palco'].includes(p.id)).map((p) => ({ ...p, label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
+  ...PLACES.filter((p) => !['academia', 'casa', 'correio', 'salao', 'quadro', 'arena', 'feira', 'torre', 'palco'].includes(p.id)).map((p) => ({ ...p, ...(p.id === 'praca' ? { x: PLAZA.x, y: PLAZA.y + 4 } : {}), label: 'Em breve', hint: 'Este lugar ainda está em construção', soon: true })),
 ];
 
 export const CITY_INFO: Record<string, CityPlace> = Object.fromEntries(LANDMARKS.map((p) => [p.id, p]));

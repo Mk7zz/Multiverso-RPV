@@ -2,14 +2,14 @@ import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState, ty
 import { sfx } from '../lib/cidade';
 import { seeded } from '../lib/pixel';
 import type { AvatarConfig } from '../lib/types';
-import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, riverX, RIVER_HALF, SPAWN, WORLD_H as H, WORLD_W as W, type Place } from '../lib/world';
+import { CITY_BOUNDS as BOUNDS, CITY_BRIDGE as BRIDGE, CITY_H as H, CITY_PATH as MAIN_PATH, CITY_SPAWN as SPAWN, CITY_W as W, cityRiverX as riverX, inCityRiver as inRiver, PLAZA, RIVER_HALF, type Place } from '../lib/world';
 import { AVATAR_PALETTES, DEFAULT_AVATAR } from './Avatar';
 import { Dialogue } from './Dialogue';
 import { MasterSprite, type MasterFrame } from './Mestres';
 import { PixelIcon } from './PixelIcon';
 import { birdDown, birdUp, Pixels, treeRuns, TREE_H, TREE_W, type DayTime } from './Scene';
 import { BridgeDeck } from './Landmarks';
-import { Building, Character, makeTrees } from './World';
+import { Building, Character, makeTrees, type TreeGeo } from './World';
 
 /*
  * Mapa da cidade em tela cheia. Diferente da base do aluno (World), aqui:
@@ -21,6 +21,9 @@ import { Building, Character, makeTrees } from './World';
  */
 
 const SPEED = 72;
+
+/** Medidas do mapa grande, para as árvores fugirem dos caminhos, do rio e da praça. */
+const CITY_GEO: TreeGeo = { w: W, h: H, path: MAIN_PATH, riverX, spawn: SPAWN, plaza: PLAZA, npcSpots: [], trees: 30, rowStep: 22 };
 const TREE_SCALE = 1.6;
 const PARALLAX = 0.4;
 
@@ -75,14 +78,14 @@ interface Sway {
 
 function makeScenery(places: Place[]) {
   const rand = seeded(77);
-  const trees = makeTrees(places, 4321).map((t) => ({ ...t, dur: 3.2 + rand() * 3.5, delay: -rand() * 7 }));
+  const trees = makeTrees(places, 4321, CITY_GEO).map((t) => ({ ...t, dur: 3.2 + rand() * 3.5, delay: -rand() * 7 }));
   const free = (x: number, y: number) =>
     y > 50 &&
     Math.abs(x - riverX(y)) > RIVER_HALF + 3 &&
     Math.abs(y - (MAIN_PATH.y + 4)) > 7 &&
-    Math.hypot((x - 150) / 28, (y - 130) / 15) > 1 &&
+    Math.hypot((x - PLAZA.x) / 28, (y - PLAZA.y) / 15) > 1 &&
     !trees.some((t) => Math.abs(t.x - x) < 6 && Math.abs(t.y - y) < 5) &&
-    !places.some((p) => Math.abs(x - p.x) < (p.kind === 'church' ? 30 : 24) && y > p.y - 42 && y < p.y + (p.kind === 'church' ? 12 : 4)) &&
+    !places.some((p) => Math.abs(x - p.x) < (p.kind === 'church' ? 30 : p.kind === 'hotel' ? 36 : 24) && y > p.y - (p.kind === 'hotel' ? 56 : 42) && y < p.y + (p.kind === 'church' || p.kind === 'hotel' ? 12 : 4)) &&
     !places.some((p) => Math.abs(x - p.x) < 6 && y > Math.min(p.y, MAIN_PATH.y) && y < Math.max(p.y, MAIN_PATH.y));
   const scatter = (n: number, make: (x: number, y: number) => Sway) => {
     const out: Sway[] = [];
@@ -96,12 +99,12 @@ function makeScenery(places: Place[]) {
   const tufts = scatter(120, (x, y) => ({ x, y, dur: 1.8 + rand() * 2.6, delay: -rand() * 4, c: rand() > 0.5 ? '#4f8f2c' : '#6fae3c' }));
   const flowers = scatter(70, (x, y) => ({ x, y, dur: 2.2 + rand() * 2.4, delay: -rand() * 4, c: ['#f2b705', '#ffffff', '#ec6a8c', '#b48ae0', '#ff8a5c'][Math.floor(rand() * 5)] }));
   const pebbles = Array.from({ length: 90 }, () => ({ x: 10 + Math.round(rand() * (W - 20)), y: MAIN_PATH.y + 1 + Math.round(rand() * (MAIN_PATH.h - 2)) })).filter((p) => !inRiver(p.x, p.y + 20));
-  const lamps = [44, 118, 186, 232, 276]
-    .filter((x) => !places.some((p) => (p.kind === 'mestre' || p.kind === 'painel') && Math.abs(x - p.x) < 24))
+  const lamps = [64, 126, 236, 280, 330, 380]
+    .filter((x) => !places.some((p) => (p.kind === 'mestre' || p.kind === 'painel') && Math.abs(x - p.x) < 24) && Math.abs(x - riverX(MAIN_PATH.y)) > 22)
     .map((x) => ({ x, y: MAIN_PATH.y - 1, dur: 2 + rand() * 3 }));
   const benches = [
-    { x: 122, y: 147 },
-    { x: 166, y: 147 },
+    { x: PLAZA.x - 28, y: PLAZA.y + 17 },
+    { x: PLAZA.x + 16, y: PLAZA.y + 17 },
   ];
   const stars = Array.from({ length: 46 }, () => ({ x: Math.round(rand() * W), y: Math.round(rand() * 34), dur: 1.4 + rand() * 3.5, delay: -rand() * 4 }));
   return { trees, tufts, flowers, pebbles, lamps, benches, stars };
@@ -119,8 +122,8 @@ export const ridgePath = (base: number, peaks: [number, number][], x0: number, x
 const Backdrop = memo(function Backdrop({ time, farRef, scenery }: { time: DayTime; farRef: RefObject<SVGGElement | null>; scenery: Scenery }) {
   const night = time === 'night';
   const sky = night ? ['#0b1730', '#24405a'] : time === 'dusk' ? ['#d9739a', '#ffcf8a'] : ['#6cc4ea', '#dff5f1'];
-  const far = useMemo(() => ridgePath(42, [[-60, 14], [30, 8], [118, 3], [205, 12], [290, 5], [370, 12]], -140, W + 20, 60), []);
-  const near = useMemo(() => ridgePath(44, [[-30, 24], [80, 20], [170, 16], [262, 22], [350, 20]], -140, W + 20, 60), []);
+  const far = useMemo(() => ridgePath(42, [[-60, 14], [30, 8], [118, 3], [205, 12], [290, 5], [370, 12], [450, 6]], -140, W + 20, 60), []);
+  const near = useMemo(() => ridgePath(44, [[-30, 24], [80, 20], [170, 16], [262, 22], [350, 20], [430, 18]], -140, W + 20, 60), []);
   return (
     <g>
       <defs>
@@ -163,7 +166,7 @@ const Backdrop = memo(function Backdrop({ time, farRef, scenery }: { time: DayTi
 const Ground = memo(function Ground({ places, scenery }: { places: Place[]; scenery: Scenery }) {
   const g = useMemo(() => {
     const rand = seeded(42);
-    const patches = Array.from({ length: 180 }, () => ({ x: Math.round(rand() * W), y: 46 + Math.round(rand() * 134), w: 2 + Math.round(rand() * 3), c: rand() > 0.5 ? '#6fae3c' : '#8ccb52' }));
+    const patches = Array.from({ length: 180 }, () => ({ x: Math.round(rand() * W), y: 46 + Math.round(rand() * (H - 46)), w: 2 + Math.round(rand() * 3), c: rand() > 0.5 ? '#6fae3c' : '#8ccb52' }));
     const river: number[] = [];
     for (let y = 36; y < H; y++) river.push(riverX(y));
     return { patches, river };
@@ -195,12 +198,12 @@ const Ground = memo(function Ground({ places, scenery }: { places: Place[]; scen
       {scenery.pebbles.map((p, i) => (
         <rect key={i} x={p.x} y={p.y} width={1} height={1} fill={i % 2 ? '#cdb983' : '#f0e2b8'} />
       ))}
-      <ellipse cx={150} cy={130} rx={25} ry={13} fill="#bdb49a" />
-      <ellipse cx={150} cy={130} rx={24} ry={12} fill="#d9d2bf" />
-      <ellipse cx={150} cy={130} rx={17} ry={8} fill="none" stroke="#c9c0a6" strokeWidth={1} />
+      <ellipse cx={PLAZA.x} cy={PLAZA.y} rx={25} ry={13} fill="#bdb49a" />
+      <ellipse cx={PLAZA.x} cy={PLAZA.y} rx={24} ry={12} fill="#d9d2bf" />
+      <ellipse cx={PLAZA.x} cy={PLAZA.y} rx={17} ry={8} fill="none" stroke="#c9c0a6" strokeWidth={1} />
       {/* Sombras das construções */}
       {places.filter((p) => p.kind !== 'bridge').map((p) => (
-        <ellipse key={p.id} cx={p.x + (p.kind === 'church' ? 6 : 2)} cy={p.y + 1} rx={p.kind === 'church' ? 34 : p.kind === 'board' ? 18 : 24} ry={3} fill="#000" opacity={0.13} />
+        <ellipse key={p.id} cx={p.x + (p.kind === 'church' ? 6 : 2)} cy={p.y + 1} rx={p.kind === 'church' ? 34 : p.kind === 'hotel' ? 38 : p.kind === 'board' ? 18 : 24} ry={3} fill="#000" opacity={0.13} />
       ))}
       {/* Rio e ponte */}
       {g.river.map((x, i) => (
@@ -361,11 +364,11 @@ function initLife(places: Place[], targets: Vec[]) {
     }),
     particles: [] as Particle[],
     flyers: Array.from({ length: 6 }, (): Flyer => {
-      const x = rnd(20, 300);
-      const y = rnd(60, 170);
+      const x = rnd(20, W - 20);
+      const y = rnd(60, H - 10);
       return { id: uid++, x, y, tx: x, ty: y, c: pick(['#f2b705', '#ec6a8c', '#ffffff', '#7fb8ff', '#ff8a5c']), rest: rnd(0, 2), phase: rnd(0, 6), speed: rnd(10, 18), flee: 0 };
     }),
-    glows: Array.from({ length: 18 }, (): Glow => ({ x: rnd(10, 310), y: rnd(56, 176), ph: rnd(0, 6), f: rnd(1.2, 3.2), vx: rnd(-3, 3), vy: rnd(-2, 2) })),
+    glows: Array.from({ length: 18 }, (): Glow => ({ x: rnd(10, W - 10), y: rnd(56, H - 4), ph: rnd(0, 6), f: rnd(1.2, 3.2), vx: rnd(-3, 3), vy: rnd(-2, 2) })),
     clouds: Array.from({ length: 5 }, (): Cloud => ({ x: rnd(-40, W), y: rnd(2, 24), w: rnd(14, 32), speed: rnd(1.2, 3.6) })),
     flocks: [] as Flock[],
     timers: { spark: 0, leaf: rnd(1, 3), flock: rnd(4, 12), drop: 0, dust: 0, glint: 0 },
@@ -397,10 +400,10 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
   const targets = useMemo<Vec[]>(
     () => [
       ...places.map((p) => ({ x: p.x, y: p.y + 6 })),
-      ...[30, 60, 100, 130, 170, 200, 228, 280, 300].map((x) => ({ x, y: MAIN_PATH.y + 4 })),
-      { x: 136, y: 140 },
-      { x: 164, y: 140 },
-      { x: 128, y: 122 },
+      ...[30, 70, 130, 170, 230, 270, 330, 370].map((x) => ({ x, y: MAIN_PATH.y + 4 })),
+      { x: PLAZA.x - 14, y: PLAZA.y + 10 },
+      { x: PLAZA.x + 14, y: PLAZA.y + 10 },
+      { x: PLAZA.x - 22, y: PLAZA.y - 8 },
     ],
     [places],
   );
@@ -726,8 +729,8 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
           const away = Math.hypot(f.x - p.x, f.y - p.y) < 12 && !demo;
           if (away && f.flee <= 0) {
             f.flee = 1.2;
-            f.tx = clamp(f.x + (f.x - p.x) * 3 + rnd(-20, 20), 10, 310);
-            f.ty = clamp(f.y + (f.y - p.y) * 3 - 10, 54, 176);
+            f.tx = clamp(f.x + (f.x - p.x) * 3 + rnd(-20, 20), 10, W - 10);
+            f.ty = clamp(f.y + (f.y - p.y) * 3 - 10, 54, H - 4);
             f.rest = 0;
           }
           f.flee = Math.max(0, f.flee - dt);
@@ -740,8 +743,8 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
           const dist = Math.hypot(vx, vy);
           if (dist < 2) {
             if (Math.random() < 0.4) f.rest = rnd(0.8, 3);
-            f.tx = clamp(f.x + rnd(-50, 50), 10, 310);
-            f.ty = clamp(f.y + rnd(-30, 30), 54, 176);
+            f.tx = clamp(f.x + rnd(-50, 50), 10, W - 10);
+            f.ty = clamp(f.y + rnd(-30, 30), 54, H - 4);
           } else {
             const sp = f.speed * (f.flee > 0 ? 2.6 : 1);
             f.x += (vx / dist) * sp * dt + Math.sin(t * 3.1 + f.phase) * 6 * dt;
@@ -756,8 +759,8 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
           g.vy = clamp(g.vy, -3, 3);
           g.x += g.vx * dt;
           g.y += g.vy * dt;
-          if (g.x < 6 || g.x > 314) g.vx *= -1;
-          if (g.y < 54 || g.y > 178) g.vy *= -1;
+          if (g.x < 6 || g.x > W - 6) g.vx *= -1;
+          if (g.y < 54 || g.y > H - 2) g.vy *= -1;
         }
       }
 
@@ -956,8 +959,8 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
     sfx('chirp');
     f.flee = 1.4;
     f.rest = 0;
-    f.tx = clamp(f.x + rnd(-60, 60), 10, 310);
-    f.ty = clamp(f.y - rnd(10, 30), 54, 176);
+    f.tx = clamp(f.x + rnd(-60, 60), 10, W - 10);
+    f.ty = clamp(f.y - rnd(10, 30), 54, H - 4);
     for (let i = 0; i < 4; i++) spawn('spark', f.x, f.y, { life: rnd(0.4, 0.7), vx: rnd(-6, 6), vy: rnd(-6, 2), c: f.c });
   };
 

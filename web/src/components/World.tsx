@@ -417,7 +417,24 @@ const NPC_SPOTS = [
 const WIDE: Place['kind'][] = ['house', 'hall', 'arena', 'stage', 'mestre', 'museum', 'station', 'chacara', 'memorial', 'painel', 'hotel'];
 
 /** Árvores espalhadas sem invadir caminhos, rio e construções. */
-export function makeTrees(places: Place[] = PLACES, seed = 1234) {
+/** Medidas do terreno usadas para espalhar as árvores (a base do Multiverso ou o mapa do Territórios). */
+export interface TreeGeo {
+  w: number;
+  h: number;
+  path: { y: number; h: number };
+  riverX: (y: number) => number;
+  spawn: { x: number; y: number };
+  plaza: { x: number; y: number };
+  npcSpots: number[][];
+  /** Quantas árvores no máximo e o espaço entre as da fileira do fundo. */
+  trees?: number;
+  rowStep?: number;
+}
+
+const BASE_GEO: TreeGeo = { w: WORLD_W, h: WORLD_H, path: MAIN_PATH, riverX, spawn: SPAWN, plaza: { x: 150, y: 132 }, npcSpots: NPC_SPOTS };
+
+export function makeTrees(places: Place[] = PLACES, seed = 1234, geo: TreeGeo = BASE_GEO) {
+  const { w: WORLD_W, h: WORLD_H, path: MAIN_PATH, riverX, spawn: SPAWN, plaza, npcSpots: NPC_SPOTS, trees: max = 46, rowStep = 13 } = geo;
   const rand = seeded(seed);
   const trees: { x: number; y: number }[] = [];
   const blocked = (x: number, y: number) =>
@@ -426,20 +443,20 @@ export function makeTrees(places: Place[] = PLACES, seed = 1234) {
     x > WORLD_W - 6 ||
     Math.abs(y - (MAIN_PATH.y + 6)) < 12 ||
     Math.abs(x - riverX(y)) < 14 ||
-    Math.hypot((x - 150) / 30, (y - 132) / 18) < 1 ||
+    Math.hypot((x - plaza.x) / 30, (y - plaza.y) / 18) < 1 ||
     Math.hypot(x - SPAWN.x, y - SPAWN.y) < 18 ||
     NPC_SPOTS.some(([nx, ny]) => Math.abs(x - nx) < 14 && Math.abs(y - ny) < 16) ||
     places.some((p) =>
       p.kind === 'church'
         ? x > p.x - 34 && x < p.x + 54 && y > p.y - 70 && y < p.y + 20
-        : Math.abs(x - p.x) < (WIDE.includes(p.kind) ? 34 : 24) && y > p.y - 52 && y < p.y + (p.kind === 'mestre' ? 30 : 16),
+        : Math.abs(x - p.x) < (p.kind === 'hotel' ? 46 : WIDE.includes(p.kind) ? 34 : 24) && y > p.y - (p.kind === 'hotel' ? 66 : 52) && y < p.y + (p.kind === 'mestre' ? 30 : 16),
     ) ||
     places.some((p) => Math.abs(x - p.x) < 10 && y > Math.min(p.y, MAIN_PATH.y) - 4 && y < Math.max(p.y, MAIN_PATH.y) + 14) ||
     trees.some((t) => Math.abs(t.x - x) < 11 && Math.abs(t.y - y) < 8);
-  for (let x = 4; x < WORLD_W; x += 13) if (!blocked(x, 56)) trees.push({ x, y: 56 + Math.round(rand() * 4) });
-  for (let i = 0; i < 400 && trees.length < 46; i++) {
+  for (let x = 4; x < WORLD_W; x += rowStep) if (!blocked(x, 56)) trees.push({ x, y: 56 + Math.round(rand() * 4) });
+  for (let i = 0; i < 400 && trees.length < max; i++) {
     const x = Math.round(rand() * WORLD_W);
-    const y = 56 + Math.round(rand() * 124);
+    const y = 56 + Math.round(rand() * (WORLD_H - 56));
     if (!blocked(x, y)) trees.push({ x, y });
   }
   return trees;
