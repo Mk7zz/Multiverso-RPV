@@ -3,36 +3,20 @@ import { randomLook } from '../../components/CityWorld';
 import { Pixels, type DayTime } from '../../components/Scene';
 import { Character } from '../../components/World';
 import { sfx, type CityPlace } from '../../lib/cidade';
-import { seeded } from '../../lib/pixel';
 import type { AvatarConfig } from '../../lib/types';
 import {
-  carRuns,
   clamp,
-  Clouds,
-  Critters,
-  DEPTH,
-  EDGE,
-  FarHills,
   FULL,
-  GROUND_END,
-  Haze,
   INK,
-  initAmbient,
-  makeBackdrop,
   makeSpawner,
-  NearHills,
   ParticleLayer,
   pick,
   PixelText,
   rnd,
   SceneBox,
   SceneHud,
-  SkyLayer,
   sprite,
-  stepAmbient,
   stepParticles,
-  TimeTint,
-  TownLights,
   uid,
   useBubbles,
   useCamera,
@@ -44,58 +28,85 @@ import {
 } from './sceneKit';
 
 /*
- * Visita ao Centro Cultural Humberto Mauro: um prédio pequeno de dois andares no centro da cidade,
- * com a placa vermelha comprida em cima da entrada e os pilares de cobogó dos lados. A frente de
- * baixo é aberta, como uma casa de bonecas: à esquerda o saguão com o elevador vermelho e o balcão,
- * no meio a galeria de quadros e, à direita, o teatro com as cadeiras vermelhas, o palco de cortina
- * e a tela de cinema (Humberto Mauro fez filmes aqui em Cataguases). Na calçada de pedrinhas em
- * losango, o cartaz do espetáculo, gente passando e carros na rua.
+ * Visita ao Centro Cultural Humberto Mauro, vista de dentro (como se a criança estivesse lá):
+ * o corredor da galeria em perspectiva, com quadros nas paredes brancas, spots no teto e piso de
+ * madeira clara. Perto, à esquerda, o elevador vermelho (a caixa vermelha do saguão) e, à direita,
+ * o balcão da recepção. No meio, o banco preto, o cartaz do espetáculo e um projetor de cinema
+ * antigo em exposição (Humberto Mauro fez filmes aqui em Cataguases). Lá no fundo, a parede
+ * vermelha com o nome do lugar e a porta larga do teatro: cadeiras vermelhas, palco de cortina
+ * e a tela onde o projetor passa um filme em preto e branco.
+ *
+ * Tudo é desenhado em 3D simples: X para os lados, Y para baixo (0 = altura do olho) e Z para o
+ * fundo; `px`/`py` levam um ponto para a tela.
  */
 
-const CX = 160;
-/** Chão de dentro do prédio (a soleira de granito fica logo abaixo). */
-const FLOOR = 88;
-/** Fundo das salas (onde a parede encontra o chão). */
-const BACK = 78;
-const CURB = 102;
-const ROAD_Y = 114;
-const B = { x0: 24, x1: 296, top: 6 };
-const SIGN = { y0: 40, y1: 53 };
-const OPEN = 55;
-const LOBBY = { x0: 34, x1: 100 };
-const GALLERY = { x0: 100, x1: 196 };
-const THEATER = { x0: 196, x1: 286 };
-const LIFT = { x0: 42, x1: 66, door0: 48, door1: 60 };
-const STAGE = { x0: 206, x1: 276, top: 59, floor: 77 };
-const STAGE_CX = (STAGE.x0 + STAGE.x1) / 2;
-const SCREEN = { x0: 214, x1: 268, y0: 59, h: 16 };
-const BOOTH = { x: 200, y: 57 };
-const FRAMES = [106, 124, 142, 160, 178];
-const UP_WIN = [64, 124, 196, 256];
-const SEAT_ROWS = [82, 85, 88];
-const SEAT_X = Array.from({ length: 12 }, (_, i) => 200 + i * 7);
-const RED = '#d42a2a';
+const VP = { x: 160, y: 56 };
+const F = 64;
+const px = (X: number, Z: number) => VP.x + (F * X) / Z;
+const py = (Y: number, Z: number) => VP.y + (F * Y) / Z;
+/** Meia largura da sala, teto e chão (em relação ao olho). */
+const RW = 4;
+const CEIL = -1.5;
+const FLOOR = 1.25;
+/** Parede do fundo (com a porta do teatro) e o fundo do teatro. */
+const BACK = 4;
+const DOOR = { x: 3.3, top: -0.75 };
+const STAGE = { front: 6.0, back: 6.6, top: 0.6, half: 3 };
+const CURTAIN = { half: 2.8, top: -1.1 };
+const SCREEN = { half: 2.2, top: -1.05, bottom: 0.35 };
+const SEAT_ROWS = [5.6, 5.0, 4.4];
+const SEAT_X = Array.from({ length: 13 }, (_, i) => -3.5 + i * 0.56);
+const LIFT = { x0: -RW, x1: -2.9, z0: 3.0, z1: 3.7, top: -1.2, door0: 3.15, door1: 3.55 };
+const DESK = { x0: 2.3, x1: 3.7, z0: 2.3, z1: 2.8, top: 0.3 };
+const PROJ = { x: 1.8, z: 3.4 };
+const BANNER = { x0: 1.55, x1: 2.1, z: 2.45 };
+const PAINTINGS = [
+  { X: -RW, z0: 1.7, z1: 2.05 },
+  { X: -RW, z0: 2.3, z1: 2.65 },
+  { X: RW, z0: 1.7, z1: 2.05 },
+  { X: RW, z0: 3.0, z1: 3.35 },
+  { X: RW, z0: 3.5, z1: 3.8 },
+];
+const ART_Y = { top: -0.55, bottom: 0.25 };
+const SPOTS = [2.2, 2.7, 3.2, 3.7];
+
+const PERSON = 1.2;
+/** Altura do boneco na escala 1 (pixels do desenho). */
+const CHAR_H = 15.4;
+
+const WALL = '#f6f4ee';
+const WALL_SH = '#e6e2d6';
+const RED = '#c8262b';
 const RED_DK = '#a51d22';
 const SEAT = '#c8262b';
-const UPPER = '#e6e4c6';
-const UPPER_SH = '#cfcdb0';
+const DARK = '#262c38';
 
 const DISCOVERIES: Discovery[] = [
-  { key: 'placa', emoji: '🟥', label: 'A placa vermelha', tip: 'Toque na placa vermelha do prédio! 🟥' },
+  { key: 'placa', emoji: '🟥', label: 'O nome na parede vermelha', tip: 'Toque no nome escrito na parede vermelha! 🟥' },
   { key: 'elevador', emoji: '🛗', label: 'O elevador vermelho', tip: 'Toque no elevador vermelho! 🛗' },
-  { key: 'quadros', emoji: '🖼️', label: 'Os quadros da galeria', tip: 'Toque nos quadros da galeria! 🖼️' },
-  { key: 'cinema', emoji: '🎬', label: 'O cinema', tip: 'Toque no projetor lá no alto do teatro! 🎬' },
-  { key: 'danca', emoji: '💃', label: 'A dança no palco', tip: 'Toque na cortina do palco! 💃' },
-  { key: 'cadeiras', emoji: '💺', label: 'As cadeiras do teatro', tip: 'Toque nas cadeiras vermelhas! 💺' },
-  { key: 'cartaz', emoji: '📜', label: 'O cartaz do espetáculo', tip: 'Toque no cartaz da calçada! 📜' },
+  { key: 'quadros', emoji: '🖼️', label: 'Os quadros da galeria', tip: 'Toque nos quadros das paredes! 🖼️' },
+  { key: 'cinema', emoji: '🎬', label: 'O projetor de cinema', tip: 'Toque no projetor antigo! 🎬' },
+  { key: 'danca', emoji: '💃', label: 'A dança no palco', tip: 'Toque na cortina do palco, lá no fundo! 💃' },
+  { key: 'cadeiras', emoji: '💺', label: 'As cadeiras do teatro', tip: 'Toque nas cadeiras vermelhas do teatro! 💺' },
+  { key: 'cartaz', emoji: '📜', label: 'O cartaz do espetáculo', tip: 'Toque no cartaz em pé! 📜' },
   { key: 'gente', emoji: '👋', label: 'Quem visita o Centro Cultural', tip: 'Dê um oi pra quem está passeando! 👋' },
 ];
 
-const LINES_IN = ['Olha esse quadro! 🖼️', 'Que exposição linda! 🎨', 'Vamos ver o filme? 🎬', 'Que lugar bonito! ✨'];
-const LINES_DAY = ['Oi! 👋', 'Vamos no Centro Cultural? 🎭', 'Hoje tem espetáculo! 💃', 'Que dia bonito! ☀️', 'Bora ver um filme! 🎬'];
-const LINES_NIGHT = ['Boa noite! 🌙', 'Hoje tem show! 🎭', 'Que noite bonita! ⭐'];
-const SKIN = ['#f1c27d', '#c68642', '#8d5524', '#e0ac69'];
-const HAIR = ['#2a1a12', '#5a3a1c', '#d9a441', '#1b1b1b', '#7a2e1a'];
+const LINES = ['Olha esse quadro! 🖼️', 'Que exposição linda! 🎨', 'Vamos ver o filme? 🎬', 'Que lugar bonito! ✨', 'Oi! 👋', 'Hoje tem espetáculo! 💃'];
+const HAIR = ['#2a1a12', '#5a3a1c', '#d9a441', '#1b1b1b', '#7a2e1a', '#c9c4bc'];
+
+/* ---- Desenho em perspectiva ---- */
+
+type Pt = [number, number];
+const poly = (pts: Pt[]) => `M${pts.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join('L')}Z`;
+/** Retângulo numa parede do lado (X fixo), de z0 a z1 e de y0 a y1. */
+const sideQuad = (X: number, z0: number, z1: number, y0: number, y1: number) => poly([[px(X, z0), py(y0, z0)], [px(X, z1), py(y0, z1)], [px(X, z1), py(y1, z1)], [px(X, z0), py(y1, z0)]]);
+/** Retângulo de chão/teto/tampo (Y fixo). */
+const flatQuad = (Y: number, x0: number, x1: number, z0: number, z1: number) => poly([[px(x0, z0), py(Y, z0)], [px(x1, z0), py(Y, z0)], [px(x1, z1), py(Y, z1)], [px(x0, z1), py(Y, z1)]]);
+/** Retângulo de frente (Z fixo). */
+function Front({ x0, x1, y0, y1, z, fill, opacity }: { x0: number; x1: number; y0: number; y1: number; z: number; fill: string; opacity?: number }) {
+  return <rect x={px(x0, z)} y={py(y0, z)} width={px(x1, z) - px(x0, z)} height={py(y1, z) - py(y0, z)} fill={fill} opacity={opacity} />;
+}
 
 /* ---- Sprites ---- */
 
@@ -105,68 +116,7 @@ const filmManRuns = [
   sprite(['.kkk.', 'kkkkk', '.kwk.', '..k..', '.kkk.', 'k.k.k', '..k..', '..k..', '.k.k.'], { k: '#1b1b1b', w: '#9a9a92' }, '#1b1b1b'),
 ];
 
-/* ---- Prédio ---- */
-
-/** Pilar de cobogó (tijolinho vazado) com a base de granito preto. */
-function Cobogo({ x0, x1 }: { x0: number; x1: number }) {
-  const holes: ReactNode[] = [];
-  for (let y = OPEN + 1; y < FLOOR - 7; y += 3) for (let x = x0 + 1; x < x1 - 1; x += 3) holes.push(<rect key={`${x}-${y}`} x={x} y={y} width={1.5} height={1.5} fill="#4a2a22" />);
-  return (
-    <g>
-      <rect x={x0 - 1} y={OPEN} width={x1 - x0 + 2} height={FLOOR - OPEN} fill={INK} />
-      <rect x={x0} y={OPEN} width={x1 - x0} height={FLOOR - OPEN} fill="#9a5a48" />
-      {holes}
-      <rect x={x0} y={OPEN} width={1} height={FLOOR - OPEN - 6} fill="#b8705a" />
-      <rect x={x0} y={FLOOR - 6} width={x1 - x0} height={6} fill="#2b2f33" />
-      <rect x={x0} y={FLOOR - 6} width={x1 - x0} height={1} fill="#4a5258" />
-    </g>
-  );
-}
-
-/** Andar de cima com as janelas de persiana e o forro da entrada (o que fica parado). */
-const Facade = memo(function Facade({ night }: { night: boolean }) {
-  const glass = night ? '#ffd76a' : '#9fb4bc';
-  return (
-    <g>
-      {/* Paredes de cima com a platibanda */}
-      <rect x={B.x0 - 1} y={B.top - 1} width={B.x1 - B.x0 + 2} height={SIGN.y0 - B.top + 1} fill={INK} />
-      <rect x={B.x0} y={B.top} width={B.x1 - B.x0} height={SIGN.y0 - B.top} fill={UPPER} />
-      <rect x={B.x0} y={B.top} width={B.x1 - B.x0} height={3} fill={UPPER_SH} />
-      <rect x={B.x0} y={B.top + 3} width={B.x1 - B.x0} height={1} fill="#000" opacity={0.08} />
-      <rect x={B.x0} y={SIGN.y0 - 3} width={B.x1 - B.x0} height={3} fill={UPPER_SH} />
-      {upperWindows(glass, night)}
-      {/* Cano do ar-condicionado */}
-      <rect x={B.x1 - 6} y={B.top + 4} width={2} height={SIGN.y0 - B.top - 4} fill="#d9d9d2" />
-      {/* Forro da entrada */}
-      <rect x={B.x0} y={SIGN.y1} width={B.x1 - B.x0} height={OPEN - SIGN.y1} fill="#f4f1e6" />
-    </g>
-  );
-});
-
-function upperWindows(glass: string, night: boolean): ReactNode[] {
-  return UP_WIN.map((x, i) => (
-    <g key={x}>
-      <rect x={x - 14} y={14} width={28} height={19} fill={INK} />
-      <rect x={x - 13} y={15} width={26} height={17} fill="#f4f1de" />
-      <rect x={x - 12} y={16} width={24} height={15} fill={glass} />
-      {/* Persiana meio baixada */}
-      {Array.from({ length: night ? 3 : 5 }, (_, k) => (
-        <rect key={k} x={x - 12} y={16 + k * 2} width={24} height={1} fill={night ? '#f2e2b0' : '#eef0ea'} />
-      ))}
-      <rect x={x - 0.5} y={16} width={1} height={15} fill="#f4f1de" />
-      {/* Ar-condicionado debaixo de algumas janelas */}
-      {i % 2 === 0 && (
-        <g>
-          <rect x={x + 3} y={33} width={10} height={4} fill={INK} />
-          <rect x={x + 4} y={33} width={8} height={3} fill="#ecece6" />
-          <rect x={x + 5} y={34} width={6} height={1} fill="#b9bdb8" />
-        </g>
-      )}
-    </g>
-  ));
-}
-
-/** Logotipo da placa: quadrado branco com a porta entreaberta. */
+/** Logotipo: quadrado branco com a porta entreaberta. */
 function Logo({ x, y }: { x: number; y: number }) {
   return (
     <g fill="#ffffff">
@@ -178,29 +128,10 @@ function Logo({ x, y }: { x: number; y: number }) {
   );
 }
 
-/** Placa vermelha comprida: CENTRO CULTURAL grande e HUMBERTO MAURO menor; tocada, as letras brilham. */
-function Sign({ glow, t, night }: { glow: boolean; t: number; night: boolean }) {
-  const lit = glow && Math.sin(t * 18) > 0;
-  const text = lit ? '#ffe27a' : '#ffffff';
-  return (
-    <g>
-      <rect x={B.x0 - 2} y={SIGN.y0 - 1} width={B.x1 - B.x0 + 4} height={SIGN.y1 - SIGN.y0 + 2} fill={INK} />
-      <rect x={B.x0 - 1} y={SIGN.y0} width={B.x1 - B.x0 + 2} height={SIGN.y1 - SIGN.y0} fill={night ? '#e63a36' : RED} />
-      <rect x={B.x0 - 1} y={SIGN.y0} width={B.x1 - B.x0 + 2} height={1} fill="#ef6a5e" />
-      <rect x={B.x0 - 1} y={SIGN.y1 - 2} width={B.x1 - B.x0 + 2} height={2} fill={RED_DK} />
-      <Logo x={61} y={41} />
-      <g transform="translate(77 42) scale(2)">
-        <PixelText text="CENTRO CULTURAL" x={0} y={0} fill={text} />
-      </g>
-      <PixelText text="HUMBERTO MAURO" x={199} y={47} fill={text} />
-    </g>
-  );
-}
-
-/** Quadros da galeria: cada toque troca a obra. */
-function Art({ k, x, y }: { k: number; x: number; y: number }) {
-  const ix = x + 1;
-  const iy = y + 1;
+/** Obras da galeria (12×13 com moldura): cada toque troca a obra. */
+function Art({ k }: { k: number }) {
+  const ix = 1;
+  const iy = 1;
   switch (k % 6) {
     case 0:
       return (
@@ -266,133 +197,130 @@ function Art({ k, x, y }: { k: number; x: number; y: number }) {
   }
 }
 
-/** Salas de dentro: saguão, galeria e teatro (as paredes do fundo e os chãos). */
-const Rooms = memo(function Rooms({ night }: { night: boolean }) {
-  const marble = useMemo(() => {
-    const rand = seeded(41);
-    return Array.from({ length: 40 }, () => ({ x: LOBBY.x0 + rand() * (LOBBY.x1 - LOBBY.x0), y: BACK + 1 + rand() * (FLOOR - BACK - 2), w: 2 + rand() * 4 }));
-  }, []);
+/** Quadro pendurado numa parede do lado: moldura em perspectiva e a obra "deitada" nela. */
+function Painting({ i, k }: { i: number; k: number }) {
+  const p = PAINTINGS[i];
+  const { top, bottom } = ART_Y;
+  const p0: Pt = [px(p.X, p.z0), py(top, p.z0)];
+  const p1: Pt = [px(p.X, p.z1), py(top, p.z1)];
+  const p3: Pt = [px(p.X, p.z0), py(bottom, p.z0)];
+  const m = `matrix(${(p1[0] - p0[0]) / 12} ${(p1[1] - p0[1]) / 12} 0 ${(p3[1] - p0[1]) / 13} ${p0[0]} ${p0[1]})`;
+  const pad = 0.04;
   return (
     <g>
-      {/* Saguão: parede creme, faixa vermelha atrás do elevador e piso de mármore */}
-      <rect x={LOBBY.x0} y={OPEN} width={LOBBY.x1 - LOBBY.x0} height={BACK - OPEN} fill="#efe6d2" />
-      <rect x={LOBBY.x0} y={OPEN} width={40} height={BACK - OPEN} fill="#b8322f" opacity={0.85} />
-      <rect x={LOBBY.x0} y={BACK} width={LOBBY.x1 - LOBBY.x0} height={FLOOR - BACK} fill="#e8dcc0" />
-      {marble.map((m, i) => (
-        <rect key={i} x={m.x} y={m.y} width={m.w} height={1} fill="#fff6e0" opacity={0.7} />
-      ))}
-      {/* Galeria: parede branca comprida e piso de madeira clara */}
-      <rect x={GALLERY.x0} y={OPEN} width={GALLERY.x1 - GALLERY.x0} height={BACK - OPEN} fill="#f6f4ee" />
-      <rect x={GALLERY.x0} y={BACK} width={GALLERY.x1 - GALLERY.x0} height={FLOOR - BACK} fill="#d9b98a" />
-      {[81, 84, 87].map((y) => (
-        <rect key={y} x={GALLERY.x0} y={y} width={GALLERY.x1 - GALLERY.x0} height={1} fill="#c9a676" />
-      ))}
-      <rect x={GALLERY.x0} y={BACK - 1} width={GALLERY.x1 - GALLERY.x0} height={1} fill="#d8d4c8" />
-      {/* Plaquinhas embaixo dos quadros */}
-      {FRAMES.map((x) => (
-        <rect key={x} x={x + 4} y={75} width={4} height={1} fill="#c4c0b4" />
-      ))}
-      {/* Banco preto no meio da galeria */}
-      <rect x={136} y={82} width={18} height={3} fill={INK} />
-      <rect x={137} y={82} width={16} height={1} fill="#3d4a52" />
-      <rect x={138} y={85} width={1} height={3} fill={INK} />
-      <rect x={151} y={85} width={1} height={3} fill={INK} />
-      {/* Teatro: parede escura, carpete e o palco */}
-      <rect x={THEATER.x0} y={OPEN} width={THEATER.x1 - THEATER.x0} height={FLOOR - OPEN} fill="#262c38" />
-      <rect x={THEATER.x0} y={81} width={THEATER.x1 - THEATER.x0} height={FLOOR - 81} fill="#3a3238" />
-      <rect x={STAGE.x0 - 2} y={OPEN + 2} width={STAGE.x1 - STAGE.x0 + 4} height={STAGE.floor - OPEN - 2} fill="#15121a" />
-      <rect x={STAGE.x0} y={STAGE.top} width={STAGE.x1 - STAGE.x0} height={STAGE.floor - STAGE.top} fill="#3b2d40" />
-      <rect x={STAGE.x0} y={STAGE.floor} width={STAGE.x1 - STAGE.x0} height={4} fill="#5c3a1c" />
-      <rect x={STAGE.x0} y={STAGE.floor} width={STAGE.x1 - STAGE.x0} height={1} fill="#a8742e" />
-      {/* Placa de saída verde */}
-      <rect x={279} y={60} width={5} height={3} fill="#2e9a4a" />
-      <rect x={280} y={61} width={3} height={1} fill="#c9f2d2" />
-      {/* Cabine do projetor lá no alto */}
-      <rect x={BOOTH.x - 1} y={BOOTH.y - 1} width={8} height={6} fill="#15121a" />
-      <rect x={BOOTH.x} y={BOOTH.y} width={6} height={4} fill={night ? '#5a5040' : '#3d4652'} />
-      {/* Paredes de divisão entre as salas */}
-      {[LOBBY.x1, GALLERY.x1].map((x) => (
-        <g key={x}>
-          <rect x={x - 1.5} y={OPEN} width={3} height={FLOOR - OPEN} fill="#cfc9b8" />
-          <rect x={x - 1.5} y={OPEN} width={1} height={FLOOR - OPEN} fill="#e8e3d4" />
+      <defs>
+        <clipPath id={`cc-art${i}`}>
+          <path d={sideQuad(p.X, p.z0 + pad, p.z1 - pad, top + pad, bottom - pad)} />
+        </clipPath>
+      </defs>
+      {/* Luz do spot na parede */}
+      <path d={sideQuad(p.X, p.z0 - 0.1, p.z1 + 0.1, CEIL, bottom + 0.3)} fill="#fff6c8" opacity={0.22} />
+      <path d={sideQuad(p.X, p.z0 - 0.03, p.z1 + 0.03, top - 0.05, bottom + 0.05)} fill="#2a2a2a" />
+      <path d={sideQuad(p.X, p.z0, p.z1, top, bottom)} fill="#ffffff" />
+      <g clipPath={`url(#cc-art${i})`}>
+        <g transform={m}>
+          <Art k={k} />
         </g>
+      </g>
+      {/* Plaquinha */}
+      <path d={sideQuad(p.X, p.z0 + 0.12, p.z0 + 0.2, bottom + 0.15, bottom + 0.22)} fill="#c4c0b4" />
+    </g>
+  );
+}
+
+/* ---- Sala ---- */
+
+/** Corredor da galeria: paredes, teto com spots e o piso de madeira. */
+const Gallery = memo(function Gallery() {
+  const near = 0.3;
+  const planks: ReactNode[] = [];
+  for (let X = -RW + 0.5; X < RW; X += 0.5) planks.push(<line key={`p${X}`} x1={px(X, near)} y1={py(FLOOR, near)} x2={px(X, BACK)} y2={py(FLOOR, BACK)} stroke="#c9a676" strokeWidth={0.5} />);
+  for (const z of [1.6, 1.9, 2.3, 2.8, 3.4]) planks.push(<rect key={`z${z}`} x={px(-RW, z)} y={py(FLOOR, z)} width={px(RW, z) - px(-RW, z)} height={0.5} fill="#c9a676" />);
+  return (
+    <g>
+      {/* Teto */}
+      <path d={flatQuad(CEIL, -RW, RW, near, BACK)} fill="#efece4" />
+      {/* Paredes dos lados, com o rodapé */}
+      <path d={sideQuad(-RW, near, BACK, CEIL, FLOOR)} fill={WALL} />
+      <path d={sideQuad(RW, near, BACK, CEIL, FLOOR)} fill={WALL_SH} />
+      <path d={sideQuad(-RW, near, BACK, FLOOR - 0.12, FLOOR)} fill="#cfc9b8" />
+      <path d={sideQuad(RW, near, BACK, FLOOR - 0.12, FLOOR)} fill="#c4bead" />
+      {/* Piso de madeira clara com o reflexo da parede vermelha */}
+      <path d={flatQuad(FLOOR, -RW, RW, near, BACK)} fill="#d9b98a" />
+      {planks}
+      <path d={flatQuad(FLOOR, -2.6, 2.6, 2.4, BACK)} fill={RED} opacity={0.1} />
+      {/* Ar-condicionado no teto */}
+      <path d={flatQuad(CEIL, -0.5, 0.5, 2.0, 2.4)} fill="#dcd8ce" />
+      {[2.1, 2.2, 2.3].map((z) => (
+        <rect key={z} x={px(-0.45, z)} y={py(CEIL, z)} width={px(0.45, z) - px(-0.45, z)} height={0.6} fill="#b9b5aa" />
       ))}
       {/* Spots do teto */}
-      {[46, 62, 86, 112, 136, 160, 184].map((x) => (
-        <rect key={x} x={x} y={OPEN} width={2} height={1} fill="#fff6c8" />
-      ))}
+      {SPOTS.flatMap((z) =>
+        [-2, 2].map((X) => <ellipse key={`${X}${z}`} cx={px(X, z)} cy={py(CEIL, z) + 0.5} rx={(F * 0.12) / z} ry={(F * 0.04) / z} fill="#fff6c8" />),
+      )}
     </g>
   );
 });
 
-/** Elevador vermelho com a porta de grade que abre; aceso em cima quando chega. */
-function Lift({ open, arriving }: { open: number; arriving: boolean }) {
-  const half = (LIFT.door1 - LIFT.door0) / 2;
-  const slide = half * open;
-  const grid: ReactNode[] = [];
-  for (const [d0, side] of [
-    [LIFT.door0 - slide, 0],
-    [LIFT.door0 + half + slide, 1],
-  ] as const) {
-    for (let y = 66; y < FLOOR; y += 3) grid.push(<rect key={`h${side}${y}`} x={d0} y={y} width={half} height={1} fill="#4a5258" />);
-    for (let x = 1; x < half; x += 3) grid.push(<rect key={`v${side}${x}`} x={d0 + x} y={65} width={1} height={FLOOR - 65} fill="#4a5258" />);
-  }
+/** Teatro lá no fundo: paredes escuras, cadeiras vermelhas, palco, cortina e tela. */
+function Theater({ seats, clapping, t, curtain, film, dancer }: { seats: (string | null)[]; clapping: boolean; t: number; curtain: number; film: number; dancer: ReactNode }) {
+  const end = STAGE.back + 0.4;
   return (
     <g>
-      <rect x={LIFT.x0 - 1} y={58} width={LIFT.x1 - LIFT.x0 + 2} height={FLOOR - 58} fill={INK} />
-      <rect x={LIFT.x0} y={59} width={LIFT.x1 - LIFT.x0} height={FLOOR - 59} fill={SEAT} />
-      <rect x={LIFT.x1 - 4} y={59} width={4} height={FLOOR - 59} fill={RED_DK} />
-      <rect x={LIFT.x0} y={59} width={LIFT.x1 - LIFT.x0} height={1} fill="#e85a52" />
-      {/* Lâmpada de parede e as letrinhas douradas */}
-      <rect x={LIFT.x0 + 2} y={61} width={4} height={1} fill="#ffe9a8" />
-      <rect x={LIFT.x0 + 15} y={61} width={6} height={1} fill="#d9a441" />
-      {/* Vão da porta: escuro por dentro, a porta de grade corre para os lados */}
-      <rect x={LIFT.door0 - 1} y={64} width={LIFT.door1 - LIFT.door0 + 2} height={FLOOR - 64} fill={INK} />
-      <rect x={LIFT.door0} y={65} width={LIFT.door1 - LIFT.door0} height={FLOOR - 65} fill="#e9d9a8" />
-      <svg x={LIFT.door0} y={65} width={LIFT.door1 - LIFT.door0} height={FLOOR - 65} viewBox={`${LIFT.door0} 65 ${LIFT.door1 - LIFT.door0} ${FLOOR - 65}`} overflow="hidden">
-        <rect x={LIFT.door0 - slide} y={65} width={half} height={FLOOR - 65} fill="#8d969c" />
-        <rect x={LIFT.door0 + half + slide} y={65} width={half} height={FLOOR - 65} fill="#8d969c" />
-        {grid}
-      </svg>
-      {/* Setinha que acende quando o elevador chega */}
-      <rect x={53} y={62} width={2} height={1} fill={arriving ? '#ffe27a' : '#7a2020'} />
-      <rect x={52.5} y={63} width={3} height={0.6} fill={arriving ? '#ffe27a' : '#7a2020'} />
-    </g>
-  );
-}
-
-/** Balcão da recepção (tampo branco, frente de madeira escura vazada). */
-function Desk() {
-  return (
-    <g>
-      <rect x={73} y={76} width={24} height={3} fill={INK} />
-      <rect x={74} y={76} width={22} height={2} fill="#f4f1e6" />
-      <rect x={75} y={79} width={20} height={8} fill="#4a2e22" />
-      {Array.from({ length: 6 }, (_, i) => (
-        <rect key={i} x={76 + i * 3} y={80} width={1.5} height={6} fill="#2e1c14" />
+      <path d={flatQuad(CEIL, -RW, RW, BACK, end)} fill="#1d222c" />
+      <path d={sideQuad(-RW, BACK, end, CEIL, FLOOR)} fill={DARK} />
+      <path d={sideQuad(RW, BACK, end, CEIL, FLOOR)} fill="#20252f" />
+      <Front x0={-RW} x1={RW} y0={CEIL} y1={FLOOR} z={end} fill="#15121a" />
+      <path d={flatQuad(FLOOR, -RW, RW, BACK, end)} fill="#3a3238" />
+      {/* Luzinhas das paredes e a placa de saída */}
+      {[4.6, 5.3, 6.0].map((z) => (
+        <g key={z}>
+          <path d={sideQuad(-RW, z, z + 0.15, -0.4, -0.25)} fill="#ffe9a8" />
+          <path d={sideQuad(RW, z, z + 0.15, -0.4, -0.25)} fill="#ffe9a8" />
+        </g>
       ))}
-      <rect x={75} y={87} width={20} height={1} fill="#2e1c14" />
+      <path d={sideQuad(RW, 5.6, 5.9, -0.45, -0.3)} fill="#2e9a4a" />
+      {/* Palco com a cortina (a dançarina fica entre o fundo e a cortina) */}
+      <Front x0={-CURTAIN.half - 0.2} x1={CURTAIN.half + 0.2} y0={CURTAIN.top - 0.3} y1={STAGE.top} z={STAGE.back} fill="#3b2d40" />
+      <path d={flatQuad(STAGE.top, -STAGE.half, STAGE.half, STAGE.front, STAGE.back)} fill="#a8742e" />
+      <Front x0={-STAGE.half} x1={STAGE.half} y0={STAGE.top} y1={FLOOR} z={STAGE.front} fill="#5c3a1c" />
+      {dancer}
+      <Curtain open={curtain} />
+      <Screen k={film} t={t} />
+      {/* Fileiras de cadeiras (vistas por trás), da mais longe para a mais perto */}
+      {SEAT_ROWS.map((z, r) =>
+        SEAT_X.map((X, i) => {
+          const hair = seats[r * SEAT_X.length + i];
+          const s = F / z;
+          const bob = hair && clapping && Math.sin(t * 20 + i + r) > 0 ? -0.6 : 0;
+          return (
+            <g key={`${r}-${i}`}>
+              {hair && <ellipse cx={px(X + 0.22, z)} cy={py(FLOOR - 0.85, z) + bob} rx={0.15 * s} ry={0.17 * s} fill={hair} />}
+              <rect x={px(X, z) - 0.4} y={py(FLOOR - 0.6, z) - 0.4} width={0.45 * s + 0.8} height={0.6 * s + 0.4} fill="#1b1418" />
+              <rect x={px(X, z)} y={py(FLOOR - 0.6, z)} width={0.45 * s} height={0.6 * s} fill={SEAT} />
+              <rect x={px(X, z)} y={py(FLOOR - 0.6, z)} width={0.45 * s} height={0.6} fill="#e85a52" />
+            </g>
+          );
+        }),
+      )}
     </g>
   );
 }
 
-/** Cortina vermelha do palco: `open` de 0 (fechada) a 1 (aberta). */
+/** Cortina vermelha: `open` de 0 (fechada) a 1 (aberta). */
 function Curtain({ open }: { open: number }) {
-  const full = (STAGE.x1 - STAGE.x0) / 2;
-  const w = full - (full - 6) * open;
-  const folds = (x0: number, w0: number) =>
-    Array.from({ length: Math.max(1, Math.floor(w0 / 3)) }, (_, i) => <rect key={i} x={x0 + 1 + i * 3} y={STAGE.top} width={1} height={STAGE.floor - STAGE.top} fill="#7e1219" />);
+  const z = STAGE.back - 0.05;
+  const w = CURTAIN.half - (CURTAIN.half - 0.5) * open;
+  const folds = (x0: number) =>
+    Array.from({ length: Math.max(1, Math.floor(w / 0.35)) }, (_, i) => <Front key={i} x0={x0 + 0.15 + i * 0.35} x1={x0 + 0.22 + i * 0.35} y0={CURTAIN.top} y1={STAGE.top} z={z} fill="#7e1219" />);
   return (
     <g>
-      <rect x={STAGE.x0} y={STAGE.top} width={w} height={STAGE.floor - STAGE.top} fill="#b3202a" />
-      {folds(STAGE.x0, w)}
-      <rect x={STAGE.x1 - w} y={STAGE.top} width={w} height={STAGE.floor - STAGE.top} fill="#b3202a" />
-      {folds(STAGE.x1 - w, w)}
-      {/* Bambinela com franja dourada */}
-      <rect x={STAGE.x0 - 1} y={STAGE.top - 3} width={STAGE.x1 - STAGE.x0 + 2} height={4} fill="#b3202a" />
-      {Array.from({ length: 24 }, (_, i) => (
-        <rect key={i} x={STAGE.x0 + i * 3} y={STAGE.top + 1} width={2} height={1} fill="#e3b341" />
-      ))}
+      <Front x0={-CURTAIN.half} x1={-CURTAIN.half + w} y0={CURTAIN.top} y1={STAGE.top} z={z} fill="#b3202a" />
+      {folds(-CURTAIN.half)}
+      <Front x0={CURTAIN.half - w} x1={CURTAIN.half} y0={CURTAIN.top} y1={STAGE.top} z={z} fill="#b3202a" />
+      {folds(CURTAIN.half - w)}
+      <Front x0={-CURTAIN.half - 0.2} x1={CURTAIN.half + 0.2} y0={CURTAIN.top - 0.35} y1={CURTAIN.top + 0.05} z={z} fill="#b3202a" />
+      <Front x0={-CURTAIN.half - 0.2} x1={CURTAIN.half + 0.2} y0={CURTAIN.top + 0.05} y1={CURTAIN.top + 0.12} z={z} fill="#e3b341" />
     </g>
   );
 }
@@ -400,182 +328,197 @@ function Curtain({ open }: { open: number }) {
 /** Tela de cinema que desce: quando desce toda, passa um filme antigo em preto e branco. */
 function Screen({ k, t }: { k: number; t: number }) {
   if (k <= 0) return null;
-  const h = SCREEN.h * k;
-  const w = SCREEN.x1 - SCREEN.x0;
-  const playing = k >= 1;
+  const z = STAGE.back - 0.1;
+  const x0 = px(-SCREEN.half, z);
+  const x1 = px(SCREEN.half, z);
+  const y0 = py(SCREEN.top, z);
+  const h = (py(SCREEN.bottom, z) - y0) * k;
+  const w = x1 - x0;
   const flick = 0.85 + Math.sin(t * 47) * 0.08 + Math.sin(t * 13) * 0.05;
-  const manX = SCREEN.x0 + 4 + ((t * 9) % (w - 8));
   return (
     <g>
-      <rect x={SCREEN.x0 - 1} y={SCREEN.y0} width={w + 2} height={h + 1} fill={INK} />
-      <rect x={SCREEN.x0} y={SCREEN.y0} width={w} height={h} fill="#f1efe6" />
-      {playing && (
+      <rect x={x0 - 0.5} y={y0} width={w + 1} height={h + 0.5} fill={INK} />
+      <rect x={x0} y={y0} width={w} height={h} fill="#f1efe6" />
+      {k >= 1 && (
         <g>
-          <rect x={SCREEN.x0 + 1} y={SCREEN.y0 + 1} width={w - 2} height={h - 2} fill="#cfcfc6" opacity={flick} />
-          <rect x={SCREEN.x0 + 1} y={SCREEN.y0 + 11} width={w - 2} height={4} fill="#7d7d76" />
-          <rect x={SCREEN.x0 + 36} y={SCREEN.y0 + 3} width={3} height={3} fill="#f6f6f0" />
-          <g transform={`translate(${manX.toFixed(1)} ${SCREEN.y0 + 2})`}>
+          <rect x={x0 + 0.5} y={y0 + 0.5} width={w - 1} height={h - 1} fill="#cfcfc6" opacity={flick} />
+          <rect x={x0 + 0.5} y={y0 + h - 4} width={w - 1} height={3.5} fill="#7d7d76" />
+          <rect x={x0 + w - 8} y={y0 + 2} width={2} height={2} fill="#f6f6f0" />
+          <g transform={`translate(${(x0 + 2 + ((t * 5) % (w - 6))).toFixed(1)} ${(y0 + h - 12).toFixed(1)})`}>
             <Pixels runs={filmManRuns[Math.floor(t * 4) % 2]} />
           </g>
-          {/* Riscos do filme velho */}
-          {Math.sin(t * 7.3) > 0.4 && <rect x={SCREEN.x0 + 6 + ((t * 61) % (w - 12))} y={SCREEN.y0 + 1} width={0.6} height={h - 2} fill="#555" opacity={0.6} />}
-          {Math.sin(t * 5.1) > 0.7 && <rect x={SCREEN.x0 + 3 + ((t * 37) % (w - 6))} y={SCREEN.y0 + 4} width={1} height={1} fill="#222" />}
+          {Math.sin(t * 7.3) > 0.4 && <rect x={x0 + 3 + ((t * 61) % (w - 6))} y={y0 + 0.5} width={0.5} height={h - 1} fill="#555" opacity={0.6} />}
         </g>
       )}
     </g>
   );
 }
 
-/** Cartaz do espetáculo na calçada: um lado é a dança, o outro é o cinema. */
-function Poster({ side }: { side: number }) {
-  const x = 106;
+/** Parede vermelha do fundo com o nome do lugar e a porta larga do teatro. */
+function BackWall({ glow, t }: { glow: boolean; t: number }) {
+  const lit = glow && Math.sin(t * 18) > 0;
+  const text = lit ? '#ffe27a' : '#ffffff';
+  const [x0, x1] = [px(-RW, BACK), px(RW, BACK)];
+  const [y0, y1] = [py(CEIL, BACK), py(FLOOR, BACK)];
+  const [dx0, dx1, dy0] = [px(-DOOR.x, BACK), px(DOOR.x, BACK), py(DOOR.top, BACK)];
   return (
     <g>
-      <rect x={x + 1} y={92} width={1} height={7} fill={INK} />
-      <rect x={x + 11} y={92} width={1} height={7} fill={INK} />
-      <rect x={x - 1} y={77} width={15} height={17} fill={INK} />
+      <path d={`M${x0} ${y0}H${x1}V${y1}H${dx1}V${dy0}H${dx0}V${y1}H${x0}Z`} fill={RED} />
+      <rect x={x0} y={y0} width={x1 - x0} height={1} fill="#e85a52" />
+      {/* Batente escuro da porta */}
+      <path d={`M${dx0 - 1} ${y1}V${dy0 - 1}H${dx1 + 1}V${y1}H${dx1}V${dy0}H${dx0}V${y1}Z`} fill={RED_DK} />
+      <Logo x={125} y={y0 + 1} />
+      <PixelText text="CENTRO CULTURAL" x={137} y={y0 + 1} fill={text} />
+      <PixelText text="HUMBERTO MAURO" x={137} y={y0 + 7} fill={text} />
+    </g>
+  );
+}
+
+/** Elevador vermelho (a caixa do saguão): frente com as letrinhas douradas, porta de grade do lado. */
+function Lift({ open, arriving }: { open: number; arriving: boolean }) {
+  const L = LIFT;
+  const slide = ((L.door1 - L.door0) / 2) * open;
+  const mid = (L.door0 + L.door1) / 2;
+  const bars: ReactNode[] = [];
+  for (const [a, b] of [
+    [L.door0, mid - slide],
+    [mid + slide, L.door1],
+  ]) {
+    if (b - a < 0.01) continue;
+    bars.push(<path key={`d${a}`} d={sideQuad(L.x1, a, b, -0.2, FLOOR)} fill="#8d969c" />);
+    for (let z = a + 0.05; z < b; z += 0.08) bars.push(<path key={`v${a}${z}`} d={sideQuad(L.x1, z, z + 0.015, -0.2, FLOOR)} fill="#4a5258" />);
+    for (let y = -0.1; y < FLOOR; y += 0.2) bars.push(<path key={`h${a}${y}`} d={sideQuad(L.x1, a, b, y, y + 0.03)} fill="#4a5258" />);
+  }
+  return (
+    <g>
+      {/* Lado (virado para o corredor), com a porta */}
+      <path d={sideQuad(L.x1, L.z0, L.z1, L.top, FLOOR)} fill={RED_DK} />
+      <path d={sideQuad(L.x1, L.door0 - 0.03, L.door1 + 0.03, -0.25, FLOOR)} fill={INK} />
+      <path d={sideQuad(L.x1, L.door0, L.door1, -0.2, FLOOR)} fill="#f1dfa8" />
+      {bars}
+      <path d={sideQuad(L.x1, mid - 0.05, mid + 0.05, -0.45, -0.35)} fill={arriving ? '#ffe27a' : '#6a1a1a'} />
+      {/* Frente */}
+      <Front x0={L.x0} x1={L.x1} y0={L.top} y1={FLOOR} z={L.z0} fill={RED} />
+      <Front x0={L.x0} x1={L.x1} y0={L.top} y1={L.top + 0.05} z={L.z0} fill="#e85a52" />
+      <Front x0={-3.8} x1={-3.45} y0={-0.85} y1={-0.75} z={L.z0} fill="#fff1c0" />
+      <circle cx={px(-3.6, L.z0)} cy={py(-0.7, L.z0)} r={5} fill="#ffe9a8" opacity={0.25} />
+      <Front x0={-3.35} x1={-3.0} y0={-0.5} y1={-0.45} z={L.z0} fill="#d9a441" />
+      <Front x0={-3.35} x1={-3.1} y0={-0.4} y1={-0.35} z={L.z0} fill="#d9a441" />
+    </g>
+  );
+}
+
+/** Balcão da recepção: tampo branco e frente de madeira escura vazada. */
+function Desk() {
+  const D = DESK;
+  const slats: ReactNode[] = [];
+  for (let X = D.x0 + 0.1; X < D.x1 - 0.05; X += 0.2) slats.push(<Front key={X} x0={X} x1={X + 0.08} y0={D.top + 0.2} y1={FLOOR - 0.1} z={D.z0} fill="#2e1c14" />);
+  return (
+    <g>
+      <path d={sideQuad(D.x0, D.z0, D.z1, D.top, FLOOR)} fill="#3a2419" />
+      <Front x0={D.x0} x1={D.x1} y0={D.top} y1={FLOOR} z={D.z0} fill="#4a2e22" />
+      {slats}
+      <path d={flatQuad(D.top, D.x0 - 0.05, D.x1 + 0.05, D.z0 - 0.05, D.z1)} fill="#f4f1e6" />
+      <Front x0={D.x0 - 0.05} x1={D.x1 + 0.05} y0={D.top} y1={D.top + 0.08} z={D.z0 - 0.05} fill="#d8d4c8" />
+    </g>
+  );
+}
+
+/** Banco preto no meio da galeria. */
+function Bench() {
+  const z0 = 3.6;
+  const z1 = 3.9;
+  return (
+    <g>
+      {[-2.5, -1.4].map((X) => (
+        <Front key={X} x0={X} x1={X + 0.08} y0={0.85} y1={FLOOR} z={z0 + 0.05} fill={INK} />
+      ))}
+      <path d={flatQuad(0.75, -2.6, -1.3, z0, z1)} fill="#3d4a52" />
+      <Front x0={-2.6} x1={-1.3} y0={0.75} y1={0.88} z={z0} fill={INK} />
+    </g>
+  );
+}
+
+/** Projetor de cinema antigo em exposição, num pedestal; tocado, as bobinas giram. */
+function Projector({ on, t }: { on: boolean; t: number }) {
+  const { x: X, z } = PROJ;
+  const s = F / z;
+  const spin = on ? t * 6 : 0;
+  const reel = (cx: number, cy: number, r: number) => (
+    <g>
+      <circle cx={cx} cy={cy} r={r + 0.5} fill={INK} />
+      <circle cx={cx} cy={cy} r={r} fill="#5f6d76" />
+      {[0, 1, 2].map((k) => {
+        const a = spin + (k * Math.PI * 2) / 3;
+        return <circle key={k} cx={cx + Math.cos(a) * r * 0.55} cy={cy + Math.sin(a) * r * 0.55} r={r * 0.22} fill="#2b2f33" />;
+      })}
+      <circle cx={cx} cy={cy} r={r * 0.18} fill="#c9ced1" />
+    </g>
+  );
+  return (
+    <g>
+      {/* Pedestal branco */}
+      <path d={flatQuad(0.45, X - 0.4, X + 0.4, z, z + 0.4)} fill="#ffffff" />
+      <Front x0={X - 0.4} x1={X + 0.4} y0={0.45} y1={FLOOR} z={z} fill="#ece8de" />
+      <path d={sideQuad(X - 0.4, z, z + 0.4, 0.45, FLOOR)} fill="#d8d4c8" />
+      {/* Corpo, lente e as duas bobinas */}
+      <Front x0={X - 0.3} x1={X + 0.3} y0={0.12} y1={0.45} z={z + 0.1} fill="#2b2f33" />
+      <Front x0={X - 0.3} x1={X + 0.3} y0={0.12} y1={0.17} z={z + 0.1} fill="#4a5258" />
+      <circle cx={px(X, z + 0.1)} cy={py(0.3, z + 0.1)} r={0.07 * s} fill={on ? '#fff6c8' : '#8d969c'} />
+      {reel(px(X - 0.17, z + 0.15), py(-0.08, z + 0.15), 0.2 * s)}
+      {reel(px(X + 0.2, z + 0.15), py(-0.12, z + 0.15), 0.22 * s)}
+    </g>
+  );
+}
+
+/** Cartaz em pé (banner): um lado é a dança, o outro é o cinema. */
+function Banner({ side }: { side: number }) {
+  const { x0, x1, z } = BANNER;
+  const X0 = px(x0, z);
+  const w = px(x1, z) - X0;
+  const y0 = py(-0.6, z);
+  const h = py(1.1, z) - y0;
+  return (
+    <g>
+      <rect x={X0 - 1} y={py(1.1, z)} width={w + 2} height={py(FLOOR, z) - py(1.1, z)} fill="#8d969c" />
+      <rect x={X0 - 0.5} y={y0 - 0.5} width={w + 1} height={h + 1} fill={INK} />
       {side === 0 ? (
         <g>
-          <rect x={x} y={78} width={13} height={15} fill="#2e7d4a" />
-          <rect x={x} y={78} width={13} height={6} fill="#c8262b" />
-          {[0, 3, 6, 9].map((d) => (
-            <rect key={d} x={x + 1 + d} y={80} width={2} height={2} fill="#e85a52" />
+          <rect x={X0} y={y0} width={w} height={h} fill="#2e7d4a" />
+          <rect x={X0} y={y0} width={w} height={h * 0.35} fill="#c8262b" />
+          {[0.2, 0.5, 0.8].map((k) => (
+            <rect key={k} x={X0 + w * k - 1} y={y0 + h * 0.12} width={2} height={2} fill="#e85a52" />
           ))}
-          <rect x={x + 1} y={86} width={8} height={1} fill="#f2c200" />
-          <rect x={x + 1} y={88} width={11} height={1} fill="#ffffff" />
-          <rect x={x + 1} y={90} width={6} height={1} fill="#ffffff" />
-          <rect x={x + 9} y={89} width={3} height={3} fill="#e8772e" />
+          <rect x={X0 + 1.5} y={y0 + h * 0.45} width={w - 3} height={1.5} fill="#f2c200" />
+          <rect x={X0 + 1.5} y={y0 + h * 0.6} width={w - 3} height={1} fill="#ffffff" />
+          <rect x={X0 + 1.5} y={y0 + h * 0.7} width={w - 5} height={1} fill="#ffffff" />
+          <rect x={X0 + w - 5} y={y0 + h * 0.82} width={3.5} height={3.5} fill="#e8772e" />
         </g>
       ) : (
         <g>
-          <rect x={x} y={78} width={13} height={15} fill="#1d2430" />
+          <rect x={X0} y={y0} width={w} height={h} fill="#1d2430" />
           {/* Claquete de cinema */}
           {[0, 2, 4, 6, 8].map((d) => (
-            <rect key={d} x={x + 2 + d} y={80} width={1} height={2} fill="#ffffff" />
+            <rect key={d} x={X0 + 1.5 + d} y={y0 + h * 0.15} width={1} height={2} fill="#ffffff" />
           ))}
-          <rect x={x + 2} y={82} width={9} height={5} fill="#f4f1de" />
-          <rect x={x + 3} y={83} width={7} height={3} fill="#3a3f42" />
-          {[0, 2, 4, 6, 8].map((d) => (
-            <rect key={d} x={x + 2 + d} y={88} width={1} height={1} fill="#f2c200" />
-          ))}
-          <rect x={x + 2} y={90} width={9} height={1} fill="#ffffff" />
+          <rect x={X0 + 1.5} y={y0 + h * 0.15 + 2} width={w - 3} height={6} fill="#f4f1de" />
+          <rect x={X0 + 2.5} y={y0 + h * 0.15 + 3} width={w - 5} height={4} fill="#3a3f42" />
+          <rect x={X0 + 1.5} y={y0 + h * 0.6} width={w - 3} height={1.5} fill="#f2c200" />
+          <rect x={X0 + 1.5} y={y0 + h * 0.72} width={w - 4} height={1} fill="#ffffff" />
         </g>
       )}
-    </g>
-  );
-}
-
-/** Lojinhas vizinhas: parede, janelas de cima, toldo e vitrine (ou porta de enrolar). */
-const SHOPS = [
-  { x0: -300, x1: -112, top: 30, wall: '#dfe8ea', awn: '#2e7d4a', stripe: '#f4f1de', shutter: true },
-  { x0: -112, x1: B.x0 - 1, top: 20, wall: '#efe0c0', awn: '#5a3a28', stripe: '#8a5a3a', shutter: false },
-  { x0: B.x1 + 1, x1: 420, top: 14, wall: '#f4f1de', awn: '#e9efe6', stripe: '#2e9a4a', shutter: false },
-  { x0: 420, x1: 640, top: 28, wall: '#f6dcc0', awn: '#2f5fb3', stripe: '#f4f1de', shutter: true },
-];
-
-const Shops = memo(function Shops({ night }: { night: boolean }) {
-  const goods = useMemo(() => {
-    const rand = seeded(57);
-    return SHOPS.map((s) => Array.from({ length: 10 }, () => ({ x: s.x0 + 8 + rand() * (s.x1 - s.x0 - 34), y: 66 + Math.floor(rand() * 4) * 5, c: ['#f2b705', '#d64545', '#12a3a0', '#8cc63f', '#ec6a8c', '#2f5fb3'][Math.floor(rand() * 6)] })));
-  }, []);
-  const glass = night ? '#ffd76a' : '#9fb4bc';
-  return (
-    <g>
-      {SHOPS.map((s, si) => {
-        const w = s.x1 - s.x0;
-        const wins = Math.floor((w - 10) / 24);
-        return (
-          <g key={s.x0}>
-            <rect x={s.x0 - 1} y={s.top - 1} width={w + 2} height={FLOOR - s.top + 1} fill={INK} />
-            <rect x={s.x0} y={s.top} width={w} height={FLOOR - s.top} fill={s.wall} />
-            <rect x={s.x0} y={s.top} width={w} height={2} fill="#000" opacity={0.08} />
-            {Array.from({ length: wins }, (_, i) => {
-              const x = s.x0 + 8 + i * 24;
-              return (
-                <g key={i}>
-                  <rect x={x - 1} y={s.top + 7} width={16} height={14} fill={INK} />
-                  <rect x={x} y={s.top + 8} width={14} height={12} fill={glass} />
-                  <rect x={x + 6.5} y={s.top + 8} width={1} height={12} fill="#f4f1de" />
-                </g>
-              );
-            })}
-            {/* Toldo listrado */}
-            <rect x={s.x0 - 1} y={51} width={w + 2} height={8} fill={INK} />
-            <rect x={s.x0} y={52} width={w} height={6} fill={s.awn} />
-            {Array.from({ length: Math.floor(w / 8) }, (_, i) => (
-              <rect key={i} x={s.x0 + i * 8 + 2} y={52} width={3} height={6} fill={s.stripe} />
-            ))}
-            <rect x={s.x0} y={58} width={w} height={1} fill="#000" opacity={0.2} />
-            {/* Embaixo: porta de enrolar ou vitrine com coisinhas coloridas */}
-            {s.shutter ? (
-              <g>
-                <rect x={s.x0 + 6} y={60} width={w - 12} height={FLOOR - 60} fill="#a7adb0" />
-                {Array.from({ length: Math.floor((FLOOR - 60) / 2) }, (_, i) => (
-                  <rect key={i} x={s.x0 + 6} y={61 + i * 2} width={w - 12} height={1} fill="#8d969c" />
-                ))}
-              </g>
-            ) : (
-              <g>
-                <rect x={s.x0 + 5} y={61} width={w - 26} height={FLOOR - 63} fill={INK} />
-                <rect x={s.x0 + 6} y={62} width={w - 28} height={FLOOR - 65} fill={night ? '#f3dc9a' : '#cfe3e8'} />
-                {goods[si].map((g, i) => (
-                  <rect key={i} x={g.x} y={g.y} width={3} height={3} fill={g.c} />
-                ))}
-                <rect x={s.x1 - 18} y={61} width={12} height={FLOOR - 61} fill={INK} />
-                <rect x={s.x1 - 17} y={62} width={10} height={FLOOR - 62} fill={night ? '#e8c46a' : '#6f8d96'} />
-              </g>
-            )}
-          </g>
-        );
-      })}
-    </g>
-  );
-});
-
-/** Calçada de pedrinhas em losango, meio-fio e a rua. */
-const Street = memo(function Street() {
-  return (
-    <g>
-      <defs>
-        <pattern id="cc-calcada" width={8} height={4} patternUnits="userSpaceOnUse">
-          <rect width={8} height={4} fill="#efe3cf" />
-          <path d="M4 0L8 2L4 4L0 2Z" fill="#b5523b" />
-        </pattern>
-      </defs>
-      <rect x={FULL.x} y={FLOOR} width={FULL.w} height={CURB - FLOOR} fill="url(#cc-calcada)" />
-      <rect x={FULL.x} y={CURB} width={FULL.w} height={2} fill="#b9b29c" />
-      <rect x={FULL.x} y={CURB + 2} width={FULL.w} height={GROUND_END - CURB - 2} fill="#4a4f55" />
-      {Array.from({ length: 40 }, (_, i) => (
-        <rect key={i} x={FULL.x + i * 30} y={ROAD_Y + 6} width={14} height={1} fill="#e9e2c4" />
-      ))}
-      {/* Soleira de granito e o tapete da entrada */}
-      <rect x={B.x0} y={FLOOR} width={B.x1 - B.x0} height={2} fill="#2b2f33" />
-      <rect x={46} y={91} width={34} height={4} fill="#2b3238" />
-      <rect x={52} y={92} width={22} height={1} fill="#3a8a9a" />
-    </g>
-  );
-});
-
-/** Poste de luz da calçada. */
-function Lamp({ x, night }: { x: number; night: boolean }) {
-  return (
-    <g>
-      <rect x={x - 1} y={44} width={2} height={CURB - 44} fill="#3a3f42" />
-      <rect x={x - 1} y={44} width={8} height={1.5} fill="#3a3f42" />
-      <rect x={x + 4} y={45} width={5} height={2} fill="#3a3f42" />
-      <rect x={x + 5} y={47} width={3} height={1} fill={night ? '#fff6c8' : '#d9d9d2'} />
     </g>
   );
 }
 
 /* ---- Coisas vivas ---- */
 
-interface Walker {
+interface Visitor {
   id: number;
-  inside: boolean;
-  x: number;
-  y: number;
+  X: number;
+  Z: number;
   tx: number;
+  tz: number;
   speed: number;
   walk: number;
   wait: number;
@@ -584,94 +527,90 @@ interface Walker {
   sayUntil: number;
 }
 
-interface Car {
-  id: number;
-  x: number;
-  dir: number;
-  speed: number;
-  runs: (typeof carRuns)[number];
+/** Para onde os visitantes andam: pelos lados, para não tampar o palco e a tela lá no fundo. */
+function spot(): [number, number] {
+  return [rnd(-3.3, -2.3), rnd(2.4, 3.0)];
 }
 
-const IN_X = { x0: LOBBY.x0 + 6, x1: GALLERY.x1 - 8 };
-const AREA = { x0: -20, x1: W + 20, y0: -10, y1: 34 };
-
-function newWalker(x?: number): Walker {
-  return { id: uid(), inside: false, x: x ?? pick([-60, W + 60]), y: Math.round(rnd(93, 99)), tx: rnd(20, W - 20), speed: rnd(8, 12), walk: 0, wait: x === undefined ? rnd(0, 4) : rnd(0, 2), config: randomLook(), say: null, sayUntil: 0 };
-}
-
-function newVisitor(x: number): Walker {
-  return { ...newWalker(x), inside: true, y: Math.round(rnd(84, 87)), tx: rnd(IN_X.x0, IN_X.x1), speed: rnd(6, 9), wait: 0 };
+function newVisitor(X?: number, Z?: number): Visitor {
+  const [sx, sz] = spot();
+  const [tx, tz] = spot();
+  return { id: uid(), X: X ?? sx, Z: Z ?? sz, tx, tz, speed: rnd(0.25, 0.4), walk: 0, wait: rnd(0, 3), config: randomLook(), say: null, sayUntil: 0 };
 }
 
 function initLife() {
   return {
-    walkers: [newVisitor(rnd(120, 150)), newVisitor(rnd(160, 185)), newWalker(rnd(20, 90)), newWalker(rnd(200, 290)), newWalker()],
-    seats: SEAT_ROWS.flatMap(() => SEAT_X.map(() => (Math.random() < 0.3 ? { skin: pick(SKIN), hair: pick(HAIR) } : null))),
-    art: [0, 1, 2, 3, 4],
-    poster: 0,
+    visitors: [newVisitor(-2.5, 2.9), newVisitor(-3.1, 2.5)],
+    clerk: { config: randomLook(), say: null as string | null, sayUntil: 0 },
+    seats: SEAT_ROWS.flatMap(() => SEAT_X.map(() => (Math.random() < 0.3 ? pick(HAIR) : null))),
+    art: [0, 1, 2, 3, 4, 5],
+    banner: 0,
     lift: { at: -10, until: -10, guest: true },
     film: { at: -10, until: -10 },
     dance: { at: -10, until: -10, who: randomLook(), clapped: true },
     clapUntil: 0,
     signUntil: 0,
-    cars: [] as Car[],
-    carTimer: rnd(1, 3),
     timers: { mote: 0, note: 0, clap: 0 },
   };
 }
 
-/** De 0 a 1: abre/desce em `ramp` segundos, fica e volta no fim. */
+/** De 0 a 1: abre/desce em `secs` segundos, fica e volta no fim. */
 const ramp = (t: number, at: number, until: number, secs: number) => (t > until ? 0 : Math.min(clamp((t - at) / secs, 0, 1), clamp((until - t) / secs, 0, 1)));
+
+/** Boneco em pé no chão da sala, no tamanho certo para a distância. */
+function Person({ X, Z, config, frame }: { X: number; Z: number; config: AvatarConfig; frame: 0 | 1 | 2 }) {
+  const k = (PERSON * F) / Z / CHAR_H;
+  return (
+    <g transform={`translate(${px(X, Z).toFixed(2)} ${py(FLOOR, Z).toFixed(2)}) scale(${k.toFixed(3)})`}>
+      <Character x={0} y={0} config={config} frame={frame} />
+    </g>
+  );
+}
 
 /* ---- Componente ---- */
 
-export const CulturalScene = memo(function CulturalScene({ place, time, onPoints }: { place: CityPlace; time: DayTime; onPoints?: (total: number) => void }) {
-  const night = time === 'night';
-  const bd = useMemo(() => makeBackdrop(58, 61, { blocks: 4 }), []);
-  const cam = useCamera((vw) => (vw < 200 ? 150 : CX));
+export const CulturalScene = memo(function CulturalScene({ place, onPoints }: { place: CityPlace; time: DayTime; onPoints?: (total: number) => void }) {
+  const cam = useCamera(VP.x);
   const life = useRef(initLife());
-  const ambient = useRef(initAmbient(AREA));
   const particles = useRef<Particle[]>([]);
   const spawn = useMemo(() => makeSpawner(particles), []);
 
   const clock = useLoop((dt, t) => {
     const L = life.current;
     cam.step(dt);
-    stepAmbient(ambient.current, dt, t, night, AREA);
 
-    for (const w of L.walkers) {
-      if (w.wait > 0) {
-        w.wait -= dt;
-        w.walk = 0;
+    for (const v of L.visitors) {
+      if (v.wait > 0) {
+        v.wait -= dt;
+        v.walk = 0;
         continue;
       }
-      const dx = w.tx - w.x;
-      if (Math.abs(dx) < 0.8) {
-        if (w.x < -50 || w.x > W + 50) {
-          Object.assign(w, newWalker());
-          continue;
+      const dx = v.tx - v.X;
+      const dz = v.tz - v.Z;
+      const d = Math.hypot(dx, dz);
+      if (d < 0.03) {
+        v.wait = rnd(1.5, 5);
+        if (Math.random() < 0.3 && t > v.sayUntil) {
+          v.say = pick(LINES);
+          v.sayUntil = t + 2.6;
         }
-        w.wait = rnd(1.2, 4.5);
-        if (Math.random() < 0.3 && t > w.sayUntil) {
-          w.say = pick(w.inside ? LINES_IN : night ? LINES_NIGHT : LINES_DAY);
-          w.sayUntil = t + 2.6;
-        }
-        w.tx = w.inside ? rnd(IN_X.x0, IN_X.x1) : Math.random() < 0.25 ? pick([-60, W + 60]) : rnd(10, W - 10);
+        [v.tx, v.tz] = spot();
       } else {
-        w.x += Math.sign(dx) * Math.min(Math.abs(dx), w.speed * dt);
-        w.walk += dt;
+        const step = Math.min(d, v.speed * dt);
+        v.X += (dx / d) * step;
+        v.Z += (dz / d) * step;
+        v.walk += dt;
       }
     }
 
     // Quem chega de elevador sai andando para a galeria
-    if (!L.lift.guest && t > L.lift.at + 0.7) {
+    if (!L.lift.guest && t > L.lift.at + 0.8) {
       L.lift.guest = true;
-      const inside = L.walkers.filter((w) => w.inside);
-      if (inside.length >= 4) L.walkers = L.walkers.filter((w) => w !== inside[0]);
-      const v = newVisitor((LIFT.door0 + LIFT.door1) / 2);
-      v.y = 85;
-      v.tx = rnd(110, 180);
-      L.walkers.push(v);
+      if (L.visitors.length >= 4) L.visitors.shift();
+      const v = newVisitor(LIFT.x1 + 0.3, (LIFT.door0 + LIFT.door1) / 2);
+      v.wait = 0;
+      [v.tx, v.tz] = spot();
+      L.visitors.push(v);
     }
 
     // Dança: notinhas saindo do palco; no fim, a plateia aplaude
@@ -679,7 +618,7 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
       L.timers.note -= dt;
       if (L.timers.note <= 0) {
         L.timers.note = rnd(0.3, 0.6);
-        spawn('note', STAGE_CX + rnd(-22, 22), STAGE.top + 6, { vx: rnd(-3, 3), vy: -rnd(5, 9), life: 1.6, c: pick(['#ffe27a', '#ffffff', '#ec6a8c']) });
+        spawn('note', px(rnd(-2, 2), STAGE.back), py(-0.3, STAGE.back), { vx: rnd(-2, 2), vy: -rnd(4, 7), life: 1.6, c: pick(['#ffe27a', '#ffffff', '#ec6a8c']) });
       }
     } else if (!L.dance.clapped) {
       L.dance.clapped = true;
@@ -690,23 +629,19 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
       if (L.timers.clap <= 0) {
         L.timers.clap = 0.12;
         const i = L.seats.findIndex((s) => s && Math.random() < 0.25);
-        if (i >= 0) spawn('spark', SEAT_X[i % SEAT_X.length] + 3, SEAT_ROWS[Math.floor(i / SEAT_X.length)] - 9, { life: 0.4, vy: -6, vx: rnd(-3, 3), c: '#fff6c8' });
+        if (i >= 0) {
+          const z = SEAT_ROWS[Math.floor(i / SEAT_X.length)];
+          spawn('spark', px(SEAT_X[i % SEAT_X.length] + 0.22, z), py(0.35, z), { life: 0.4, vy: -5, vx: rnd(-2, 2), c: '#fff6c8' });
+        }
       }
     }
 
-    L.carTimer -= dt;
-    if (L.carTimer <= 0 && L.cars.length < 2) {
-      L.carTimer = rnd(4, 9);
-      const dir = pick([-1, 1]);
-      L.cars.push({ id: uid(), x: dir > 0 ? -EDGE - 30 : W + EDGE + 30, dir, speed: rnd(26, 36), runs: pick(carRuns) });
-    }
-    for (const c of L.cars) c.x += c.dir * c.speed * dt;
-    L.cars = L.cars.filter((c) => c.x > -EDGE - 40 && c.x < W + EDGE + 40);
-
+    // Poeirinha brilhando na luz dos spots
     L.timers.mote -= dt;
-    if (!night && L.timers.mote <= 0) {
-      L.timers.mote = rnd(0.3, 0.7);
-      spawn('mote', rnd(-60, W + 60), rnd(0, 36), { vx: rnd(-1.5, 1.5), vy: rnd(-1.2, -0.3), life: rnd(4, 7), c: time === 'dusk' ? '#ffd9a8' : '#fff6c8' });
+    if (L.timers.mote <= 0) {
+      L.timers.mote = rnd(0.25, 0.6);
+      const z = pick(SPOTS);
+      spawn('mote', px(pick([-2, 2]) + rnd(-0.6, 0.6), z), py(rnd(-1.3, 0.5), z), { vx: rnd(-1, 1), vy: rnd(0.3, 1.2), life: rnd(3, 5), c: '#fff6c8' });
     }
     particles.current = stepParticles(particles.current, dt, spawn);
   });
@@ -725,8 +660,8 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
     if (!guard()) return;
     sfx('zap');
     life.current.signUntil = clock.current + 1.2;
-    for (let i = 0; i < 12; i++) spawn('spark', rnd(70, 250), rnd(SIGN.y0, SIGN.y1), { life: rnd(0.5, 0.9), vx: rnd(-6, 6), vy: rnd(-8, 2), c: pick(['#ffffff', '#ffe27a']) });
-    say('placa', CX, SIGN.y0 - 2, pick(['Centro Cultural Humberto Mauro! 🎭', 'Aqui tem arte, teatro e cinema! 🎬']), 3);
+    for (let i = 0; i < 10; i++) spawn('spark', rnd(125, 195), rnd(28, 40), { life: rnd(0.5, 0.9), vx: rnd(-5, 5), vy: rnd(-6, 2), c: pick(['#ffffff', '#ffe27a']) });
+    say('placa', VP.x, 26, pick(['Centro Cultural Humberto Mauro! 🎭', 'Aqui tem arte, teatro e cinema! 🎬']), 3);
     discover('placa');
   };
 
@@ -737,17 +672,20 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
     if (t < L.lift.until) return;
     sfx('plim');
     L.lift = { at: t, until: t + 3.5, guest: false };
-    say('elevador', (LIFT.x0 + LIFT.x1) / 2, 56, pick(['Plim! Chegou o elevador! 🛗', 'Plim! Quem vem lá? 🛗']), 2.6);
+    say('elevador', px(-3.2, LIFT.z0), py(-1.3, LIFT.z0), pick(['Plim! Chegou o elevador! 🛗', 'Plim! Quem vem lá? 🛗']), 2.6);
     discover('elevador');
   };
 
   const tapArt = (i: number) => {
     if (!guard()) return;
     const L = life.current;
+    const p = PAINTINGS[i];
+    const zm = (p.z0 + p.z1) / 2;
+    const [x, y] = [px(p.X, zm), py(-0.15, zm)];
     sfx('pop');
-    L.art[i] = (L.art[i] + 5) % 6;
-    for (let k = 0; k < 6; k++) spawn('spark', FRAMES[i] + 6 + rnd(-6, 6), rnd(60, 72), { life: rnd(0.4, 0.8), vx: rnd(-5, 5), vy: rnd(-6, 2), c: '#ffe27a' });
-    say(`q${i}`, FRAMES[i] + 6, 58, pick(['Que quadro bonito! 🖼️', 'Isso é arte! 🎨', 'Uma exposição! 🖼️']), 2.4);
+    L.art[i] = (L.art[i] + 1) % 6;
+    for (let k = 0; k < 6; k++) spawn('spark', x + rnd(-6, 6), y + rnd(-6, 6), { life: rnd(0.4, 0.8), vx: rnd(-5, 5), vy: rnd(-6, 2), c: '#ffe27a' });
+    say(`q${i}`, clamp(x, -60, W + 60), py(-0.8, zm), pick(['Que quadro bonito! 🖼️', 'Isso é arte! 🎨', 'Uma exposição! 🖼️']), 2.4);
     discover('quadros');
   };
 
@@ -762,7 +700,7 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
     sfx('whir');
     setTimeout(() => sfx('tictac'), 700);
     L.film = { at: t + (busy ? 1 : 0), until: t + 10 };
-    say('cinema', BOOTH.x + 3, BOOTH.y - 2, pick(['Humberto Mauro fazia filmes aqui! 🎬', 'Luz, câmera, ação! 🎬']), 3.2);
+    say('cinema', px(PROJ.x, PROJ.z), py(-0.3, PROJ.z), pick(['Humberto Mauro fazia filmes aqui! 🎬', 'Luz, câmera, ação! 🎬']), 3.2);
     discover('cinema');
   };
 
@@ -773,7 +711,7 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
     if (t < L.film.until || t < L.dance.until) return;
     sfx('musica');
     L.dance = { at: t, until: t + 7, who: randomLook(), clapped: false };
-    say('danca', STAGE_CX, STAGE.top - 4, pick(['Vai começar o espetáculo! 💃', 'Hoje tem dança! 💃']), 2.8);
+    say('danca', VP.x, py(CURTAIN.top - 0.4, STAGE.back), pick(['Vai começar o espetáculo! 💃', 'Hoje tem dança! 💃']), 2.8);
     discover('danca');
   };
 
@@ -781,111 +719,125 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
     if (!guard()) return;
     const L = life.current;
     sfx('pop');
-    L.seats = L.seats.map((s) => s ?? (Math.random() < 0.45 ? { skin: pick(SKIN), hair: pick(HAIR) } : null));
+    L.seats = L.seats.map((s) => s ?? (Math.random() < 0.45 ? pick(HAIR) : null));
     clap(clock.current, 2);
-    say('cadeiras', 241, 70, pick(['Cadeiras vermelhas! 💺', 'Cabe muita gente aqui! 💺', 'Clap, clap, clap! 👏']), 2.6);
+    say('cadeiras', VP.x, py(0.1, 4.4), pick(['Cadeiras vermelhas! 💺', 'Cabe muita gente aqui! 💺', 'Clap, clap, clap! 👏']), 2.6);
     discover('cadeiras');
   };
 
-  const tapPoster = () => {
+  const tapBanner = () => {
     if (!guard()) return;
     const L = life.current;
     sfx('creak');
-    L.poster = 1 - L.poster;
-    say('cartaz', 112, 74, L.poster ? 'Hoje tem cinema! 🎬' : 'Hoje tem espetáculo de dança! 💃', 2.6);
+    L.banner = 1 - L.banner;
+    say('cartaz', px((BANNER.x0 + BANNER.x1) / 2, BANNER.z), py(-0.9, BANNER.z), L.banner ? 'Hoje tem cinema! 🎬' : 'Hoje tem espetáculo de dança! 💃', 2.6);
     discover('cartaz');
   };
 
-  const tapWalker = (w: Walker) => {
+  const tapVisitor = (v: Visitor) => {
     if (!guard()) return;
     sfx('pop');
-    w.say = pick(w.inside ? LINES_IN : night ? LINES_NIGHT : LINES_DAY);
-    w.sayUntil = clock.current + 2.8;
-    w.wait = Math.max(w.wait, 2.4);
+    v.say = pick(LINES);
+    v.sayUntil = clock.current + 2.8;
+    v.wait = Math.max(v.wait, 2.4);
     discover('gente');
   };
 
-  const tapCar = (x: number, id: string) => {
+  const tapClerk = () => {
     if (!guard()) return;
-    sfx('honk');
-    say(id, x, ROAD_Y - 12, pick(['Bi-bi! 🚗', 'Fom-fom! 🚙']), 1.6);
+    sfx('pop');
+    const c = life.current.clerk;
+    c.say = pick(['Bem-vindo ao Centro Cultural! 😊', 'A entrada é de graça! 🎟️', 'Hoje tem filme e dança! 🎭']);
+    c.sayUntil = clock.current + 2.8;
+    discover('gente');
   };
 
   const t = clock.current;
   const L = life.current;
-  const A = ambient.current;
   const view = cam.view(t);
 
   const tapGround = (e: MouseEvent<SVGSVGElement>) => {
     if (!guard()) return;
     const pt = cam.toWorld(e);
-    if (pt && pt.y > FLOOR) spawn('marker', pt.x, pt.y, { life: 0.6, c: '#ffffff' });
+    if (pt && pt.y > py(FLOOR, BACK)) spawn('marker', pt.x, pt.y, { life: 0.6, c: '#ffffff' });
   };
 
   const liftOpen = ramp(t, L.lift.at, L.lift.until, 0.5);
   const filmK = ramp(t, L.film.at, L.film.until, 0.8);
   const curtainK = ramp(t, L.dance.at, L.dance.until, 1);
-  const dancing = curtainK > 0;
-  const dx = STAGE_CX + Math.sin((t - L.dance.at) * 1.6) * 14;
+  const filmOn = t < L.film.until;
+  const danceX = Math.sin((t - L.dance.at) * 1.6) * 1.3;
   const spin = Math.cos((t - L.dance.at) * 7) >= 0 ? 1 : -1;
-
-  const inside = L.walkers.filter((w) => w.inside).sort((a, b) => a.y - b.y);
-  const outside = L.walkers.filter((w) => !w.inside).sort((a, b) => a.y - b.y);
-  const walkerNode = (w: Walker) => (
-    <g
-      key={w.id}
-      className="cw-tap"
-      onClick={(e) => {
-        e.stopPropagation();
-        tapWalker(w);
-      }}
-    >
-      <Character x={w.x} y={w.y} config={w.config} frame={w.walk > 0 ? (((Math.floor(w.walk / 0.17) % 2) + 1) as 1 | 2) : 0} />
-    </g>
-  );
-
-  const bubbles = [...live(t), ...L.walkers.filter((w) => w.say && w.sayUntil > t).map((w) => ({ key: `w${w.id}`, x: w.x, y: w.y - 18, text: w.say! }))];
-
-  return (
-    <SceneBox cam={cam}>
-      <svg ref={cam.svg} className="visit-art" viewBox={`${view.fx.toFixed(2)} ${view.fy.toFixed(2)} ${view.vw.toFixed(2)} ${view.vh.toFixed(2)}`} preserveAspectRatio="xMidYMax slice" shapeRendering="crispEdges" onClick={tapGround}>
-        <defs>
-          <radialGradient id="cc-glow">
-            <stop offset="0" stopColor="#ffe9a8" stopOpacity="0.9" />
-            <stop offset="1" stopColor="#ffe9a8" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <g transform={view.layer(DEPTH.sky)}>
-          <SkyLayer time={time} bd={bd} />
+  const dz = STAGE.back - 0.25;
+  const dancer =
+    curtainK > 0 ? (
+      <g>
+        <ellipse cx={px(danceX, dz)} cy={py(STAGE.top, dz)} rx={8} ry={1.5} fill="#fff6c8" opacity={0.4} />
+        <g transform={`translate(${px(danceX, dz).toFixed(2)} 0) scale(${spin} 1) translate(${(-px(danceX, dz)).toFixed(2)} 0)`}>
+          <g transform={`translate(${px(danceX, dz).toFixed(2)} ${py(STAGE.top, dz).toFixed(2)}) scale(${((PERSON * F) / dz / CHAR_H).toFixed(3)})`}>
+            <Character x={0} y={0} config={L.dance.who} frame={Math.sin(t * 8) > 0 ? 1 : 2} />
+          </g>
         </g>
-        <g transform={view.layer(DEPTH.clouds)}>
-          <Clouds A={A} t={t} time={time} />
-        </g>
-        <g transform={view.layer(DEPTH.far)}>
-          <FarHills time={time} bd={bd} />
-        </g>
-        <Haze time={time} ground={bd.ground} />
-        <g transform={view.layer(DEPTH.near)}>
-          <NearHills time={time} bd={bd} />
-        </g>
+      </g>
+    ) : null;
 
-        <Street />
-        <Shops night={night} />
-        <Facade night={night} />
+  // Coisas do corredor, desenhadas da mais longe para a mais perto
+  const things: { z: number; key: string; node: ReactNode }[] = [
+    {
+      z: BANNER.z,
+      key: 'banner',
+      node: (
         <g
           className="cw-tap"
           onClick={(e) => {
             e.stopPropagation();
-            tapSign();
+            tapBanner();
           }}
           role="button"
-          aria-label="Placa do Centro Cultural"
+          aria-label="Cartaz do espetáculo"
         >
-          <Sign glow={t < L.signUntil} t={t} night={night} />
+          <Banner side={L.banner} />
         </g>
-
-        {/* Dentro: saguão, galeria e teatro */}
-        <Rooms night={night} />
+      ),
+    },
+    { z: 3.6, key: 'bench', node: <Bench /> },
+    {
+      z: PROJ.z,
+      key: 'proj',
+      node: (
+        <g
+          className="cw-tap"
+          onClick={(e) => {
+            e.stopPropagation();
+            tapFilm();
+          }}
+          role="button"
+          aria-label="Projetor de cinema"
+        >
+          <Projector on={filmOn} t={t} />
+        </g>
+      ),
+    },
+    {
+      z: DESK.z1 + 0.3,
+      key: 'clerk',
+      node: (
+        <g
+          className="cw-tap"
+          onClick={(e) => {
+            e.stopPropagation();
+            tapClerk();
+          }}
+        >
+          <Person X={3.0} Z={DESK.z1 + 0.3} config={L.clerk.config} frame={0} />
+        </g>
+      ),
+    },
+    { z: DESK.z0, key: 'desk', node: <Desk /> },
+    {
+      z: LIFT.z0,
+      key: 'lift',
+      node: (
         <g
           className="cw-tap"
           onClick={(e) => {
@@ -897,25 +849,48 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
         >
           <Lift open={liftOpen} arriving={t < L.lift.until} />
         </g>
-        <Desk />
-        {FRAMES.map((x, i) => (
-          <g
-            key={x}
-            className="cw-tap"
-            onClick={(e) => {
-              e.stopPropagation();
-              tapArt(i);
-            }}
-          >
-            {/* Luz do spot no quadro */}
-            <path d={`M${x + 5} ${OPEN}L${x + 13} 74L${x - 1} 74Z`} fill="#fff6c8" opacity={0.18} />
-            <rect x={x - 1} y={59} width={14} height={15} fill="#2a2a2a" />
-            <rect x={x} y={60} width={12} height={13} fill="#ffffff" />
-            <Art k={L.art[i]} x={x} y={60.5} />
-          </g>
-        ))}
+      ),
+    },
+    ...L.visitors.map((v) => ({
+      z: v.Z,
+      key: `v${v.id}`,
+      node: (
+        <g
+          className="cw-tap"
+          onClick={(e) => {
+            e.stopPropagation();
+            tapVisitor(v);
+          }}
+        >
+          <Person X={v.X} Z={v.Z} config={v.config} frame={v.walk > 0 ? (((Math.floor(v.walk / 0.2) % 2) + 1) as 1 | 2) : 0} />
+        </g>
+      ),
+    })),
+  ].sort((a, b) => b.z - a.z);
 
-        {/* Palco: dançarina, cortina, tela e o facho do projetor */}
+  const headY = (Z: number) => py(FLOOR - PERSON, Z) - 3;
+  const bubbles = [
+    ...live(t),
+    ...L.visitors.filter((v) => v.say && v.sayUntil > t).map((v) => ({ key: `v${v.id}`, x: px(v.X, v.Z), y: headY(v.Z), text: v.say! })),
+    ...(L.clerk.say && L.clerk.sayUntil > t ? [{ key: 'clerk', x: px(3.0, DESK.z1 + 0.3), y: headY(DESK.z1 + 0.3), text: L.clerk.say }] : []),
+  ];
+
+  // Facho de luz do projetor até a tela
+  const sz = STAGE.back - 0.1;
+  const lens: Pt = [px(PROJ.x, PROJ.z + 0.1), py(0.3, PROJ.z + 0.1)];
+  const scr: Pt[] = [
+    [px(-SCREEN.half, sz), py(SCREEN.top, sz)],
+    [px(SCREEN.half, sz), py(SCREEN.top, sz)],
+    [px(SCREEN.half, sz), py(SCREEN.bottom, sz)],
+    [px(-SCREEN.half, sz), py(SCREEN.bottom, sz)],
+  ];
+
+  return (
+    <SceneBox cam={cam}>
+      <svg ref={cam.svg} className="visit-art" viewBox={`${view.fx.toFixed(2)} ${view.fy.toFixed(2)} ${view.vw.toFixed(2)} ${view.vh.toFixed(2)}`} preserveAspectRatio="xMidYMax slice" shapeRendering="crispEdges" onClick={tapGround}>
+        <rect x={FULL.x} y={-300} width={FULL.w} height={700} fill="#efece4" />
+
+        {/* Teatro lá no fundo (aparece pela porta larga) */}
         <g
           className="cw-tap"
           onClick={(e) => {
@@ -925,41 +900,8 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
           role="button"
           aria-label="Palco"
         >
-          <rect x={STAGE.x0} y={STAGE.top - 3} width={STAGE.x1 - STAGE.x0} height={STAGE.floor - STAGE.top + 3} fill="transparent" />
-          {dancing && (
-            <g>
-              <ellipse cx={dx} cy={STAGE.floor - 1} rx={9} ry={2} fill="#fff6c8" opacity={0.35} />
-              <path d={`M${dx - 3} ${STAGE.top}L${dx + 3} ${STAGE.top}L${dx + 9} ${STAGE.floor}L${dx - 9} ${STAGE.floor}Z`} fill="#fff6c8" opacity={0.12} />
-              <g transform={`translate(${dx.toFixed(2)} 0) scale(${spin} 1) translate(${(-dx).toFixed(2)} 0)`}>
-                <Character x={dx} y={STAGE.floor} config={L.dance.who} frame={Math.sin(t * 8) > 0 ? 1 : 2} />
-              </g>
-            </g>
-          )}
-          <Curtain open={curtainK} />
-          <Screen k={filmK} t={t} />
+          <Theater seats={L.seats} clapping={t < L.clapUntil} t={t} curtain={curtainK} film={filmK} dancer={dancer} />
         </g>
-        <g
-          className="cw-tap"
-          onClick={(e) => {
-            e.stopPropagation();
-            tapFilm();
-          }}
-          role="button"
-          aria-label="Projetor de cinema"
-        >
-          <rect x={BOOTH.x - 3} y={BOOTH.y - 3} width={12} height={10} fill="transparent" />
-          <rect x={BOOTH.x + 1} y={BOOTH.y + 1} width={4} height={2} fill={filmK > 0 ? '#fff6c8' : '#6f7d86'} />
-        </g>
-        {filmK >= 1 && (
-          <path
-            d={`M${BOOTH.x + 5} ${BOOTH.y + 1}L${SCREEN.x0} ${SCREEN.y0}L${SCREEN.x1} ${SCREEN.y0}L${SCREEN.x1} ${SCREEN.y0 + SCREEN.h}L${SCREEN.x0} ${SCREEN.y0 + SCREEN.h}L${BOOTH.x + 5} ${BOOTH.y + 3}Z`}
-            fill="#fff6c8"
-            opacity={0.1 + Math.sin(t * 31) * 0.03}
-            pointerEvents="none"
-          />
-        )}
-
-        {/* Cadeiras vermelhas (vistas por trás), com a plateia */}
         <g
           className="cw-tap"
           onClick={(e) => {
@@ -969,89 +911,47 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
           role="button"
           aria-label="Cadeiras do teatro"
         >
-          {SEAT_ROWS.map((y, r) =>
-            SEAT_X.map((x, i) => {
-              const p = L.seats[r * SEAT_X.length + i];
-              const bob = p && t < L.clapUntil && Math.sin(t * 20 + i + r) > 0 ? -1 : 0;
-              return (
-                <g key={`${r}-${i}`}>
-                  {p && (
-                    <g>
-                      <rect x={x + 1.5} y={y - 8 + bob} width={3} height={3} fill={p.skin} />
-                      <rect x={x + 1.5} y={y - 8.5 + bob} width={3} height={2} fill={p.hair} />
-                    </g>
-                  )}
-                  <rect x={x - 0.5} y={y - 5.5} width={7} height={5.5} fill={INK} />
-                  <rect x={x} y={y - 5} width={6} height={5} fill={SEAT} />
-                  <rect x={x} y={y - 5} width={6} height={1} fill="#e85a52" />
-                  <rect x={x + 5} y={y - 4} width={1} height={4} fill={RED_DK} />
-                </g>
-              );
-            }),
-          )}
+          <rect x={px(-RW, 4.5)} y={py(STAGE.top + 0.05, 5.6)} width={px(RW, 4.4) - px(-RW, 4.4)} height={py(FLOOR, BACK) - py(STAGE.top + 0.05, 5.6)} fill="transparent" />
         </g>
 
-        {inside.map(walkerNode)}
-
-        {/* Pilares de cobogó da frente */}
-        <Cobogo x0={B.x0} x1={LOBBY.x0} />
-        <Cobogo x0={THEATER.x1} x1={B.x1} />
-
-        <Lamp x={10} night={night} />
-        <Lamp x={304} night={night} />
+        <Gallery />
         <g
           className="cw-tap"
           onClick={(e) => {
             e.stopPropagation();
-            tapPoster();
+            tapSign();
           }}
           role="button"
-          aria-label="Cartaz do espetáculo"
+          aria-label="Nome do Centro Cultural"
         >
-          <Poster side={L.poster} />
+          <BackWall glow={t < L.signUntil} t={t} />
         </g>
-        {outside.map(walkerNode)}
-
-        {L.cars.map((c) => (
+        {PAINTINGS.map((_, i) => (
           <g
-            key={c.id}
+            key={i}
             className="cw-tap"
             onClick={(e) => {
               e.stopPropagation();
-              tapCar(c.x, `car${c.id}`);
+              tapArt(i);
             }}
           >
-            <g transform={`translate(${c.x.toFixed(2)} ${ROAD_Y - 10}) scale(${c.dir} 1) translate(-10 0)`}>
-              <Pixels runs={c.runs} />
-            </g>
+            <Painting i={i} k={L.art[i]} />
           </g>
         ))}
 
-        <ParticleLayer list={particles.current} />
-        <Critters A={A} t={t} night={night} area={AREA} spawn={spawn} />
-
-        <TimeTint time={time} />
-        {night && (
-          <>
-            <g transform={view.layer(DEPTH.near)}>
-              <TownLights bd={bd} />
-            </g>
-            <g pointerEvents="none">
-              {[50, 80, 120, 150, 180].map((x) => (
-                <circle key={x} cx={x} cy={70} r={16} fill="url(#cc-glow)" opacity={0.4} />
-              ))}
-              {UP_WIN.map((x) => (
-                <circle key={x} cx={x} cy={24} r={12} fill="url(#cc-glow)" opacity={0.35} />
-              ))}
-              <rect x={B.x0} y={SIGN.y0} width={B.x1 - B.x0} height={SIGN.y1 - SIGN.y0} fill="#ff6a5a" opacity={0.18} />
-              {[14, 308].map((x) => (
-                <circle key={x} cx={x} cy={48} r={8} fill="url(#cc-glow)" opacity={0.7} />
-              ))}
-              {dancing && <circle cx={dx} cy={68} r={12} fill="url(#cc-glow)" opacity={0.5} />}
-              {filmK > 0 && <rect x={SCREEN.x0} y={SCREEN.y0} width={SCREEN.x1 - SCREEN.x0} height={SCREEN.h * filmK} fill="#fff6c8" opacity={0.25} />}
-            </g>
-          </>
+        {filmK >= 1 && (
+          <g opacity={0.12 + Math.sin(t * 31) * 0.03} pointerEvents="none">
+            {scr.map((p, i) => (
+              <path key={i} d={poly([lens, p, scr[(i + 1) % 4]])} fill="#fff6c8" />
+            ))}
+          </g>
         )}
+
+        {things.map((th) => (
+          <g key={th.key}>{th.node}</g>
+        ))}
+
+        <ParticleLayer list={particles.current} />
       </svg>
 
       <SceneHud
@@ -1062,9 +962,9 @@ export const CulturalScene = memo(function CulturalScene({ place, time, onPoints
         found={found}
         fresh={fresh}
         toast={toast.current}
-        night={night}
-        firstTip="Toque no prédio, nos quadros e no teatro para descobrir! 👆"
-        dragText="👈 Arraste para ver o Centro Cultural todo 👉"
+        night={false}
+        firstTip="Toque nos quadros, no elevador e no teatro lá no fundo! 👆"
+        dragText="👈 Arraste para olhar em volta 👉"
         dragged={cam.dragged.current}
       />
     </SceneBox>
