@@ -10,7 +10,8 @@ import type { AvatarConfig, PublicUser } from '../lib/types';
 import { BOUNDS, BRIDGE, inRiver, MAIN_PATH, PLACES, riverX, RIVER_HALF, SPAWN, WORLD_H, WORLD_W, type Place } from '../lib/world';
 import { Avatar, AvatarSprite, SPRITE_H, SPRITE_W } from './Avatar';
 import { Dialogue } from './Dialogue';
-import { bridgeParts, chacaraParts, culturalParts, hotelParts, memorialParts, museumParts, painelParts, stationParts } from './Landmarks';
+import { hotelParts } from './Landmarks';
+import { bridgeParts, chacaraParts, culturalParts, memorialParts, museumParts, painelParts, stationParts } from './MapLandmarks';
 import { mestreParts } from './MestreHouses';
 import { LevelBadge, XpBar } from './Game';
 import { iconRuns, PixelIcon } from './PixelIcon';
@@ -449,7 +450,7 @@ export function makeTrees(places: Place[] = PLACES, seed = 1234, geo: TreeGeo = 
     places.some((p) =>
       p.kind === 'church'
         ? x > p.x - 34 && x < p.x + 54 && y > p.y - 70 && y < p.y + 20
-        : Math.abs(x - p.x) < (p.kind === 'hotel' ? 46 : WIDE.includes(p.kind) ? 34 : 24) && y > p.y - (p.kind === 'hotel' ? 66 : 52) && y < p.y + (p.kind === 'mestre' ? 30 : 16),
+        : Math.abs(x - p.x) < (p.kind === 'hotel' ? 46 : p.kind === 'museum' || p.kind === 'station' ? 40 : WIDE.includes(p.kind) ? 34 : 30) && y > p.y - (p.kind === 'hotel' ? 66 : 52) && y < p.y + (p.kind === 'mestre' || p.kind === 'station' ? 30 : p.kind === 'museum' ? 26 : 16),
     ) ||
     places.some((p) => Math.abs(x - p.x) < 10 && y > Math.min(p.y, MAIN_PATH.y) - 4 && y < Math.max(p.y, MAIN_PATH.y) + 14) ||
     trees.some((t) => Math.abs(t.x - x) < 11 && Math.abs(t.y - y) < 8);

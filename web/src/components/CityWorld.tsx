@@ -85,7 +85,7 @@ function makeScenery(places: Place[]) {
     Math.abs(y - (MAIN_PATH.y + 4)) > 7 &&
     Math.hypot((x - PLAZA.x) / 28, (y - PLAZA.y) / 15) > 1 &&
     !trees.some((t) => Math.abs(t.x - x) < 6 && Math.abs(t.y - y) < 5) &&
-    !places.some((p) => Math.abs(x - p.x) < (p.kind === 'church' ? 30 : p.kind === 'hotel' ? 36 : 24) && y > p.y - (p.kind === 'hotel' ? 56 : 42) && y < p.y + (p.kind === 'church' || p.kind === 'hotel' ? 12 : 4)) &&
+    !places.some((p) => Math.abs(x - p.x) < (p.kind === 'church' ? 30 : p.kind === 'hotel' || p.kind === 'museum' || p.kind === 'station' ? 36 : 28) && y > p.y - (p.kind === 'hotel' ? 56 : 44) && y < p.y + (p.kind === 'church' || p.kind === 'hotel' ? 12 : p.kind === 'museum' ? 17 : 4)) &&
     !places.some((p) => Math.abs(x - p.x) < 6 && y > Math.min(p.y, MAIN_PATH.y) && y < Math.max(p.y, MAIN_PATH.y));
   const scatter = (n: number, make: (x: number, y: number) => Sway) => {
     const out: Sway[] = [];
