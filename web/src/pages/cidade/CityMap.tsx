@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { Avatar } from '../../components/Avatar';
 import { CityWorld } from '../../components/CityWorld';
 import { useDayTime } from '../../components/Scene';
 import { CITY_PLACES, getPoints, sfx } from '../../lib/cidade';
+import { getHero } from '../../lib/personagem';
 import type { Place } from '../../lib/world';
 import { FullscreenToggle, Logo, ScoreBadge, SoundToggle, useCityTitle } from './CityHud';
 
@@ -21,8 +23,15 @@ export function CityMap() {
   const [entering, setEntering] = useState<{ x: number; y: number } | null>(null);
   const [leaving, setLeaving] = useState(false);
   const timer = useRef(0);
+  const hero = useMemo(getHero, []);
 
   useEffect(() => () => clearTimeout(timer.current), []);
+
+  const go = (to: string) => {
+    sfx('pop');
+    setLeaving(true);
+    navigate(to);
+  };
 
   const arrive = useCallback(
     (p: Place, screen: { x: number; y: number }) => {
@@ -40,20 +49,18 @@ export function CityMap() {
   return (
     <div className="city-screen">
       <div className={`city-stage ${entering ? 'entering' : ''}`} style={entering ? { transformOrigin: `${entering.x}px ${entering.y}px` } : undefined}>
-        <CityWorld places={CITY_PLACES} time={time} onArrive={arrive} introLines={INTRO} paused={leaving}>
+        <CityWorld places={CITY_PLACES} time={time} onArrive={arrive} introLines={INTRO} hero={hero?.look} paused={leaving}>
           <div className="city-top">
-            <button
-              className="city-sound"
-              aria-label="Voltar para o início"
-              title="Início"
-              onClick={() => {
-                sfx('pop');
-                setLeaving(true);
-                navigate('/');
-              }}
-            >
-              🏠
-            </button>
+            <div className="city-top-right">
+              <button className="city-sound" aria-label="Voltar para o início" title="Início" onClick={() => go('/')}>
+                🏠
+              </button>
+              {hero && (
+                <button className="city-sound city-hero" aria-label="Trocar o personagem" title="Trocar o personagem" onClick={() => go('/personagem')}>
+                  <Avatar config={hero.look} size={38} />
+                </button>
+              )}
+            </div>
             <Logo />
             <div className="city-top-right">
               <ScoreBadge points={getPoints()} />

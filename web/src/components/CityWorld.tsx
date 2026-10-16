@@ -384,12 +384,14 @@ export interface CityWorldProps {
   demo?: boolean;
   introLines?: string[];
   introKey?: string;
+  /** Aparência do personagem da criança (montado em /personagem). */
+  hero?: AvatarConfig | null;
   /** Congela a tela (usado ao trocar de página: a navegação do roteador é de baixa prioridade e não pode competir com 60 quadros por segundo). */
   paused?: boolean;
   children?: ReactNode;
 }
 
-export function CityWorld({ places, time, onArrive, demo, introLines, introKey = 'cidade:intro:v3', paused, children }: CityWorldProps) {
+export function CityWorld({ places, time, onArrive, demo, introLines, introKey = 'cidade:intro:v3', hero = null, paused, children }: CityWorldProps) {
   const night = time === 'night';
   const scenery = useMemo(() => makeScenery(places), [places]);
   const targets = useMemo<Vec[]>(
@@ -1015,7 +1017,7 @@ export function CityWorld({ places, time, onArrive, demo, introLines, introKey =
         </g>
       ),
     })),
-    ...(demo ? [] : [{ key: 'me', y: p.y + 0.1, node: <Character x={p.x} y={p.y} config={null} frame={frame.current} me /> }]),
+    ...(demo ? [] : [{ key: 'me', y: p.y + 0.1, node: <Character x={p.x} y={p.y} config={hero} frame={frame.current} me /> }]),
   ].sort((a, b) => a.y - b.y);
 
   const pct = (x: number, y: number) => ({ left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%` });

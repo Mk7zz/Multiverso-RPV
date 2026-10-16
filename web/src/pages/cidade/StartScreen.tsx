@@ -5,7 +5,7 @@ import { useDayTime } from '../../components/Scene';
 import { CITY_PLACES, sfx } from '../../lib/cidade';
 import { APP_NAME, enterFullscreenOnTouch, TAGLINE, useCityTitle } from './CityHud';
 
-/** Tela de abertura: a cidade viva ao fundo, o título em pixel (como o do Multiverso) e o botão Começar. */
+/** Tela de abertura: a cidade viva ao fundo, o título em pixel (como o do Multiverso) e o botão Começar, que leva à criação do personagem. */
 export function StartScreen() {
   useCityTitle();
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export function StartScreen() {
   const play = () => {
     enterFullscreenOnTouch();
     setLeaving(true);
-    navigate('/mapa');
+    navigate('/personagem');
     setTimeout(() => sfx('ok'), 0);
   };
 

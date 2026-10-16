@@ -1,10 +1,12 @@
 /**
  * Vozes gravadas por crianças: os Mestres do Saber e a Pomba, que narra os pontos focais.
  *
+ * Toda fala é gravada duas vezes, por uma menina e por um menino: quem joga com personagem menina
+ * ouve o jogo todo em vozes de menina; com personagem menino, em vozes de menino (lib/personagem.ts).
  * Cada fala tem um nome de arquivo fixo. Quando existe a gravação em
- * `web/public/vozes/<mestre>/<nome>.mp3` (ou .m4a, .opus, .ogg, .wav), o jogo toca ela; quando não existe, lê o texto
- * com a voz do navegador. Dá para gravar aos poucos: o que ainda não foi gravado continua
- * funcionando.
+ * `web/public/vozes/<menina|menino>/<mestre>/<nome>.mp3` (ou .m4a, .opus, .ogg, .wav), o jogo toca ela; quando não existe,
+ * lê o texto com a voz do navegador (feminina ou masculina). Dá para gravar aos poucos: o que ainda
+ * não foi gravado continua funcionando.
  *
  * Por mestre: 1 fala de entrada, de acerto e de erro e, para cada pergunta dele, a pergunta e a
  * curiosidade. A Pomba (pasta `pomba`) tem 3 falas comuns e, para cada pergunta de cada ponto

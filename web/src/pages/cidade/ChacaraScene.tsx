@@ -3,6 +3,7 @@ import { randomLook } from '../../components/CityWorld';
 import { Pixels, type DayTime } from '../../components/Scene';
 import { Character } from '../../components/World';
 import { sfx, type CityPlace } from '../../lib/cidade';
+import { byGender } from '../../lib/personagem';
 import { seeded } from '../../lib/pixel';
 import type { AvatarConfig } from '../../lib/types';
 import { palmRuns } from './PlaceScene';
@@ -470,7 +471,7 @@ export const ChacaraScene = memo(function ChacaraScene({ place, time, onPoints }
     sfx('creak');
     L.doorUntil[i] = clock.current + 4.5;
     L.doorWho[i] = randomLook();
-    say(`porta${i}`, DOORS[i], 46, pick(['Oi! Seja bem-vindo! 👋', 'Que bom que você veio! 😊', 'Entra pra conhecer! 🏡']), 3);
+    say(`porta${i}`, DOORS[i], 46, pick([`Oi! Seja ${byGender('bem-vindo', 'bem-vinda')}! 👋`, 'Que bom que você veio! 😊', 'Entra pra conhecer! 🏡']), 3);
     discover('janela');
   };
 

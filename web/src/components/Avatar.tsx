@@ -42,7 +42,7 @@ export const AVATAR_OPTIONS = {
   mouth: [
     ['smile', 'Sorriso'],
     ['grin', 'Risada'],
-    ['neutral', 'SÃ©rio'],
+    ['neutral', 'Sério'],
     ['open', 'Surpresa'],
   ],
   outfit: [
@@ -52,9 +52,9 @@ export const AVATAR_OPTIONS = {
   ],
   accessory: [
     ['none', 'Nenhum'],
-    ['glasses', 'Ã“culos'],
-    ['sunglasses', 'Ã“culos escuros'],
-    ['cap', 'BonÃ©'],
+    ['glasses', 'Óculos'],
+    ['sunglasses', 'Óculos escuros'],
+    ['cap', 'Boné'],
     ['headphones', 'Fones'],
     ['earring', 'Brinco'],
   ],
@@ -86,7 +86,7 @@ function buildGrid(c: AvatarConfig, frame: 0 | 1 | 2): Grid {
   const outfit = c.outfit ?? 'tee';
   const shoe = '#2b2f36';
 
-  // Cabelo de trÃ¡s (fica atrÃ¡s do rosto e dos ombros)
+  // Cabelo de trás (fica atrás do rosto e dos ombros)
   if (c.hair === 'afro') {
     for (let y = 0; y < 11; y++) for (let x = 0; x < W; x++) if (Math.hypot(x - 7.5, (y - 4.6) * 1.08) <= 6.7) set(x, y, (x + y) % 5 === 0 ? hairD : hair);
   }
@@ -97,7 +97,7 @@ function buildGrid(c: AvatarConfig, frame: 0 | 1 | 2): Grid {
     set(13, 13, hairD);
   }
 
-  // Pernas e sapatos (animaÃ§Ã£o de passo)
+  // Pernas e sapatos (animação de passo)
   rect(4, 16, 11, 16, pants);
   const leftUp = frame === 1;
   const rightUp = frame === 2;
@@ -108,7 +108,7 @@ function buildGrid(c: AvatarConfig, frame: 0 | 1 | 2): Grid {
   rect(3, leftUp ? 18 : 19, 6, leftUp ? 18 : 19, shoe);
   rect(9, rightUp ? 18 : 19, 12, rightUp ? 18 : 19, shoe);
 
-  // Tronco e braÃ§os
+  // Tronco e braços
   rect(4, 11, 11, 15, shirt);
   rect(11, 12, 11, 15, shirtD);
   rect(4, 15, 11, 15, shirtD);
@@ -137,7 +137,7 @@ function buildGrid(c: AvatarConfig, frame: 0 | 1 | 2): Grid {
     rect(9, 11, 9, 14, shirtD);
   }
 
-  // CabeÃ§a
+  // Cabeça
   rect(3, 2, 12, 10, skin);
   set(3, 2, null);
   set(12, 2, null);
@@ -266,7 +266,7 @@ function buildGrid(c: AvatarConfig, frame: 0 | 1 | 2): Grid {
       set(6, 3, shade(skin, 0.25));
   }
 
-  // AcessÃ³rios
+  // Acessórios
   if (c.accessory === 'cap') {
     const cap = shirt;
     rect(3, 1, 12, 3, cap);
@@ -313,7 +313,7 @@ export function avatarRuns(c: AvatarConfig, frame: 0 | 1 | 2 = 0): Run[] {
   return r;
 }
 
-/** DimensÃµes do sprite completo (com contorno), em pixels lÃ³gicos. */
+/** Dimensões do sprite completo (com contorno), em pixels lógicos. */
 export const SPRITE_W = W + 2;
 export const SPRITE_H = H + 2;
 
@@ -335,8 +335,8 @@ function initials(name: string) {
 }
 
 /**
- * Avatar em pixel-art. "portrait" mostra cabeÃ§a e ombros (listas, ranking, cabeÃ§alho);
- * "full" mostra o corpo inteiro (criador de personagem, celebraÃ§Ãµes).
+ * Avatar em pixel-art. "portrait" mostra cabeça e ombros (listas, ranking, cabeçalho);
+ * "full" mostra o corpo inteiro (criador de personagem, celebrações).
  */
 export function Avatar({
   config,

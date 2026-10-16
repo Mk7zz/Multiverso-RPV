@@ -3,6 +3,7 @@ import { randomLook } from '../../components/CityWorld';
 import { Pixels, treeRuns, type DayTime } from '../../components/Scene';
 import { Character } from '../../components/World';
 import { sfx, type CityPlace } from '../../lib/cidade';
+import { byGender } from '../../lib/personagem';
 import { shade, type Run } from '../../lib/pixel';
 import type { AvatarConfig } from '../../lib/types';
 import {
@@ -738,7 +739,7 @@ export const MuseuScene = memo(function MuseuScene({ place, time, onPoints }: { 
     sfx('creak');
     L.windowUntil[i] = clock.current + 4.5;
     L.windowWho[i] = randomLook();
-    say(`jan${i}`, UP_WIN[i] + 4, 42, pick(['Bem-vindo ao museu! 👋', 'Oi! Vem conhecer! 😊', 'Aqui tem muita história! 📜']), 3);
+    say(`jan${i}`, UP_WIN[i] + 4, 42, pick([`${byGender('Bem-vindo', 'Bem-vinda')} ao museu! 👋`, 'Oi! Vem conhecer! 😊', 'Aqui tem muita história! 📜']), 3);
     discover('janela');
   };
 

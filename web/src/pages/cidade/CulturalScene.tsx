@@ -3,6 +3,7 @@ import { randomLook } from '../../components/CityWorld';
 import { Pixels, type DayTime } from '../../components/Scene';
 import { Character } from '../../components/World';
 import { sfx, type CityPlace } from '../../lib/cidade';
+import { byGender } from '../../lib/personagem';
 import type { AvatarConfig } from '../../lib/types';
 import {
   clamp,
@@ -747,7 +748,7 @@ export const CulturalScene = memo(function CulturalScene({ place, onPoints }: { 
     if (!guard()) return;
     sfx('pop');
     const c = life.current.clerk;
-    c.say = pick(['Bem-vindo ao Centro Cultural! 😊', 'A entrada é de graça! 🎟️', 'Hoje tem filme e dança! 🎭']);
+    c.say = pick([`${byGender('Bem-vindo', 'Bem-vinda')} ao Centro Cultural! 😊`, 'A entrada é de graça! 🎟️', 'Hoje tem filme e dança! 🎭']);
     c.sayUntil = clock.current + 2.8;
     discover('gente');
   };

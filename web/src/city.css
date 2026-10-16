@@ -331,3 +331,41 @@ button.visit-dove { left: 6%; top: 34%; background: none; border: 0; padding: 0;
 .mz-pool { animation: mz-pool 2.4s ease-in-out infinite alternate; }
 @keyframes mz-pool { to { opacity: 0.06; } }
 @media (prefers-reduced-motion: reduce) { .mz-peek, .mz-pool { animation: none !important; } }
+
+/* ---- Criação de personagem (/personagem) ---- */
+.hc { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 14px; padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)); overflow-y: auto; font-family: 'Nunito Sans', var(--font); color: var(--line); }
+.hc.hc-first { justify-content: center; }
+.hc-title { margin: 0; text-align: center; font-family: var(--font-pixel); font-size: clamp(1.6rem, 4.4vw, 2.8rem); color: #fff; text-transform: uppercase; text-shadow: 3px 3px 0 var(--line), 0 0 12px rgba(0, 0, 0, 0.5); animation: cw-drop 0.5s ease-out both; }
+.hc-gender { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.hc-g { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 150px; background: #fffdf5; color: var(--line); border: 4px solid var(--line); border-radius: 10px; box-shadow: 0 6px 0 var(--line); padding: 10px 22px; font-family: inherit; font-weight: 800; font-size: 1.4rem; text-transform: uppercase; cursor: pointer; animation: cw-rise2 0.5s ease-out both; }
+.hc-g-menino { animation-delay: 0.12s; }
+.hc-g:active { transform: translateY(4px); box-shadow: 0 2px 0 var(--line); }
+.hc-g .avatar { border: 3px solid var(--line); border-radius: 6px; }
+.hc-g-menina.on { background: #ec6a8c; color: #fff; }
+.hc-g-menino.on { background: #2f8fd8; color: #fff; }
+.hc:not(.hc-first) .hc-g { min-width: 130px; padding: 6px 18px; font-size: 1.15rem; box-shadow: 0 4px 0 var(--line); animation: none; }
+.hc-body { display: flex; gap: 16px; align-items: flex-start; justify-content: center; width: min(860px, 100%); animation: cw-rise2 0.4s ease-out both; }
+.hc-stage { display: flex; flex-direction: column; align-items: center; gap: 12px; flex: none; }
+.hc-stage .avatar { border: 4px solid var(--line); border-radius: 10px; box-shadow: 0 6px 0 var(--line); }
+.hc-panel { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; background: #fffdf5; border: 4px solid var(--line); border-radius: 10px; box-shadow: 0 6px 0 var(--line); padding: 14px 16px; }
+.hc-row { display: flex; align-items: center; gap: 12px; }
+.hc-label { width: 120px; flex: none; font-weight: 800; font-size: 1rem; text-transform: uppercase; }
+.hc-cycler { flex: 1; display: flex; align-items: center; gap: 8px; }
+.hc-cycler span { flex: 1; text-align: center; font-family: var(--font-pixel); font-size: 1.25rem; background: #fff8e1; border: 3px solid var(--line); border-radius: 6px; padding: 4px 8px; }
+.hc-cycler button { width: 44px; height: 44px; flex: none; display: grid; place-items: center; background: var(--lime, #8cc63f); color: var(--line); border: 3px solid var(--line); border-radius: 6px; box-shadow: 0 3px 0 var(--line); font-size: 1.8rem; font-weight: 800; line-height: 1; padding: 0 0 4px; cursor: pointer; }
+.hc-cycler button:active { transform: translateY(3px); box-shadow: none; }
+.hc-swatches { flex: 1; display: flex; flex-wrap: wrap; gap: 7px; }
+.hc-swatches button { width: 36px; height: 36px; border: 3px solid var(--line); border-radius: 6px; padding: 0; cursor: pointer; }
+.hc-swatches button.on { box-shadow: 0 0 0 3px #fffdf5, 0 0 0 6px var(--line); transform: scale(1.06); }
+.hc-done { flex: none; margin-top: 2px; }
+@media (max-width: 700px) {
+  .hc-body { flex-direction: column; align-items: stretch; }
+  .hc-stage { flex-direction: row; justify-content: center; }
+  .hc-stage .avatar { height: 150px; width: auto; }
+  .hc-row { flex-direction: column; align-items: stretch; gap: 6px; }
+  .hc-label { width: auto; }
+  .hc-swatches button { width: 34px; height: 34px; }
+  .hc-done { position: sticky; bottom: 4px; z-index: 3; }
+}
+.city-hero { overflow: hidden; }
+.city-hero .avatar { display: block; width: 100%; height: 100%; box-shadow: none; }

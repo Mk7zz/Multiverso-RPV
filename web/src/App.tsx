@@ -50,6 +50,7 @@ import { Ranking } from './pages/student/Ranking';
 import { Onboarding } from './pages/start/Onboarding';
 import { TitleScreen } from './pages/start/TitleScreen';
 import { CityMap } from './pages/cidade/CityMap';
+import { HeroCreator } from './pages/cidade/HeroCreator';
 import { MestreVisit } from './pages/cidade/MestreVisit';
 import { PlaceVisit } from './pages/cidade/PlaceVisit';
 import { StartScreen } from './pages/cidade/StartScreen';
@@ -74,6 +75,7 @@ export function App() {
     <Routes>
       {/* Cataguases para crianças: mapa da cidade e visita aos pontos turísticos */}
       <Route index element={<StartScreen />} />
+      <Route path="personagem" element={<HeroCreator />} />
       <Route path="mapa" element={<CityMap />} />
       <Route path="lugar/:id" element={<PlaceVisit />} />
       <Route path="mestre/:id" element={<MestreVisit />} />

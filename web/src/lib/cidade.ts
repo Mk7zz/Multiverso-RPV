@@ -4,6 +4,7 @@
  * Para liberar um lugar novo: troque o item "Em breve" por um lugar com `kind`/`to` próprios
  * e cadastre as perguntas dele em QUESTIONS.
  */
+import { heroGender } from './personagem';
 import type { Clip } from './vozes';
 import { BRIDGE, MAIN_PATH, PLACES, riverX, type Place } from './world';
 
@@ -704,17 +705,18 @@ export function setMuted(v: boolean) {
 }
 
 /**
- * Jeito de falar de quem fala: voz de homem ou de mulher, velocidade e tom.
+ * Jeito de falar de quem fala: velocidade e tom. A voz (de homem ou de mulher) segue o personagem
+ * da criança, como as gravações: personagem menina ouve tudo em voz feminina; menino, em masculina.
  * As vozes "naturais" (Edge: Francisca, Antonio, Thalita; Chrome: Google) soam bem mais
  * humanas que as do sistema e ganham prioridade quando existem.
  */
-type Voice = { gender: 'm' | 'f'; rate: number; pitch: number };
+type Voice = { rate: number; pitch: number };
 const VOICES: Record<string, Voice> = {
-  narrador: { gender: 'f', rate: 0.95, pitch: 1.1 },
-  pomba: { gender: 'f', rate: 0.95, pitch: 1.1 },
-  'seu-zico': { gender: 'm', rate: 0.86, pitch: 0.85 },
-  sektor: { gender: 'm', rate: 1.02, pitch: 1 },
-  'dona-rosa': { gender: 'f', rate: 0.88, pitch: 1.05 },
+  narrador: { rate: 0.95, pitch: 1.1 },
+  pomba: { rate: 0.95, pitch: 1.1 },
+  'seu-zico': { rate: 0.86, pitch: 0.85 },
+  sektor: { rate: 1.02, pitch: 1 },
+  'dona-rosa': { rate: 0.88, pitch: 1.05 },
 };
 const MALE = /antonio|daniel|donato|fabio|humberto|julio|nicolau|valerio|ricardo|male|masculin/i;
 const FEMALE = /francisca|thalita|maria|leila|leticia|manuela|yara|giovanna|brenda|elza|luciana|female|feminin/i;
@@ -752,7 +754,7 @@ function tts(text: string, who: string, onEnd?: () => void) {
   u.lang = 'pt-BR';
   u.rate = style.rate;
   u.pitch = style.pitch;
-  const voice = pickVoice(style.gender);
+  const voice = pickVoice(heroGender() === 'menino' ? 'm' : 'f');
   if (voice) u.voice = voice;
   if (onEnd) u.onend = onEnd;
   synth.speak(u);
@@ -762,7 +764,7 @@ let playing: HTMLAudioElement | null = null;
 let turn = 0;
 /** Gravações que não existem (não tenta baixar de novo). */
 const missing = new Set<string>();
-/** Formato que já funcionou para cada mestre: é o primeiro a tentar nas próximas falas dele. */
+/** Formato que já funcionou para cada pasta de vozes: é o primeiro a tentar nas próximas falas dela. */
 const foundExt: Record<string, string> = {};
 
 /** Para qualquer fala em andamento (gravada ou do navegador). */
@@ -781,9 +783,9 @@ export function stopVoice() {
 const AUDIO_EXT = ['mp3', 'm4a', 'opus', 'ogg', 'wav'];
 
 /**
- * Fala uma sequência de trechos. Cada trecho com `id` toca a gravação de `who`
- * (web/public/vozes/<who>/<id>.mp3, ou .m4a/.opus/.ogg/.wav; veja lib/vozes.ts);
- * sem gravação, a voz do navegador lê.
+ * Fala uma sequência de trechos. Cada trecho com `id` toca a gravação de `who` na voz do
+ * personagem da criança (web/public/vozes/<menina|menino>/<who>/<id>.mp3, ou .m4a/.opus/.ogg/.wav;
+ * veja lib/vozes.ts); sem gravação, a voz do navegador lê.
  */
 export function say(parts: Clip[], who = 'narrador') {
   stopVoice();
@@ -794,8 +796,9 @@ export function say(parts: Clip[], who = 'narrador') {
     const { id, text } = parts[i];
     const speakIt = () => tts(text, who, () => next(i + 1));
     if (!id) return speakIt();
-    const base = `/vozes/${who}/${id}`;
-    const exts = foundExt[who] ? [foundExt[who], ...AUDIO_EXT.filter((e) => e !== foundExt[who])] : AUDIO_EXT;
+    const folder = `${heroGender()}/${who}`;
+    const base = `/vozes/${folder}/${id}`;
+    const exts = foundExt[folder] ? [foundExt[folder], ...AUDIO_EXT.filter((e) => e !== foundExt[folder])] : AUDIO_EXT;
     const tryExt = (k: number) => {
       if (mine !== turn) return;
       if (k >= exts.length) return speakIt();
@@ -813,7 +816,7 @@ export function say(parts: Clip[], who = 'narrador') {
       audio.onended = () => next(i + 1);
       audio.onerror = fail;
       audio.play().then(
-        () => (foundExt[who] = exts[k]),
+        () => (foundExt[folder] = exts[k]),
         (e: unknown) => {
           // Navegador bloqueou o som antes do primeiro toque (NotAllowed) ou a fala foi
           // interrompida por outra (Abort): a gravação existe, não é para cair na voz do navegador.
