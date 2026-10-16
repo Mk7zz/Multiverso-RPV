@@ -202,27 +202,27 @@ São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 
 | Arquivo | Fala | Menina | Menino |
 | --- | --- | --- | --- |
-| `entrada.mp3` | Oi, minha flor! Essa é a casa da Dona Rosa. Vamos brincar? |  |  |
+| `entrada.mp3` | Oi, minha flor! Essa é a casa da Dona Rosa. Vamos brincar? | gravada |  |
 
 ### Quando acerta
 
 | Arquivo | Fala | Menina | Menino |
 | --- | --- | --- | --- |
-| `acerto-1.mp3` | Muito bem, minha flor! |  |  |
+| `acerto-1.mp3` | Muito bem, minha flor! | gravada |  |
 
 ### Quando erra
 
 | Arquivo | Fala | Menina | Menino |
 | --- | --- | --- | --- |
-| `erro-1.mp3` | Quase, meu anjo! Escuta só. |  |  |
+| `erro-1.mp3` | Quase, meu anjo! Escuta só. | gravada |  |
 
 ### Perguntas e curiosidades
 
 | Arquivo | Fala | Menina | Menino |
 | --- | --- | --- | --- |
-| `agulha-pergunta.mp3` | Pra bordar, a gente usa o quê? |  |  |
-| `agulha-curiosidade.mp3` | Agulha e linha! Cada furinho vira um pontinho. |  |  |
-| `ponto-cruz-pergunta.mp3` | Tem um ponto feito de xizinhos. Qual é? |  |  |
-| `ponto-cruz-curiosidade.mp3` | Ponto cruz! Feito de xizinhos. |  |  |
-| `aprender-pergunta.mp3` | Como será que eu aprendi a bordar? |  |  |
-| `aprender-curiosidade.mp3` | Com quem já sabe! Eu aprendi com a minha avó. |  |  |
+| `agulha-pergunta.mp3` | Pra bordar, a gente usa o quê? | gravada |  |
+| `agulha-curiosidade.mp3` | Agulha e linha! Cada furinho vira um pontinho. | gravada |  |
+| `ponto-cruz-pergunta.mp3` | Tem um ponto feito de xizinhos. Qual é? | gravada |  |
+| `ponto-cruz-curiosidade.mp3` | Ponto cruz! Feito de xizinhos. | gravada |  |
+| `aprender-pergunta.mp3` | Como será que eu aprendi a bordar? | gravada |  |
+| `aprender-curiosidade.mp3` | Com quem já sabe! Eu aprendi com a minha avó. | gravada |  |
