@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Avatar, AVATAR_OPTIONS, AVATAR_PALETTES } from '../../components/Avatar';
+import { Avatar, AVATAR_OPTIONS, AVATAR_PALETTES, AvatarSprite, SPRITE_H, SPRITE_W } from '../../components/Avatar';
 import { CityWorld } from '../../components/CityWorld';
 import { useDayTime } from '../../components/Scene';
 import { CITY_PLACES, sfx } from '../../lib/cidade';
 import { getHero, saveHero, STARTER, type Gender } from '../../lib/personagem';
 import type { AvatarConfig } from '../../lib/types';
 import { useCityTitle } from './CityHud';
+import { Confetti } from './PlaceVisit';
 
 /*
  * Criação de personagem, logo depois do "Começar": primeiro a criança escolhe menina ou menino
@@ -74,6 +75,10 @@ export function HeroCreator() {
   const [gender, setGender] = useState<Gender | null>(saved?.gender ?? null);
   const [look, setLook] = useState<Look>(saved?.look ?? STARTER.menina);
   const [leaving, setLeaving] = useState(false);
+  /** Festa do "Pronto!": o personagem cai no meio da tela, pula, comemora e sai andando para o mapa. */
+  const [party, setParty] = useState<'show' | 'go' | null>(null);
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
   const set = <K extends keyof Look>(k: K, v: Look[K]) => setLook((l) => ({ ...l, [k]: v }));
 
@@ -84,19 +89,29 @@ export function HeroCreator() {
     setGender(g);
   };
 
-  const done = () => {
-    if (!gender) return;
-    saveHero({ gender, look });
-    sfx('ok');
+  const toMap = () => {
+    timers.current.forEach(clearTimeout);
     setLeaving(true);
     navigate('/mapa');
+  };
+
+  const done = () => {
+    if (!gender || party) return;
+    saveHero({ gender, look });
+    sfx('ok');
+    setParty('show');
+    const at = (ms: number, f: () => void) => timers.current.push(window.setTimeout(f, ms));
+    at(650, () => sfx('palmas'));
+    at(1500, () => sfx('plim'));
+    at(2300, () => setParty('go'));
+    at(3300, toMap);
   };
 
   return (
     <div className="start-screen hc-screen">
       <CityWorld places={CITY_PLACES} time={time} demo paused={leaving} />
       <div className="start-shade" aria-hidden />
-      <main className={`hc ${gender ? '' : 'hc-first'}`}>
+      <main className={`hc ${gender ? '' : 'hc-first'} ${party ? 'hc-out' : ''}`}>
         <h1 className="hc-title">{gender ? 'Monte seu personagem!' : 'Quem vai passear pela cidade?'}</h1>
 
         <div className="hc-gender" role="radiogroup" aria-label="Menina ou menino">
@@ -134,6 +149,34 @@ export function HeroCreator() {
           </button>
         )}
       </main>
+      {party && gender && <Party look={look} gender={gender} phase={party} onSkip={toMap} />}
+    </div>
+  );
+}
+
+/** A comemoração: raios girando, confete, o personagem pulando e, no fim, andando para o mapa. */
+function Party({ look, gender, phase, onSkip }: { look: Look; gender: Gender; phase: 'show' | 'go'; onSkip: () => void }) {
+  const [step, setStep] = useState<1 | 2>(1);
+  useEffect(() => {
+    if (phase !== 'go') return;
+    const id = setInterval(() => setStep((s) => (s === 1 ? 2 : 1)), 160);
+    return () => clearInterval(id);
+  }, [phase]);
+  return (
+    <div className={`hc-party hc-party-${gender} ${phase}`} onClick={onSkip} role="status" aria-label="Personagem pronto! Indo para o mapa">
+      <div className="hc-rays" aria-hidden />
+      <Confetti />
+      <div className="hc-hero">
+        <div className="hc-hero-jump">
+          <svg viewBox={`0 0 ${SPRITE_W} ${SPRITE_H}`} shapeRendering="crispEdges" aria-hidden>
+            <AvatarSprite config={look} frame={phase === 'go' ? step : 0} />
+          </svg>
+        </div>
+        <span className="hc-hero-shadow" aria-hidden />
+      </div>
+      <p className="hc-party-title">{gender === 'menina' ? 'Prontinha!' : 'Prontinho!'}</p>
+      <p className="hc-party-sub">Vamos passear pela cidade! 🗺️</p>
+      <div className="hc-wipe" aria-hidden />
     </div>
   );
 }
