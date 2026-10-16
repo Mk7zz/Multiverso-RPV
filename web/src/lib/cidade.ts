@@ -577,14 +577,14 @@ export const QUESTIONS: Record<string, Question[]> = {
       fact: 'Um burrinho, carregando a carga nas costas!',
     },
     {
-      id: 'janelas',
-      text: 'Como são as janelas lá de cima?',
+      id: 'artista',
+      text: 'Quem morava nesta casa?',
       options: [
-        { text: 'Grandes, de vidro', emoji: '🪟' },
-        { text: 'De pedra', emoji: '🪨' },
-        { text: 'Não tem janela', emoji: '🚫' },
+        { text: 'Uma artista', emoji: '🎨' },
+        { text: 'Um pirata', emoji: '🏴‍☠️' },
+        { text: 'Um astronauta', emoji: '🧑‍🚀' },
       ],
-      fact: 'Grandes e de vidro, uma do lado da outra!',
+      fact: 'A artista Nanzita! Hoje a casa guarda a arte dela.',
     },
   ],
   educandario: [

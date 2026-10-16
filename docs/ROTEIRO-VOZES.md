@@ -99,8 +99,8 @@ São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 | `nanzita-painel-curiosidade.mp3` | Um painel enorme, feito de azulejos! |  |  |
 | `nanzita-burro-pergunta.mp3` | Que bicho aparece no painel? |  |  |
 | `nanzita-burro-curiosidade.mp3` | Um burrinho, carregando a carga nas costas! |  |  |
-| `nanzita-janelas-pergunta.mp3` | Como são as janelas lá de cima? |  |  |
-| `nanzita-janelas-curiosidade.mp3` | Grandes e de vidro, uma do lado da outra! |  |  |
+| `nanzita-artista-pergunta.mp3` | Quem morava nesta casa? |  |  |
+| `nanzita-artista-curiosidade.mp3` | A artista Nanzita! Hoje a casa guarda a arte dela. |  |  |
 
 ### Painel do Educandário
 
