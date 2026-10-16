@@ -33,8 +33,8 @@ São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 | `santa-rita-nome-praca-curiosidade.mp3` | Santa Rita! A santa das rosas. |  |  |
 | `santa-rita-torre-cruz-pergunta.mp3` | O que tem no alto da torre? |  |  |
 | `santa-rita-torre-cruz-curiosidade.mp3` | Uma cruz! E lá dentro mora o sino. |  |  |
-| `santa-rita-espelho-agua-pergunta.mp3` | O que parece um espelho na frente da igreja? |  |  |
-| `santa-rita-espelho-agua-curiosidade.mp3` | O laguinho! A igreja aparece nele. |  |  |
+| `santa-rita-encontro-pergunta.mp3` | O povo vem na praça pra fazer o quê? |  |  |
+| `santa-rita-encontro-curiosidade.mp3` | Encontrar os amigos! A praça é o coração da cidade. |  |  |
 
 ### Ponte Metálica
 
@@ -44,15 +44,15 @@ São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 | `ponte-apelido-curiosidade.mp3` | Ponte Velha! Ela tem mais de cem anos. |  |  |
 | `ponte-rio-pergunta.mp3` | Qual rio passa embaixo da ponte? |  |  |
 | `ponte-rio-curiosidade.mp3` | O Rio Pomba! |  |  |
-| `ponte-ferro-pergunta.mp3` | Do que a ponte é feita? |  |  |
-| `ponte-ferro-curiosidade.mp3` | De ferro! E ela é bem forte. |  |  |
+| `ponte-atravessar-pergunta.mp3` | Pra que serve a ponte? |  |  |
+| `ponte-atravessar-curiosidade.mp3` | Pra atravessar o rio! E ela é toda de ferro. |  |  |
 
 ### Museu Energisa
 
 | Arquivo | Fala | Menina | Menino |
 | --- | --- | --- | --- |
-| `museu-historia-pergunta.mp3` | O museu conta a história de quê? |  |  |
-| `museu-historia-curiosidade.mp3` | Da energia elétrica! |  |  |
+| `museu-predio-pergunta.mp3` | Antes de ser museu, este prédio era de quê? |  |  |
+| `museu-predio-curiosidade.mp3` | Da energia! O museu guarda a história da luz na cidade. |  |  |
 | `museu-turbina-pergunta.mp3` | Como a água vira energia? |  |  |
 | `museu-turbina-curiosidade.mp3` | Girando a turbina! |  |  |
 | `museu-economizar-pergunta.mp3` | Como a gente economiza energia? |  |  |
@@ -66,8 +66,8 @@ São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 | `estacao-nome-curiosidade.mp3` | Cataguazes, com Z! É o jeito antigo de escrever. |  |  |
 | `estacao-trem-pergunta.mp3` | Quem para na estação? |  |  |
 | `estacao-trem-curiosidade.mp3` | O trem! Ele anda em cima dos trilhos. |  |  |
-| `estacao-tijolo-pergunta.mp3` | Do que é feita a parede da estação? |  |  |
-| `estacao-tijolo-curiosidade.mp3` | De tijolinho vermelho! |  |  |
+| `estacao-cafe-pergunta.mp3` | Antigamente, o trem levava muito o quê? |  |  |
+| `estacao-cafe-curiosidade.mp3` | Café! O trem levava o café pra longe. |  |  |
 
 ### Chácara Dona Catarina
 
@@ -77,8 +77,8 @@ São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 | `chacara-cor-curiosidade.mp3` | Laranja, com enfeites brancos! |  |  |
 | `chacara-renda-pergunta.mp3` | O enfeite branco do telhado parece o quê? |  |  |
 | `chacara-renda-curiosidade.mp3` | Uma renda! E ela é feita de madeira. |  |  |
-| `chacara-jardim-pergunta.mp3` | O que tem na frente da casa? |  |  |
-| `chacara-jardim-curiosidade.mp3` | Um jardim, com laguinho e pontezinha! |  |  |
+| `chacara-homenagem-pergunta.mp3` | Este lugar homenageia quem? |  |  |
+| `chacara-homenagem-curiosidade.mp3` | Dona Catarina! Uma personagem famosa de Cataguases. |  |  |
 
 ### Centro Cultural Humberto Mauro
 
@@ -88,8 +88,8 @@ São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 | `cultural-cinema-curiosidade.mp3` | Filmes! Ele fez cinema aqui em Cataguases. |  |  |
 | `cultural-cadeiras-pergunta.mp3` | De que cor são as cadeiras do teatro? |  |  |
 | `cultural-cadeiras-curiosidade.mp3` | Vermelhas! E cabe muita gente. |  |  |
-| `cultural-quadros-pergunta.mp3` | O que tem nas paredes da galeria? |  |  |
-| `cultural-quadros-curiosidade.mp3` | Quadros! A galeria é lugar de ver arte. |  |  |
+| `cultural-fazer-pergunta.mp3` | O que a gente faz no Centro Cultural? |  |  |
+| `cultural-fazer-curiosidade.mp3` | Vê filmes e arte! E lembra do Humberto Mauro. |  |  |
 
 ### Memorial Nanzita
 
@@ -110,8 +110,8 @@ São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 | `educandario-pombas-curiosidade.mp3` | Pombas! Brancas e azuis, voando juntas. |  |  |
 | `educandario-azulejo-pergunta.mp3` | Do que é feito o painel? |  |  |
 | `educandario-azulejo-curiosidade.mp3` | De azulejos! Cada quadradinho foi pintado. |  |  |
-| `educandario-cores-pergunta.mp3` | Quais são as cores do painel? |  |  |
-| `educandario-cores-curiosidade.mp3` | Azul e branco, como o céu com nuvens! |  |  |
+| `educandario-parede-pergunta.mp3` | Onde esta obra de arte foi feita? |  |  |
+| `educandario-parede-curiosidade.mp3` | Na parede! A arte faz parte do prédio. |  |  |
 
 ### Prédio Sicredi
 
@@ -121,8 +121,8 @@ São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 | `sicredi-hotel-curiosidade.mp3` | Um hotel! O Grande Hotel Villas. |  |  |
 | `sicredi-cor-pergunta.mp3` | Qual é a cor do prédio? |  |  |
 | `sicredi-cor-curiosidade.mp3` | Verde, com enfeites brancos! |  |  |
-| `sicredi-arcos-pergunta.mp3` | Como é o alto das janelas? |  |  |
-| `sicredi-arcos-curiosidade.mp3` | Redondo! Cada janela tem um arco em cima. |  |  |
+| `sicredi-centro-pergunta.mp3` | Onde fica o prédio do Sicredi? |  |  |
+| `sicredi-centro-curiosidade.mp3` | No centro da cidade! Todo mundo repara nele. |  |  |
 
 ## Seu Zico (pasta `seu-zico`)
 
