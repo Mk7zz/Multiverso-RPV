@@ -58,7 +58,7 @@ export function randomLook(): AvatarConfig {
 
 const NPC_LINES_DAY = ['Oi! 👋', 'Que dia bonito! ☀️', 'Já foi na Praça Santa Rita? ⛪', 'Bora explorar Cataguases!', '🎵 lá lá lá', 'Olha a pombinha! 🕊️', 'Bom passeio! 😊', 'Já foi prosear com o Seu Zico? 🏡', 'O Sektor tá no estúdio! 🎧', 'A Dona Rosa tá bordando! 🧵'];
 const NPC_LINES_NIGHT = ['Boa noite! 🌙', 'Olha os vagalumes! ✨', 'Que céu estrelado! ⭐', 'Hora de passear 🚶'];
-const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️', 'Pruu! Na Rua dos Mestres moram os Mestres do Saber! 🏡', 'Pruu! Vamos atravessar a Ponte Velha? 🌉', 'Pruu! Já visitou o Museu Energisa? ⚡', 'Pruu! O trem chegou na estação! 🚂', 'Pruu! Vamos na Chácara Dona Catarina? 🏡', 'Pruu! Tem filme no Centro Cultural! 🎬', 'Pruu! Já viu o painel do Memorial Nanzita? 🎨'];
+const DOVE_LINES = ['Pruu! Toque nas árvores! 🌳', 'Pruu! Toque no rio! 💧', 'Pruu! Converse com as pessoas! 👋', 'Pruu! Vamos na Praça Santa Rita? ⛪', 'Pruu! Arraste o mapa para olhar a cidade! 🗺️', 'Pruu! Na Rua dos Mestres moram os Mestres do Saber! 🏡', 'Pruu! Vamos atravessar a Ponte Velha? 🌉', 'Pruu! Já visitou o Museu Energisa? ⚡', 'Pruu! O trem chegou na estação! 🚂', 'Pruu! Vamos na Chácara Dona Catarina? 🏡', 'Pruu! Tem filme no Centro Cultural! 🎬', 'Pruu! Já viu o painel do Memorial Nanzita? 🎨', 'Pruu! Tem pombas no painel do Educandário! 🕊️', 'Pruu! O prédio verde do Sicredi já foi hotel! 🏨'];
 
 /** Onde o Mestre do Saber fica parado, à esquerda da porta de casa. */
 const masterSpot = (p: Place) => (p.variant === 'hiphop' ? -15 : -13);
@@ -97,7 +97,7 @@ function makeScenery(places: Place[]) {
   const flowers = scatter(70, (x, y) => ({ x, y, dur: 2.2 + rand() * 2.4, delay: -rand() * 4, c: ['#f2b705', '#ffffff', '#ec6a8c', '#b48ae0', '#ff8a5c'][Math.floor(rand() * 5)] }));
   const pebbles = Array.from({ length: 90 }, () => ({ x: 10 + Math.round(rand() * (W - 20)), y: MAIN_PATH.y + 1 + Math.round(rand() * (MAIN_PATH.h - 2)) })).filter((p) => !inRiver(p.x, p.y + 20));
   const lamps = [44, 118, 186, 232, 276]
-    .filter((x) => !places.some((p) => p.kind === 'mestre' && Math.abs(x - p.x) < 24))
+    .filter((x) => !places.some((p) => (p.kind === 'mestre' || p.kind === 'painel') && Math.abs(x - p.x) < 24))
     .map((x) => ({ x, y: MAIN_PATH.y - 1, dur: 2 + rand() * 3 }));
   const benches = [
     { x: 122, y: 147 },

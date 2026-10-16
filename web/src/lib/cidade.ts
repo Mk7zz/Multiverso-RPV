@@ -52,6 +52,10 @@ const SANTA_RITA: CityPlace = {
  * - Chácara Dona Catarina: a casa laranja com renda branca no telhado e o jardim com laguinho.
  * - Centro Cultural Humberto Mauro: o prédio pequeno da placa vermelha, com galeria, teatro e cinema.
  * - Memorial Nanzita (hoje Sicoob): casa moderna com a fileira de janelas e o grande painel de azulejos.
+ * - Painel do Educandário: o muro de azulejos azuis com pombas brancas, na Praça Santa Rita
+ *   (no mapa, ao lado da igreja). A cena é a calçada da praça na frente do painel.
+ * - Prédio Sicredi: o sobrado verde que foi o Grande Hotel Villas (arcos, base de pedra e ameias).
+ *   No mapa fica embaixo, à esquerda, depois da casa do Seu Zico.
  */
 const PONTE: CityPlace = {
   id: 'ponte',
@@ -131,7 +135,33 @@ const NANZITA: CityPlace = {
   y: 164,
 };
 
-const LANDMARKS = [SANTA_RITA, PONTE, MUSEU, ESTACAO, CHACARA, CULTURAL, NANZITA];
+const EDUCANDARIO: CityPlace = {
+  id: 'educandario',
+  label: 'Painel do Educandário',
+  title: 'Painel do Educandário',
+  hint: 'O muro das pombas azuis',
+  intro: 'Chegamos no Painel do Educandário! Olha quantas pombas.',
+  to: '/lugar/educandario',
+  icon: 'school',
+  kind: 'painel',
+  x: 97,
+  y: 117,
+};
+
+const SICREDI: CityPlace = {
+  id: 'sicredi',
+  label: 'Prédio Sicredi',
+  title: 'Prédio Sicredi',
+  hint: 'O prédio verde que já foi hotel',
+  intro: 'Chegamos no Prédio Sicredi! Ele já foi um hotel.',
+  to: '/lugar/sicredi',
+  icon: 'building',
+  kind: 'hotel',
+  x: 36,
+  y: 175,
+};
+
+const LANDMARKS = [SANTA_RITA, PONTE, MUSEU, ESTACAO, CHACARA, CULTURAL, NANZITA, EDUCANDARIO, SICREDI];
 
 /*
  * Mestres do Saber: pessoas da cultura popular que guardam histórias, músicas e costumes.
@@ -555,6 +585,70 @@ export const QUESTIONS: Record<string, Question[]> = {
         { text: 'Não tem janela', emoji: '🚫' },
       ],
       fact: 'Grandes e de vidro, uma do lado da outra!',
+    },
+  ],
+  educandario: [
+    {
+      id: 'pombas',
+      text: 'Que bicho voa no painel?',
+      options: [
+        { text: 'Pombas', emoji: '🕊️' },
+        { text: 'Peixes', emoji: '🐟' },
+        { text: 'Gatos', emoji: '🐱' },
+      ],
+      fact: 'Pombas! Brancas e azuis, voando juntas.',
+    },
+    {
+      id: 'azulejo',
+      text: 'Do que é feito o painel?',
+      options: [
+        { text: 'De azulejos', emoji: '🟦' },
+        { text: 'De papel', emoji: '📄' },
+        { text: 'De madeira', emoji: '🪵' },
+      ],
+      fact: 'De azulejos! Cada quadradinho foi pintado.',
+    },
+    {
+      id: 'cores',
+      text: 'Quais são as cores do painel?',
+      options: [
+        { text: 'Azul e branco', emoji: '💙' },
+        { text: 'Verde e amarelo', emoji: '💚' },
+        { text: 'Preto e vermelho', emoji: '🖤' },
+      ],
+      fact: 'Azul e branco, como o céu com nuvens!',
+    },
+  ],
+  sicredi: [
+    {
+      id: 'hotel',
+      text: 'Hoje é o Sicredi. E antes, o que era?',
+      options: [
+        { text: 'Um hotel', emoji: '🏨' },
+        { text: 'Um navio', emoji: '🚢' },
+        { text: 'Um circo', emoji: '🎪' },
+      ],
+      fact: 'Um hotel! O Grande Hotel Villas.',
+    },
+    {
+      id: 'cor',
+      text: 'Qual é a cor do prédio?',
+      options: [
+        { text: 'Verde', emoji: '💚' },
+        { text: 'Roxo', emoji: '💜' },
+        { text: 'Laranja', emoji: '🧡' },
+      ],
+      fact: 'Verde, com enfeites brancos!',
+    },
+    {
+      id: 'arcos',
+      text: 'Como é o alto das janelas?',
+      options: [
+        { text: 'Redondo, em arco', emoji: '🌈' },
+        { text: 'Pontudo', emoji: '🔺' },
+        { text: 'Não tem janela', emoji: '🚫' },
+      ],
+      fact: 'Redondo! Cada janela tem um arco em cima.',
     },
   ],
   'santa-rita': [

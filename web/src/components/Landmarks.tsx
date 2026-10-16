@@ -350,3 +350,108 @@ export function memorialParts(p: Place, glass: string): HouseParts {
     ),
   };
 }
+
+/**
+ * Painel do Educandário, na Praça Santa Rita, no mapa: o muro baixo de azulejos azuis com as pombas
+ * brancas voando, o portão azul do lado e o muro de tijolinho; atrás, o sobrado bege de telhado vermelho.
+ */
+export function painelParts(p: Place, glass: string): HouseParts {
+  const { x, y } = p;
+  const x0 = x - 18;
+  const blue = '#2448a8';
+  const body: Part[] = [
+    // Sobrado de trás
+    [x + 5, y - 20, 17, 9, '#efe2c6'],
+    [x + 3, y - 22, 21, 2, '#c4553a'],
+    [x + 4, y - 24, 19, 2, '#d9694a'],
+    // Muro de tijolinho, portão azul e o painel
+    [x0, y - 11, 8, 11, '#c98a52'],
+    [x0 + 8, y - 12, 9, 12, '#2f5fb3'],
+    [x0 + 17, y - 12, 22, 12, blue],
+    [x0, y - 12, 39, 1, '#e9e4da'],
+  ];
+  const details: Part[] = [
+    [x + 7, y - 18, 3, 3, glass],
+    [x + 12, y - 18, 3, 3, glass],
+    [x + 17, y - 18, 3, 3, glass],
+  ];
+  /** Pombas brancas (um "v" de asas abertas) espalhadas pelo azul. */
+  const doves: [number, number][] = [
+    [4, 3],
+    [12, 3],
+    [19, 4],
+    [8, 8],
+    [16, 9],
+  ];
+  return {
+    body,
+    details,
+    sign: [x - 5, y - 36],
+    under: <rect x={x0} y={y - 1} width={39} height={1} fill="#8d969c" />,
+    extra: (
+      <g>
+        {/* Tijolinhos e as tábuas do portão */}
+        {[y - 9, y - 6, y - 3].map((yy) => (
+          <rect key={yy} x={x0} y={yy} width={8} height={0.5} fill="#a86a3a" />
+        ))}
+        {[2, 5].map((d) => (
+          <rect key={d} x={x0 + 8 + d} y={y - 11} width={0.6} height={11} fill="#244a8a" />
+        ))}
+        {/* Pombas brancas de asas abertas */}
+        {doves.map(([dx, dy], i) => {
+          const cx = x0 + 17 + dx;
+          const cy = y - 12 + dy;
+          return <path key={i} d={`M${cx - 3.5} ${cy - 1.5}L${cx} ${cy + 0.5}L${cx + 3.5} ${cy - 1.5}L${cx + 1} ${cy + 1.5}L${cx + 0.5} ${cy + 3}L${cx - 0.5} ${cy + 3}L${cx - 1} ${cy + 1.5}Z`} fill="#f4f6fb" />;
+        })}
+      </g>
+    ),
+  };
+}
+
+/**
+ * Prédio Sicredi (o antigo Grande Hotel Villas) no mapa: sobrado verde de dois andares com as janelas
+ * em arco, pilastras brancas, a base de pedra, as ameias em cima e a placa verde no meio.
+ */
+export function hotelParts(p: Place, glass: string): HouseParts {
+  const { x, y } = p;
+  const x0 = x - 20;
+  const green = '#3f9a52';
+  const white = '#f4f4ee';
+  const body: Part[] = [
+    [x0, y - 22, 40, 22, green],
+    [x0 - 1, y - 24, 42, 2, white],
+    [x0, y - 11, 40, 1, white],
+    [x0, y - 4, 40, 4, '#8a8a80'],
+    [x - 5, y - 28, 10, 4, white],
+  ];
+  const ameias: Part[] = Array.from({ length: 7 }, (_, i) => [x0 + i * 6.3, y - 26, 3, 2, white] as Part);
+  const arch = (cx: number, top: number, h: number): Part[] => [
+    [cx - 2, top + 1, 4, h - 1, glass],
+    [cx - 1, top, 2, 1, glass],
+  ];
+  const details: Part[] = [
+    ...[x0 + 6, x0 + 14, x0 + 26, x0 + 34].flatMap((cx) => arch(cx, y - 20, 7)),
+    ...[x0 + 6, x0 + 14, x0 + 26, x0 + 34].flatMap((cx) => arch(cx, y - 9, 9).map((d) => [...d.slice(0, 4), '#f4f4ee'] as Part)),
+    [x - 2, y - 10, 4, 10, '#6b4a2a'],
+  ];
+  return {
+    body: [...body, ...ameias],
+    details,
+    sign: [x - 5, y - 40],
+    under: <rect x={x0} y={y - 1} width={40} height={1} fill="#6b6b62" />,
+    extra: (
+      <g>
+        {/* Pilastras brancas e as pedras da base */}
+        {[x0, x0 + 19, x0 + 38].map((px) => (
+          <rect key={px} x={px} y={y - 22} width={2} height={18} fill={white} />
+        ))}
+        {Array.from({ length: 12 }, (_, i) => (
+          <rect key={i} x={x0 + 1 + i * 3.3} y={y - 3.2 + (i % 2)} width={1.6} height={1} fill="#4f4f48" />
+        ))}
+        {/* Placa verde do Sicredi */}
+        <rect x={x - 4} y={y - 27} width={8} height={2} fill="#3fae49" />
+        <rect x={x - 1} y={y - 27} width={2} height={2} fill="#bff0c4" />
+      </g>
+    ),
+  };
+}

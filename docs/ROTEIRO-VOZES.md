@@ -2,7 +2,7 @@
 
 > Gerado a partir do jogo (`npm run roteiro -w web`). Não edite à mão: mude a fala no código e gere de novo.
 
-São 76 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes: por uma menina e por um menino**. No começo do jogo a criança monta o personagem dela; com personagem menina, o jogo inteiro (Pomba e Mestres) fala com as vozes de menina, e com personagem menino, com as de menino. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador (feminina ou masculina, conforme o personagem).
+São 88 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes: por uma menina e por um menino**. No começo do jogo a criança monta o personagem dela; com personagem menina, o jogo inteiro (Pomba e Mestres) fala com as vozes de menina, e com personagem menino, com as de menino. Não precisa gravar tudo de uma vez: o que ainda não tiver gravação continua sendo lido pela voz do computador (feminina ou masculina, conforme o personagem).
 
 ## Como gravar
 
@@ -101,6 +101,28 @@ São 76 falas curtas, gravadas por crianças, e **cada uma é gravada duas vezes
 | `nanzita-burro-curiosidade.mp3` | Um burrinho, carregando a carga nas costas! |  |  |
 | `nanzita-janelas-pergunta.mp3` | Como são as janelas lá de cima? |  |  |
 | `nanzita-janelas-curiosidade.mp3` | Grandes e de vidro, uma do lado da outra! |  |  |
+
+### Painel do Educandário
+
+| Arquivo | Fala | Menina | Menino |
+| --- | --- | --- | --- |
+| `educandario-pombas-pergunta.mp3` | Que bicho voa no painel? |  |  |
+| `educandario-pombas-curiosidade.mp3` | Pombas! Brancas e azuis, voando juntas. |  |  |
+| `educandario-azulejo-pergunta.mp3` | Do que é feito o painel? |  |  |
+| `educandario-azulejo-curiosidade.mp3` | De azulejos! Cada quadradinho foi pintado. |  |  |
+| `educandario-cores-pergunta.mp3` | Quais são as cores do painel? |  |  |
+| `educandario-cores-curiosidade.mp3` | Azul e branco, como o céu com nuvens! |  |  |
+
+### Prédio Sicredi
+
+| Arquivo | Fala | Menina | Menino |
+| --- | --- | --- | --- |
+| `sicredi-hotel-pergunta.mp3` | Hoje é o Sicredi. E antes, o que era? |  |  |
+| `sicredi-hotel-curiosidade.mp3` | Um hotel! O Grande Hotel Villas. |  |  |
+| `sicredi-cor-pergunta.mp3` | Qual é a cor do prédio? |  |  |
+| `sicredi-cor-curiosidade.mp3` | Verde, com enfeites brancos! |  |  |
+| `sicredi-arcos-pergunta.mp3` | Como é o alto das janelas? |  |  |
+| `sicredi-arcos-curiosidade.mp3` | Redondo! Cada janela tem um arco em cima. |  |  |
 
 ## Seu Zico (pasta `seu-zico`)
 
